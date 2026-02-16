@@ -1,0 +1,11 @@
+
+# Deriv Agentic Workflow
+.env
+.env.*
+*.local
+
+# Don't ignore task files - they're for coordination
+# !.claude/tasks/*.md
+
+.DS_Store
+dist/

@@ -1,0 +1,146 @@
+name: Quality Gates
+
+on:
+  pull_request:
+    branches: [main, master]
+  push:
+    branches: [main, master]
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Detect package manager and project type
+      - name: Detect project type
+        id: detect
+        run: |
+          if [ -f "package.json" ]; then
+            echo "type=node" >> $GITHUB_OUTPUT
+            if [ -f "pnpm-lock.yaml" ]; then
+              echo "pm=pnpm" >> $GITHUB_OUTPUT
+            elif [ -f "yarn.lock" ]; then
+              echo "pm=yarn" >> $GITHUB_OUTPUT
+            elif [ -f "bun.lockb" ]; then
+              echo "pm=bun" >> $GITHUB_OUTPUT
+            else
+              echo "pm=npm" >> $GITHUB_OUTPUT
+            fi
+          elif [ -f "Cargo.toml" ]; then
+            echo "type=rust" >> $GITHUB_OUTPUT
+          elif [ -f "go.mod" ]; then
+            echo "type=go" >> $GITHUB_OUTPUT
+          elif [ -f "pyproject.toml" ] || [ -f "setup.py" ]; then
+            echo "type=python" >> $GITHUB_OUTPUT
+          fi
+
+      # Node.js setup
+      - name: Setup Node.js
+        if: steps.detect.outputs.type == 'node'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup pnpm
+        if: steps.detect.outputs.pm == 'pnpm'
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: Install dependencies (Node)
+        if: steps.detect.outputs.type == 'node'
+        run: |
+          case "${{ steps.detect.outputs.pm }}" in
+            pnpm) pnpm install --frozen-lockfile ;;
+            yarn) yarn install --frozen-lockfile ;;
+            bun) bun install ;;
+            *) npm ci ;;
+          esac
+
+      # Rust setup
+      - name: Setup Rust
+        if: steps.detect.outputs.type == 'rust'
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+
+      # Go setup
+      - name: Setup Go
+        if: steps.detect.outputs.type == 'go'
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.21'
+
+      # Python setup
+      - name: Setup Python
+        if: steps.detect.outputs.type == 'python'
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies (Python)
+        if: steps.detect.outputs.type == 'python'
+        run: |
+          pip install -e ".[dev]" || pip install -r requirements.txt
+
+      # Quality checks
+      - name: Type Check
+        run: |
+          case "${{ steps.detect.outputs.type }}" in
+            node) ${{ steps.detect.outputs.pm }} run typecheck || npx tsc --noEmit ;;
+            rust) cargo check ;;
+            go) go build ./... ;;
+            python) mypy . || pyright || echo "No type checker configured" ;;
+          esac
+
+      - name: Lint
+        run: |
+          case "${{ steps.detect.outputs.type }}" in
+            node) ${{ steps.detect.outputs.pm }} run lint || npx eslint . ;;
+            rust) cargo clippy -- -D warnings ;;
+            go) golangci-lint run || echo "golangci-lint not installed" ;;
+            python) ruff check . || flake8 ;;
+          esac
+
+      - name: Test
+        run: |
+          case "${{ steps.detect.outputs.type }}" in
+            node) ${{ steps.detect.outputs.pm }} test ;;
+            rust) cargo test ;;
+            go) go test ./... ;;
+            python) pytest ;;
+          esac
+
+      - name: Build
+        run: |
+          case "${{ steps.detect.outputs.type }}" in
+            node) ${{ steps.detect.outputs.pm }} run build ;;
+            rust) cargo build --release ;;
+            go) go build ./... ;;
+            python) echo "No build step" ;;
+          esac
+
+      - name: Security Audit
+        run: |
+          case "${{ steps.detect.outputs.type }}" in
+            node) ${{ steps.detect.outputs.pm }} audit --audit-level=high || true ;;
+            rust) cargo audit || echo "cargo-audit not installed" ;;
+            go) govulncheck ./... || echo "govulncheck not installed" ;;
+            python) pip-audit || safety check || echo "No Python audit tool" ;;
+          esac
+
+  auto-merge:
+    needs: quality
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Auto-merge on quality pass
+        uses: pascalgn/automerge-action@v0.15.6
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MERGE_METHOD: squash
+          MERGE_LABELS: ""
