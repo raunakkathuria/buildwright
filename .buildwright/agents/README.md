@@ -6,8 +6,22 @@ This directory contains reusable agent personas that commands can reference.
 
 | Agent | File | Used By | Key Capabilities |
 |-------|------|---------|-------------------|
-| Staff Engineer | `staff-engineer.md` | `/bw-new-feature`, `/bw-ship` | Confidence scoring (≥80), HIGH SIGNAL criteria, false-positive exclusions |
-| Security Engineer | `bw-security-engineer.md` | `/bw-ship` | Confidence scoring (≥0.8), exploit scenarios, hard exclusions |
+| Architect | `architect.md` | `/bw-claw` | Decomposes cross-domain work, defines interfaces, coordinates claws |
+| Staff Engineer | `staff-engineer.md` | `/bw-new-feature`, `/bw-ship` | Confidence scoring (>=80), HIGH SIGNAL criteria, false-positive exclusions |
+| Security Engineer | `security-engineer.md` | `/bw-ship` | Confidence scoring (>=0.8), exploit scenarios, hard exclusions |
+
+## Claw Architecture
+
+For domain-specialist agents (claws), see `.buildwright/claws/`.
+
+The Architect agent coordinates claws:
+```
+        Architect (Brain)
+             |
+   +---------+---------+
+   |         |         |
+ UI Claw  API Claw  DB Claw
+```
 
 ## Adding New Agents
 
@@ -17,7 +31,7 @@ This directory contains reusable agent personas that commands can reference.
    - What they look for
    - Output format
    - Rules/guidelines
-3. Reference in commands via: `Read and adopt persona from .claude/agents/[role-name].md`
+3. Reference in commands via: `Read and adopt persona from .buildwright/agents/[role-name].md`
 
 ## Planned Agents (Future)
 

@@ -14,7 +14,7 @@ First, check the project for available commands:
 - pyproject.toml
 - go.mod
 
-Document findings in .claude/steering/tech.md if not already present.
+Document findings in .buildwright/steering/tech.md if not already present.
 
 ---
 

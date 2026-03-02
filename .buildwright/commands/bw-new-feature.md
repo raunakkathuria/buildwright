@@ -54,8 +54,8 @@ This phase prevents the #1 failure mode: code that works in isolation but breaks
 
 ```bash
 # Always read these first
-cat .claude/steering/product.md   # Product context
-cat .claude/steering/tech.md      # Tech stack, commands, patterns
+cat .buildwright/steering/product.md   # Product context
+cat .buildwright/steering/tech.md      # Tech stack, commands, patterns
 ```
 
 Extract:
@@ -245,7 +245,7 @@ Create `docs/specs/[feature-name]/spec.md`
 
 ## Phase 4: Validate Specification (AUTO)
 
-Adopt Staff Engineer persona from `.claude/agents/staff-engineer.md`.
+Adopt Staff Engineer persona from `.buildwright/agents/staff-engineer.md`.
 
 Review the spec for:
 - Does it leverage existing patterns from research?
@@ -325,12 +325,33 @@ Reply with feedback to revise.
 
 ### Detect Implementation Mode
 
-If spec has 3+ independent components and 8+ hours estimated, offer parallel mode.
+**Single-domain or small scope** → Sequential implementation (below)
 
-If parallel selected or $ARGUMENTS.parallel set:
-- Create task file, worktrees, runner script
-- Output instructions
-- STOP (human runs agents in separate terminals)
+**Multi-domain (3+ independent components, 8+ hours, crosses layer boundaries)** → Recommend Claw Architecture:
+
+```
+╔═══════════════════════════════════════════════════════════════╗
+║  MULTI-DOMAIN FEATURE DETECTED                                ║
+╠═══════════════════════════════════════════════════════════════╣
+║                                                               ║
+║  This feature touches [N] domains: [list]                     ║
+║                                                               ║
+║  Recommendation: Use /bw-claw for multi-agent execution       ║
+║                                                               ║
+║  Benefits:                                                    ║
+║  • Each domain gets a specialist agent (claw)                 ║
+║  • Interface contracts prevent integration failures           ║
+║  • Parallel execution where possible                          ║
+║                                                               ║
+║  /bw-claw "[feature description]"                             ║
+║                                                               ║
+║  Or say "continue" to proceed with single-agent mode.         ║
+╚═══════════════════════════════════════════════════════════════╝
+```
+
+If parallel selected, $ARGUMENTS.parallel set, or user says "claw":
+- Switch to `/bw-claw` pipeline
+- STOP this command
 
 ### Sequential Implementation (Default)
 

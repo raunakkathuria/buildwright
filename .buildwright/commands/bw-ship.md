@@ -80,7 +80,7 @@ If FAIL after retries:
 
 ## Step 2: Security Review — No retry (needs human judgment)
 
-Adopt Security Engineer persona from `.claude/agents/security-engineer.md`.
+Adopt Security Engineer persona from `.buildwright/agents/security-engineer.md`.
 
 ### 2.1 Determine Scope
 ```bash
@@ -134,7 +134,7 @@ If CRITICAL VULNERABILITIES:
 
 ## Step 3: Code Review — No retry (architectural decisions)
 
-Adopt Staff Engineer persona from `.claude/agents/staff-engineer.md`.
+Adopt Staff Engineer persona from `.buildwright/agents/staff-engineer.md`.
 
 ### 3.1 Determine Scope
 ```bash

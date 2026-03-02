@@ -1,0 +1,15 @@
+{
+  "// COMMENT": "OpenClaw single-agent configuration (standard Buildwright)",
+  "// COMMENT2": "Copy to ~/.openclaw/openclaw.json",
+
+  "skills": {
+    "entries": {
+      "buildwright": {
+        "enabled": true,
+        "env": {
+          "BUILDWRIGHT_AUTO_APPROVE": "true"
+        }
+      }
+    }
+  }
+}

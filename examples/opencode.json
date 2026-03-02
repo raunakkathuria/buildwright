@@ -1,0 +1,24 @@
+{
+  "// COMMENT": "OpenCode project configuration (.opencode.json)",
+  "// COMMENT2": "Place at project root alongside .opencode/ directory",
+
+  "skills": {
+    "buildwright": {
+      "enabled": true
+    }
+  },
+  "agents": {
+    "architect": {
+      "instructions": ".opencode/agents/architect.md",
+      "mode": "primary"
+    },
+    "staff-engineer": {
+      "instructions": ".opencode/agents/staff-engineer.md",
+      "mode": "subagent"
+    },
+    "security-engineer": {
+      "instructions": ".opencode/agents/security-engineer.md",
+      "mode": "subagent"
+    }
+  }
+}
