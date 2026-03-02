@@ -130,25 +130,39 @@ make sync
 
 ### For OpenClaw
 
+The recommended approach is to run the setup script, which installs the full workflow (commands, agents, claws, steering docs) into your project:
+
 ```bash
-# Install as skill
+curl -sL https://raw.githubusercontent.com/raunakkathuria/buildwright/main/setup.sh | bash
+make sync
+```
+
+Alternatively, install just the skill globally for reference across all projects:
+
+```bash
 mkdir -p ~/.openclaw/skills/buildwright
 curl -s https://raw.githubusercontent.com/raunakkathuria/buildwright/main/SKILL.md > ~/.openclaw/skills/buildwright/SKILL.md
-
-# Use in any project
-/bw-new-feature "Add user authentication"
 ```
+
+> **Note:** The global skill install provides buildwright's workflow guidance via SKILL.md. The slash commands (`/bw-new-feature`, `/bw-claw`, etc.) require the full project setup above.
 
 ### For OpenCode
 
+Same as above — run the setup script for the full workflow:
+
 ```bash
-# Install skill globally
+curl -sL https://raw.githubusercontent.com/raunakkathuria/buildwright/main/setup.sh | bash
+make sync
+```
+
+Or install the skill globally:
+
+```bash
 mkdir -p ~/.config/opencode/skills/buildwright
 curl -s https://raw.githubusercontent.com/raunakkathuria/buildwright/main/SKILL.md > ~/.config/opencode/skills/buildwright/SKILL.md
-
-# Use in any project
-/bw-new-feature "Add user authentication"
 ```
+
+> **Note:** The global skill install provides buildwright's workflow guidance via SKILL.md. The slash commands require the full project setup.
 
 ---
 

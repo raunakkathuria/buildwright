@@ -5,7 +5,7 @@ license: MIT
 compatibility: Requires git and gh (GitHub CLI). GITHUB_TOKEN with repo scope needed for push/PR. Optional tools for security scans (semgrep, gitleaks, trufflehog). Works with Claude Code, OpenCode, and OpenClaw.
 metadata:
   homepage: https://github.com/raunakkathuria/buildwright
-  version: "2.1.0"
+  version: "0.0.1"
   author: raunakkathuria
   tags:
     - development
