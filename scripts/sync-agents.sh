@@ -137,7 +137,7 @@ fi
 # 4. Package for ClawHub (dist/)
 # ============================================================================
 
-if [ "$CHECK_ONLY" = false ]; then
+if [ "$CHECK_ONLY" = false ] && [ -f "SKILL.md" ]; then
   mkdir -p dist/buildwright
   cp SKILL.md dist/buildwright/
   echo "  packaged dist/buildwright/SKILL.md for ClawHub"

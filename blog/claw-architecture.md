@@ -1,4 +1,4 @@
-# The Claw Architecture: Multi-Agent AI Development with OpenClaw + Buildwright
+# The Claw Architecture: Multi-Agent AI Development
 
 One lobster. Multiple claws. Each claw grabs its domain.
 
@@ -43,15 +43,15 @@ A single AI trying to handle everything is like a surgeon trying to perform ever
 
 The concept is inspired by OpenClaw's branding — a lobster that grabs and executes tasks, not just chats about them.
 
-One lobster (OpenClaw instance) with multiple specialized claws (agents).
+One lobster (an OpenClaw, Claude Code, or OpenCode instance) with multiple specialized claws (agents).
 
 Each claw is an expert at grabbing work in its domain:
 
-- **UI Claw**: Knows React patterns, component libraries, accessibility, state management
-- **API Claw**: Knows REST conventions, OpenAPI specs, authentication, error handling
-- **DB Claw**: Knows schema design, migrations, indexing, query optimization
+- **UI Claw** (`.buildwright/claws/frontend.md`): Knows React patterns, component libraries, accessibility, state management
+- **API Claw** (`.buildwright/claws/backend.md`): Knows REST conventions, OpenAPI specs, authentication, error handling
+- **DB Claw** (`.buildwright/claws/database.md`): Knows schema design, migrations, indexing, query optimization
 
-The Brain (Architect) coordinates everything — analyzing requirements, creating plans, spawning claws, and combining results.
+The Brain — the Architect (`.buildwright/agents/architect.md`) — coordinates everything: analyzing requirements, creating plans, spawning claws, and combining results.
 
 ## The Anatomy
 
@@ -59,20 +59,20 @@ The Brain (Architect) coordinates everything — analyzing requirements, creatin
 |---|---|
 | Brain | Architect Agent — analyzes, plans, coordinates |
 | Claws | Specialized Agents — grab and execute domain-specific work |
-| Nervous System | OpenClaw Gateway — handles communication between claws |
-| Shell | Buildwright — protects quality through verify, security, review |
+| Nervous System | Naming Conventions Registry — shared vocabulary across claws |
+| Shell | Buildwright Quality Gates — verify, security, review |
 
 ## How It Works
 
 ### Step 1: You Request a Feature
 
 ```
-You (Telegram): "Add profile photo upload for team members"
+/bw-claw "Add profile photo upload for team members"
 ```
 
 ### Step 2: Brain Analyzes
 
-The Architect Agent reads your system architecture and determines which claws need to grab work:
+The Architect reads your codebase and `.buildwright/steering/` docs, then determines which claws need to grab work:
 
 ```
 ARCHITECT: This feature touches:
@@ -80,10 +80,23 @@ ARCHITECT: This feature touches:
 - API (upload endpoint)
 - UI (upload component)
 
-Creating plan...
+Registering fields in naming-conventions.md...
+Creating claw plan...
 ```
 
-### Step 3: Brain Spawns Claws
+### Step 3: Brain Registers the Contract
+
+Before spawning claws, the Architect writes to `.buildwright/steering/naming-conventions.md`:
+
+```
+| Concept | Database | API (JSON) | UI (JS) |
+|---------|----------|------------|---------|
+| photo_url | photo_url | photoUrl | photoUrl |
+```
+
+And defines interface contracts in the claw plan — what each claw must produce and what it can assume about the others.
+
+### Step 4: Brain Spawns Claws
 
 Each claw gets spawned with its specific task:
 
@@ -93,14 +106,14 @@ Each claw gets spawned with its specific task:
 🎨 UI CLAW: "Add PhotoUpload component to MemberCard"
 ```
 
-### Step 4: Claws Grab and Execute
+### Step 5: Claws Grab and Execute
 
 Each claw:
-1. Reads its domain (schema, routes, components)
-2. Plans the changes
+1. Reads its domain-specific files (schema, routes, or components)
+2. Looks up naming from the conventions registry — never invents its own
 3. Implements with TDD
-4. Verifies its work
-5. Reports back to Brain
+4. Runs `/bw-verify` against its work
+5. Reports back to the Brain
 
 ```
 🗄️ DB CLAW: ✅ Migration created, photo_url column added
@@ -108,12 +121,13 @@ Each claw:
 🎨 UI CLAW: ✅ PhotoUpload component added, drag-and-drop works
 ```
 
-### Step 5: Brain Combines and Ships
+### Step 6: Brain Combines and Ships
 
 ```
 ARCHITECT: All claws complete.
 - Running integration test... ✅
 - Security scan... ✅
+- Staff Engineer review... ✅
 - Creating PR...
 
 PR ready: feature/add-profile-photo
@@ -174,9 +188,8 @@ Every claw uses Buildwright for quality:
 │  BUILDWRIGHT SHELL                                          │
 ├─────────────────────────────────────────────────────────────┤
 │  /bw-verify    → Typecheck, lint, test, build               │
-│  /bw-security  → OWASP scan, secrets detection              │
-│  /bw-review    → Staff Engineer code review                 │
-│  /bw-ship      → Full pipeline to PR                        │
+│  /bw-ship      → Full pipeline: verify → security → review  │
+│  /bw-claw      → Multi-agent: decompose → execute → ship    │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -186,103 +199,132 @@ Each claw verifies its work. The brain does integration verification at the end.
 
 Claws need to speak the same language. When the DB Claw adds `photo_url`, the API Claw must know it's `photoUrl`, and the UI Claw must use `photoUrl`.
 
-A shared `naming-conventions.md` keeps everyone aligned:
+The naming conventions registry (`.buildwright/steering/naming-conventions.md`) keeps everyone aligned:
 
 ```
-## Canonical Field Registry
-
-| Concept | Database | API | UI |
-|---------|----------|-----|-----|
-| photo_url | photo_url | photoUrl | photoUrl |
-| created_at | created_at | createdAt | createdAt |
-
-When adding a new field, the Brain registers it here first.
-All claws derive their naming from this registry.
+| Layer     | Convention   | Example                |
+|-----------|-------------|------------------------|
+| Database  | snake_case  | photo_url, created_at  |
+| API JSON  | camelCase   | photoUrl, createdAt    |
+| UI (JS)   | camelCase   | photoUrl, createdAt    |
+| CSS       | kebab-case  | photo-upload           |
+| URLs      | kebab-case  | /api/team-members/:id  |
 ```
+
+Rules: The Architect registers fields before spawning claws. Claws derive their naming from the registry — they never invent their own. One source of truth.
+
+## Building Your Own Claws
+
+Buildwright ships with three claws (frontend, backend, database) and a `TEMPLATE.md` for building your own:
+
+```bash
+# Copy the template
+cp .buildwright/claws/TEMPLATE.md .buildwright/claws/gateway.md
+
+# Edit to match your domain
+nano .buildwright/claws/gateway.md
+```
+
+A claw file defines: what the claw owns, its domain context, naming conventions for that layer, verification requirements, and what it must read before implementing.
 
 ## When to Use Claw Architecture
 
-| Project Type | Approach |
+| Scenario | Approach |
 |---|---|
-| Small/Demo | Single agent + Buildwright |
-| Medium (growing) | 2-3 claws (Frontend, Backend, Database) |
-| Enterprise | 5+ claws (UI, API, Gateway, DB, Business, Security) |
+| Single-domain feature | `/bw-new-feature` — one agent handles it |
+| Bug fix, small task | `/bw-quick` — fast path, no decomposition |
+| Feature touching 2+ domains | `/bw-claw` — architect decomposes, claws execute |
+| Greenfield project | `/bw-new-feature` first (sets up steering), then `/bw-claw` for cross-cutting features |
 
-Start simple. Add claws as complexity grows.
+Start simple. `/bw-new-feature` auto-detects when a feature crosses domain boundaries and suggests escalating to `/bw-claw`.
 
 ## Setting It Up
 
 ### Prerequisites
-- OpenClaw installed (or Claude Code / OpenCode)
-- Buildwright skill
 
-### 1. Create Workspaces (OpenClaw)
+- [Buildwright](https://github.com/raunakkathuria/buildwright) installed
+- `git` and `gh` (GitHub CLI) available
+- `GITHUB_TOKEN` with `repo` scope for push/PR access
+
+### For Claude Code / OpenCode
 
 ```bash
-# Brain (Architect)
-mkdir -p ~/.openclaw/workspace-architect/skills/buildwright
+# Install buildwright
+curl -sL https://raw.githubusercontent.com/raunakkathuria/buildwright/main/setup.sh | bash
 
-# Claws
-mkdir -p ~/.openclaw/workspace-frontend/skills/buildwright
-mkdir -p ~/.openclaw/workspace-backend/skills/buildwright
-mkdir -p ~/.openclaw/workspace-database/skills/buildwright
+# Generate tool-specific configs
+make sync
+
+# Start building
+/bw-claw "Add profile photo upload for team members"
 ```
 
-### 2. Configure OpenClaw
+The `/bw-claw` command handles everything — it reads the Architect persona, decomposes the feature, executes claws sequentially (adopting each persona in turn), and integrates the result.
+
+For true parallel execution, you can run claws in separate terminal sessions or workspaces — each session adopts one claw persona and works its domain. The Architect coordinates via the claw plan and naming conventions.
+
+### For OpenClaw
+
+The recommended approach is the same setup script, which installs the full workflow into your project. For OpenClaw-specific multi-agent setups, you can also install the skill globally:
+
+```bash
+mkdir -p ~/.openclaw/skills/buildwright
+curl -s https://raw.githubusercontent.com/raunakkathuria/buildwright/main/SKILL.md > ~/.openclaw/skills/buildwright/SKILL.md
+```
+
+> **Note:** The global skill provides buildwright's workflow guidance. The slash commands (`/bw-claw`, etc.) require the full project setup via `setup.sh`.
+
+OpenClaw supports multi-agent natively. Configure `openclaw.json` to spawn separate agents per claw:
 
 ```json
-// ~/.openclaw/openclaw.json
 {
   "agents": {
     "list": [
-      { "id": "architect", "name": "Brain", "default": true,
-        "workspace": "~/.openclaw/workspace-architect" },
-      { "id": "frontend", "name": "UI Claw",
-        "workspace": "~/.openclaw/workspace-frontend" },
-      { "id": "backend", "name": "API Claw",
-        "workspace": "~/.openclaw/workspace-backend" },
-      { "id": "database", "name": "DB Claw",
-        "workspace": "~/.openclaw/workspace-database" }
+      { "id": "architect", "name": "Brain", "default": true },
+      { "id": "frontend", "name": "UI Claw" },
+      { "id": "backend", "name": "API Claw" },
+      { "id": "database", "name": "DB Claw" }
     ]
   },
   "tools": {
-    "agentToAgent": { "enabled": true,
-      "allow": ["architect", "frontend", "backend", "database"] }
+    "agentToAgent": {
+      "enabled": true,
+      "allow": ["architect", "frontend", "backend", "database"]
+    }
   }
 }
 ```
 
-### 3. Add Buildwright Skill to Each
+Example configs for both single-agent and multi-agent setups are in the `examples/` directory of the repo.
 
-```bash
-for workspace in architect frontend backend database; do
-  cp SKILL.md ~/.openclaw/workspace-$workspace/skills/buildwright/SKILL.md
-done
+## Tool-Agnostic Design
+
+The Claw Architecture is tool-agnostic by design. All configuration lives in `.buildwright/` — a single canonical directory that works with any agentic coding tool.
+
+```
+.buildwright/
+├── agents/architect.md        ← The brain
+├── claws/
+│   ├── frontend.md            ← UI specialist
+│   ├── backend.md             ← API specialist
+│   ├── database.md            ← DB specialist
+│   └── TEMPLATE.md            ← Build your own
+├── commands/bw-claw.md        ← The multi-agent command
+└── steering/
+    └── naming-conventions.md  ← Shared vocabulary
 ```
 
-### 4. Use with Claude Code or OpenCode
-
-The same pattern works — claws run as sequential persona switches (single agent) or parallel terminal sessions:
-
-```bash
-# Claude Code
-/bw-claw "Add profile photo upload"
-
-# OpenCode
-/bw-claw "Add profile photo upload"
-```
+A sync script (`make sync`) generates tool-specific directories (`.claude/`, `.opencode/`) with path rewriting. Edit `.buildwright/`, run `make sync`, and every tool gets the update. The generated directories are gitignored — only the canonical source is committed.
 
 ## What's Next
 
-The Claw Architecture is a pattern, not a product. You can implement it today with:
-- Any agentic coding tool (Claude Code, OpenCode, OpenClaw)
-- Buildwright for quality gates
-- Any messaging channel (Telegram, Slack, Discord) for OpenClaw
+The Claw Architecture is a pattern, not a product. You can implement it today with any agentic coding tool and Buildwright for quality gates.
 
 We're exploring:
-- **Agent Teams RFC** — native OpenClaw support for coordinated multi-agent
-- **Parallel execution** — claws working simultaneously
+- **Agent Teams RFC** — native OpenClaw support for coordinated multi-agent execution
+- **Parallel execution** — claws working simultaneously in separate sessions
 - **Claw marketplace** — pre-built claws for common stacks (Next.js, Django, Rails)
+- **Cross-repo claws** — monorepo and multi-repo coordination
 
 ## Try It
 
@@ -290,15 +332,18 @@ We're exploring:
 # Add to any project
 curl -sL https://raw.githubusercontent.com/raunakkathuria/buildwright/main/setup.sh | bash
 
+# Set up credentials
+export GITHUB_TOKEN=ghp_your_token_here
+
 # Start building
 /bw-claw "Add profile photo upload for team members"
 ```
 
 Or build your own claws for your stack. The pattern is simple:
-1. One brain to coordinate
-2. Specialized claws per domain
-3. Shared naming conventions
-4. Buildwright for quality
+1. One brain to coordinate (`.buildwright/agents/architect.md`)
+2. Specialized claws per domain (`.buildwright/claws/*.md`)
+3. Shared naming conventions (`.buildwright/steering/naming-conventions.md`)
+4. Buildwright quality gates for every claw
 
 One lobster. Multiple claws. Ship features across your entire stack.
 
