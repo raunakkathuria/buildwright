@@ -1,0 +1,47 @@
+{
+  "// COMMENT": "OpenClaw multi-agent configuration for the Claw Architecture",
+  "// COMMENT2": "Copy to ~/.openclaw/openclaw.json and adjust workspaces",
+
+  "agents": {
+    "list": [
+      {
+        "id": "architect",
+        "name": "Brain",
+        "default": true,
+        "workspace": "~/.openclaw/workspace-architect",
+        "// model": "Use best available — complex reasoning needed"
+      },
+      {
+        "id": "frontend",
+        "name": "UI Claw",
+        "workspace": "~/.openclaw/workspace-frontend"
+      },
+      {
+        "id": "backend",
+        "name": "API Claw",
+        "workspace": "~/.openclaw/workspace-backend"
+      },
+      {
+        "id": "database",
+        "name": "DB Claw",
+        "workspace": "~/.openclaw/workspace-database"
+      }
+    ]
+  },
+  "tools": {
+    "agentToAgent": {
+      "enabled": true,
+      "allow": ["architect", "frontend", "backend", "database"]
+    }
+  },
+  "skills": {
+    "entries": {
+      "buildwright": {
+        "enabled": true,
+        "env": {
+          "BUILDWRIGHT_AUTO_APPROVE": "true"
+        }
+      }
+    }
+  }
+}

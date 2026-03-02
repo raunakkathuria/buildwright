@@ -1,20 +1,29 @@
 ---
 name: buildwright
-description: Autonomous development workflow — research codebase, generate spec, get one human approval, then implement with TDD, security scan, and code review without interruption. Use when building features, fixing bugs, or shipping code with consistent quality gates.
+description: Autonomous development workflow with multi-agent Claw Architecture. Single-agent mode for simple features; multi-agent mode decomposes cross-domain work into specialist claws (UI, API, DB). Includes TDD, security scan, code review, and quality gates. Works with Claude Code, OpenCode, and OpenClaw.
 license: MIT
-compatibility: Requires git and gh (GitHub CLI) with push/PR credentials. Security scans use semgrep, gitleaks, trufflehog if installed (optional). Works with Claude Code, OpenCode, and OpenClaw.
+compatibility: Requires git and gh (GitHub CLI). GITHUB_TOKEN with repo scope needed for push/PR. Optional tools for security scans (semgrep, gitleaks, trufflehog). Works with Claude Code, OpenCode, and OpenClaw.
 metadata:
   homepage: https://github.com/raunakkathuria/buildwright
-  version: "1.0.2"
+  version: "2.1.0"
   author: raunakkathuria
+  tags:
+    - development
+    - workflow
+    - tdd
+    - security
+    - code-review
+    - autonomous
+    - multi-agent
+    - claw-architecture
   openclaw:
     requires:
       bins:
         - git
         - gh
       env:
-        - BUILDWRIGHT_AUTO_APPROVE
-    primaryEnv: BUILDWRIGHT_AUTO_APPROVE
+        - GITHUB_TOKEN
+    primaryEnv: GITHUB_TOKEN
 ---
 
 # Buildwright
@@ -36,29 +45,47 @@ When activated, Buildwright directs the agent to:
 
 ## Requirements
 
-| Requirement | Purpose | Required |
-|-------------|---------|----------|
-| `git` | Commits and pushes | Yes |
-| `gh` (GitHub CLI) | Opens PRs | Yes |
-| Git credentials (SSH key or token) | Push access to repo | Yes |
-| `semgrep` | SAST security scan | Optional |
-| `gitleaks` / `trufflehog` | Secrets detection | Optional |
+### Credentials (required)
+
+| Credential | Purpose | Scope | How to provide |
+|------------|---------|-------|----------------|
+| `GITHUB_TOKEN` | Push commits and open PRs via `gh` | `repo` scope (read/write) | `export GITHUB_TOKEN=ghp_...` or configure in OpenClaw config under `skills.entries.buildwright.apiKey` |
+
+The token must have `repo` scope to push branches and create pull requests. For minimal privilege, use a fine-grained personal access token scoped to a single repository with "Contents: Read and write" and "Pull requests: Read and write" permissions.
+
+Alternatively, if you use SSH for git push, the `GITHUB_TOKEN` is still needed for `gh pr create`. You can use `gh auth login` to authenticate the GitHub CLI separately.
+
+### Binaries (required)
+
+| Binary | Purpose |
+|--------|---------|
+| `git` | Commits and pushes |
+| `gh` | Opens PRs via GitHub CLI |
+
+### Optional tools
+
+| Binary | Purpose |
+|--------|---------|
+| `semgrep` | SAST security scan |
+| `gitleaks` / `trufflehog` | Secrets detection |
 
 ## Agent Personas (prompt-based, no binaries)
 
-**Staff Engineer** and **Security Engineer** are prompt-engineering personas — instructions loaded from `.claude/agents/` files. They are not external tools or binaries. The agent adopts these personas to review specs and code using defined criteria and confidence thresholds.
+**Staff Engineer** and **Security Engineer** are prompt-engineering personas — instructions loaded from `.buildwright/agents/` files in the workspace. They are not external tools or binaries. The agent adopts these personas to review specs and code using defined criteria and confidence thresholds. These files contain only prompt instructions and review checklists — no secrets or credentials.
 
-## Autonomous Mode
+## Configuration
 
-`BUILDWRIGHT_AUTO_APPROVE` controls whether the agent waits for human approval at the spec stage.
+### BUILDWRIGHT_AUTO_APPROVE (optional, not a credential)
+
+This is an optional boolean flag that controls whether the agent waits for human approval at the spec stage. It is **not** a secret and **not** declared in `requires.env` because it is not required to run the skill.
 
 | Value | Behavior |
 |-------|---------|
-| Not set | **Interactive** — stops and waits for "approved" before building |
+| Not set | **Interactive** (default) — stops and waits for "approved" before building |
 | `false` | Interactive — same as default |
 | `true` | **Autonomous** — commits spec to git (audit trail) and proceeds without waiting |
 
-**Recommendation for first use:** Leave `BUILDWRIGHT_AUTO_APPROVE` unset until you have reviewed a few specs and are comfortable with the workflow.
+**Recommendation for first use:** Leave `BUILDWRIGHT_AUTO_APPROVE` unset until you have reviewed a few specs and are comfortable with the workflow. Start with interactive mode in a sandbox repository to observe behavior before enabling autonomous commits and PRs.
 
 ## Commands
 
@@ -75,6 +102,24 @@ Flow: Research → Spec → Staff Engineer validates → Human approves → TDD 
 **Artifacts produced:**
 - `docs/specs/[feature]/research.md` — what the agent found in your codebase
 - `docs/specs/[feature]/spec.md` — implementation plan with approaches considered
+
+---
+
+### /bw-claw \<feature\>
+
+Multi-agent pipeline using the Claw Architecture. Architect decomposes the feature into domain-specific claw tasks (UI, API, DB), defines interface contracts, and coordinates execution.
+
+```
+/bw-claw "Add profile photo upload for team members"
+```
+
+Flow: Architect analyzes → Decomposes into claw tasks → Defines interface contract → Claws execute per domain (TDD) → Architect integrates → Buildwright quality gates → PR
+
+**Best for:** Features that cross domain boundaries (e.g., need DB schema + API endpoint + UI component).
+
+**Artifacts produced:**
+- `docs/specs/[feature]/claw-plan.md` — decomposition plan with interface contracts
+- `docs/specs/[feature]/claw-[domain].md` — per-claw execution report
 
 ---
 
@@ -121,6 +166,24 @@ If any gate fails after retries, the agent commits completed work, pushes, and o
 | Verify (typecheck, lint, test, build) | 2x | Fixable by the agent |
 | Security scan | None | Requires human judgment |
 | Code review | None | Architectural decisions need humans |
+
+## Security Considerations
+
+This skill performs autonomous code changes, commits, and pull requests. Understand what it does before enabling it on repositories with sensitive or production code.
+
+**What the skill reads:** Your repository source code, `.buildwright/agents/` persona files (prompt instructions only, no secrets), and `.buildwright/steering/` context files.
+
+**What the skill writes:** Spec files under `docs/specs/`, source code changes, git commits on feature branches, and pull requests via `gh`.
+
+**What the skill does NOT do:** It does not modify `.env` files, access secrets stores, run destructive git operations (force push, reset), or merge PRs. All changes go to feature branches with PRs for human review.
+
+**Recommended setup for first use:**
+
+1. Start with a fork or sandbox repository, not production code
+2. Leave `BUILDWRIGHT_AUTO_APPROVE` unset (interactive mode) to review specs before builds
+3. Use a fine-grained GitHub token scoped to a single repository with minimal permissions
+4. Rotate tokens regularly and revoke when no longer needed
+5. Review generated PRs before merging — the skill creates PRs, it does not merge them
 
 ## More Information
 

@@ -93,13 +93,13 @@ About 60 seconds. Creates commands, agent personas, steering docs, quality gates
 **2. Configure your steering docs**
 
 ```bash
-nano .claude/steering/product.md  # product vision, key features
-nano .claude/steering/tech.md     # tech stack, conventions
+nano .buildwright/steering/product.md  # product vision, key features
+nano .buildwright/steering/tech.md     # tech stack, conventions
 ```
 
 **3. Load the skills**
 
-*Claude Code* — handled by the install script. Skills live in `.claude/commands/`.
+*Claude Code* — handled by the install script. Skills live in `.buildwright/commands/`.
 
 *OpenCode* — handled by the install script. Skills live in `.opencode/commands/`. For global use across all projects:
 ```bash
@@ -135,7 +135,7 @@ opencode
 *OpenClaw:*
 ```bash
 openclaw
-> /bw-new-feature "Add user authentication with OAuth2"
+"Add user authentication with OAuth2 with buildwright philosophy" 
 ```
 
 Same commands, different runner. Say "approved" after the spec and it builds.

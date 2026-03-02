@@ -5,6 +5,10 @@ This project uses agent-first autonomous development.
 ## Quick Start
 
 ```bash
+# After cloning, generate tool-specific configs from .buildwright/
+make sync
+
+# Then start your agent tool
 claude
 
 # For new features (full workflow)
@@ -180,12 +184,12 @@ Only Critical/High findings block the pipeline. Medium and Low findings are repo
 
 | Agent | Purpose | Key Capabilities | Location |
 |-------|---------|-------------------|----------|
-| Staff Engineer | Spec & code review | Confidence scoring (≥80), HIGH SIGNAL criteria, false-positive exclusions | `.claude/agents/staff-engineer.md` |
-| Security Engineer | Security review | Confidence scoring (≥0.8), exploit scenarios, hard exclusions | `.claude/agents/bw-security-engineer.md` |
+| Staff Engineer | Spec & code review | Confidence scoring (≥80), HIGH SIGNAL criteria, false-positive exclusions | `.buildwright/agents/staff-engineer.md` |
+| Security Engineer | Security review | Confidence scoring (≥0.8), exploit scenarios, hard exclusions | `.buildwright/agents/bw-security-engineer.md` |
 
 ## Customization
 
-- **Product context**: `.claude/steering/product.md`
-- **Tech stack**: `.claude/steering/tech.md`
-- **Quality gates**: `.claude/steering/quality-gates.md`
+- **Product context**: `.buildwright/steering/product.md`
+- **Tech stack**: `.buildwright/steering/tech.md`
+- **Quality gates**: `.buildwright/steering/quality-gates.md`
 - **Learned patterns**: `CLAUDE.md` (bottom section)

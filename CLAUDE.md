@@ -4,9 +4,15 @@
 Agent-first autonomous development. Humans approve specs; agents implement, test, and ship.
 
 ## Steering Documents
-@.claude/steering/product.md
-@.claude/steering/tech.md
-@.claude/steering/quality-gates.md
+@.buildwright/steering/product.md
+@.buildwright/steering/tech.md
+@.buildwright/steering/quality-gates.md
+@.buildwright/steering/naming-conventions.md
+
+## Agents & Claws
+- Agent personas in `.buildwright/agents/` — Staff Engineer, Security Engineer, Architect
+- Domain-specialist claws in `.buildwright/claws/` — Frontend, Backend, Database (+ TEMPLATE for custom)
+- Use `/bw-claw` for cross-domain features that need the Claw Architecture
 
 ## Operating Mode
 
@@ -18,17 +24,18 @@ Agent-first autonomous development. Humans approve specs; agents implement, test
 - **Autonomous failure handling**: When `BUILDWRIGHT_AUTO_APPROVE=true` (default) and any step fails after retries, commit completed work, push, create PR with failure details, and exit(1). In interactive mode (`BUILDWRIGHT_AUTO_APPROVE=false`), STOP and report blocker as before.
 
 ### Workflow Priority
-1. **New features**: /bw-new-feature → Research → Spec → Approval → Implement → Ship
-2. **Small tasks/bugs**: /bw-quick → Quick research → Implement → Verify → Commit
-3. **Refactors**: /bw-new-feature (if scope unclear) or /bw-quick (if scope clear)
-4. **Ship existing work**: /bw-ship → Verify → Security → Review → Push → PR
-5. **Quick quality check**: /bw-verify → typecheck, lint, test, build
+1. **New features (single domain)**: /bw-new-feature → Research → Spec → Approval → Implement → Ship
+2. **Cross-domain features**: /bw-claw → Architect decomposes → Claws execute per domain → Integrate → Ship
+3. **Small tasks/bugs**: /bw-quick → Quick research → Implement → Verify → Commit
+4. **Refactors**: /bw-new-feature (if scope unclear) or /bw-quick (if scope clear)
+5. **Ship existing work**: /bw-ship → Verify → Security → Review → Push → PR
+6. **Quick quality check**: /bw-verify → typecheck, lint, test, build
 
 ## Command Discovery
 When you need project commands:
 1. Check package.json / Cargo.toml / pyproject.toml / go.mod / Makefile
 2. Check .github/workflows/ for expected command sequence
-3. Document discovered commands in .claude/steering/tech.md
+3. Document discovered commands in .buildwright/steering/tech.md
 
 ## Environment Variables
 

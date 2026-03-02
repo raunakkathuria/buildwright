@@ -1,28 +1,36 @@
 #!/bin/bash
 # Buildwright Setup Script
 # Run this in any project to add the autonomous development workflow
+# Supports: Claude Code, OpenCode, OpenClaw
+#
+# Canonical config lives in .buildwright/ (tool-agnostic)
+# Sync script generates .claude/ and .opencode/ from it
 
 set -e
 
 BASE_URL="https://raw.githubusercontent.com/raunakkathuria/buildwright/main"
 
-echo "🚀 Setting up Buildwright Development Workflow..."
+echo "Setting up Buildwright Development Workflow..."
 
 # ============================================================================
-# Directory Structure
+# Directory Structure — .buildwright/ is the canonical source
 # ============================================================================
-mkdir -p .claude/commands
-mkdir -p .claude/steering
-mkdir -p .claude/agents
+mkdir -p .buildwright/commands
+mkdir -p .buildwright/steering
+mkdir -p .buildwright/agents
+mkdir -p .buildwright/claws
+mkdir -p .buildwright/tasks
+mkdir -p .claude           # For settings.json (Claude Code-specific)
 mkdir -p docs/requirements
 mkdir -p docs/specs
 mkdir -p docs/decisions
 mkdir -p .github/workflows
+mkdir -p scripts
 
-echo "📁 Created directory structure"
+echo "  Created directory structure"
 
 # ============================================================================
-# CLAUDE.md - Main agent instructions
+# CLAUDE.md - Main agent instructions (references .buildwright/)
 # ============================================================================
 cat > CLAUDE.md << 'CLAUDE_EOF'
 # Buildwright Development
@@ -31,12 +39,15 @@ cat > CLAUDE.md << 'CLAUDE_EOF'
 Agent-first autonomous development. Humans approve specs; agents implement, test, and ship.
 
 ## Steering Documents
-@.claude/steering/product.md
-@.claude/steering/tech.md
-@.claude/steering/quality-gates.md
+@.buildwright/steering/product.md
+@.buildwright/steering/tech.md
+@.buildwright/steering/quality-gates.md
+@.buildwright/steering/naming-conventions.md
 
-## Agent Personas
-Reusable agent personas are in `.claude/agents/`. Commands reference these for specialized reviews.
+## Agents & Claws
+- Agent personas in `.buildwright/agents/` -- Staff Engineer, Security Engineer, Architect
+- Domain-specialist claws in `.buildwright/claws/` -- Frontend, Backend, Database (+ TEMPLATE for custom)
+- Use `/bw-claw` for cross-domain features that need the Claw Architecture
 
 ## Operating Mode
 
@@ -47,39 +58,24 @@ Reusable agent personas are in `.claude/agents/`. Commands reference these for s
 - Only stop if genuinely blocked (missing info, failing tests after retries)
 - **Autonomous failure handling**: When `BUILDWRIGHT_AUTO_APPROVE=true` (default) and any step fails after retries, commit completed work, push, create PR with failure details, and exit(1). In interactive mode (`BUILDWRIGHT_AUTO_APPROVE=false`), STOP and report blocker as before.
 
-### Feature Development Flow
-```
-/bw-new-feature
-  ├─ RESEARCH: Deep-read codebase, understand context
-  ├─ PLAN: Generate spec informed by research
-  ├─ VALIDATE: Staff Engineer reviews spec (auto)
-  ├─ APPROVE: Human approves
-  ├─ BUILD: TDD per milestone
-  └─ SHIP: verify → security → review → release
-
-/bw-quick (for small tasks)
-  ├─ Quick research (in-context)
-  ├─ Implement with TDD
-  ├─ Verify
-  └─ Commit
-```
-
 ### Workflow Priority
-1. **New features**: /bw-new-feature → research → spec → approval → implement → ship
-2. **Small tasks/bugs**: /bw-quick → implement → verify → commit
-3. **Refactors**: /bw-new-feature with refactor scope → approval → implement → ship
+1. **New features (single domain)**: /bw-new-feature -> research -> spec -> approval -> implement -> ship
+2. **Cross-domain features**: /bw-claw -> architect decomposes -> claws execute -> integrate -> ship
+3. **Small tasks/bugs**: /bw-quick -> implement -> verify -> commit
+4. **Ship existing work**: /bw-ship -> verify -> security -> review -> push -> PR
+5. **Quick quality check**: /bw-verify -> typecheck, lint, test, build
 
 ## Command Discovery
 When you need project commands:
 1. Check package.json / Cargo.toml / pyproject.toml / go.mod / Makefile
 2. Check .github/workflows/ for expected command sequence
-3. Document discovered commands in .claude/steering/tech.md
+3. Document discovered commands in .buildwright/steering/tech.md
 
 ## Environment Variables
 
 | Variable | Default | Purpose |
 |----------|---------|---------|
-| `BUILDWRIGHT_AUTO_APPROVE` | `true` | Autonomous mode — skip human approval, fail gracefully on errors |
+| `BUILDWRIGHT_AUTO_APPROVE` | `true` | Autonomous mode -- skip human approval, fail gracefully on errors |
 | `BUILDWRIGHT_AGENT_RETRIES` | `2` | Number of verify retries before giving up |
 
 ## Design Principles (ALWAYS APPLY)
@@ -135,164 +131,124 @@ When you discover a pattern, gotcha, or better approach:
 
 CLAUDE_EOF
 
-echo "✅ Created CLAUDE.md"
+echo "  Created CLAUDE.md"
 
 # ============================================================================
-# .claude/settings.json - Permissions and safety
+# .claude/settings.json - Claude Code permissions (stays in .claude/)
 # ============================================================================
 curl -sL "$BASE_URL/.claude/settings.json" > .claude/settings.json
-echo "✅ Created .claude/settings.json"
+echo "  Created .claude/settings.json"
 
 # ============================================================================
-# AGENTS - Reusable Personas
+# AGENTS — Download to .buildwright/ (canonical source)
 # ============================================================================
 
-# Staff Engineer Agent
-curl -sL "$BASE_URL/.claude/agents/staff-engineer.md" > .claude/agents/staff-engineer.md
-echo "✅ Created .claude/agents/staff-engineer.md"
+curl -sL "$BASE_URL/.buildwright/agents/staff-engineer.md" > .buildwright/agents/staff-engineer.md
+curl -sL "$BASE_URL/.buildwright/agents/security-engineer.md" > .buildwright/agents/security-engineer.md
+curl -sL "$BASE_URL/.buildwright/agents/architect.md" > .buildwright/agents/architect.md
+curl -sL "$BASE_URL/.buildwright/agents/README.md" > .buildwright/agents/README.md
+echo "  Created agent personas (staff-engineer, security-engineer, architect)"
 
-# Security Engineer Agent
-curl -sL "$BASE_URL/.claude/agents/security-engineer.md" > .claude/agents/bw-security-engineer.md
-echo "✅ Created .claude/agents/bw-security-engineer.md"
+# ============================================================================
+# CLAWS — Domain Specialist Templates
+# ============================================================================
 
-# Agents README
-curl -sL "$BASE_URL/.claude/agents/README.md" > .claude/agents/README.md
-echo "✅ Created .claude/agents/README.md"
+curl -sL "$BASE_URL/.buildwright/claws/README.md" > .buildwright/claws/README.md
+curl -sL "$BASE_URL/.buildwright/claws/TEMPLATE.md" > .buildwright/claws/TEMPLATE.md
+curl -sL "$BASE_URL/.buildwright/claws/frontend.md" > .buildwright/claws/frontend.md
+curl -sL "$BASE_URL/.buildwright/claws/backend.md" > .buildwright/claws/backend.md
+curl -sL "$BASE_URL/.buildwright/claws/database.md" > .buildwright/claws/database.md
+echo "  Created claw templates (frontend, backend, database)"
 
 # ============================================================================
 # COMMANDS
 # ============================================================================
 
-curl -sL "$BASE_URL/.claude/commands/bw-new-feature.md" > .claude/commands/bw-new-feature.md
-echo "✅ Created .claude/commands/bw-new-feature.md"
-
-curl -sL "$BASE_URL/.claude/commands/bw-quick.md" > .claude/commands/bw-quick.md
-echo "✅ Created .claude/commands/bw-quick.md"
-
-curl -sL "$BASE_URL/.claude/commands/bw-verify.md" > .claude/commands/bw-verify.md
-echo "✅ Created .claude/commands/bw-verify.md"
-
-curl -sL "$BASE_URL/.claude/commands/bw-ship.md" > .claude/commands/bw-ship.md
-echo "✅ Created .claude/commands/bw-ship.md"
-
-curl -sL "$BASE_URL/.claude/commands/bw-help.md" > .claude/commands/bw-help.md
-echo "✅ Created .claude/commands/bw-help.md"
+curl -sL "$BASE_URL/.buildwright/commands/bw-new-feature.md" > .buildwright/commands/bw-new-feature.md
+curl -sL "$BASE_URL/.buildwright/commands/bw-claw.md" > .buildwright/commands/bw-claw.md
+curl -sL "$BASE_URL/.buildwright/commands/bw-quick.md" > .buildwright/commands/bw-quick.md
+curl -sL "$BASE_URL/.buildwright/commands/bw-verify.md" > .buildwright/commands/bw-verify.md
+curl -sL "$BASE_URL/.buildwright/commands/bw-ship.md" > .buildwright/commands/bw-ship.md
+curl -sL "$BASE_URL/.buildwright/commands/bw-help.md" > .buildwright/commands/bw-help.md
+echo "  Created commands (bw-new-feature, bw-claw, bw-quick, bw-ship, bw-verify, bw-help)"
 
 # ============================================================================
 # STEERING DOCUMENTS
 # ============================================================================
 
-curl -sL "$BASE_URL/.claude/steering/product.md" > .claude/steering/product.md
-echo "✅ Created .claude/steering/product.md"
-
-curl -sL "$BASE_URL/.claude/steering/tech.md" > .claude/steering/tech.md
-echo "✅ Created .claude/steering/tech.md"
-
-curl -sL "$BASE_URL/.claude/steering/quality-gates.md" > .claude/steering/quality-gates.md
-echo "✅ Created .claude/steering/quality-gates.md"
+curl -sL "$BASE_URL/.buildwright/steering/product.md" > .buildwright/steering/product.md
+curl -sL "$BASE_URL/.buildwright/steering/tech.md" > .buildwright/steering/tech.md
+curl -sL "$BASE_URL/.buildwright/steering/quality-gates.md" > .buildwright/steering/quality-gates.md
+curl -sL "$BASE_URL/.buildwright/steering/naming-conventions.md" > .buildwright/steering/naming-conventions.md
+echo "  Created steering documents (product, tech, quality-gates, naming-conventions)"
 
 # ============================================================================
 # TEMPLATES
 # ============================================================================
 
 curl -sL "$BASE_URL/docs/requirements/TEMPLATE.md" > docs/requirements/TEMPLATE.md
-echo "✅ Created docs/requirements/TEMPLATE.md"
+curl -sL "$BASE_URL/.buildwright/tasks/TEMPLATE.md" > .buildwright/tasks/TEMPLATE.md
+echo "  Created templates"
+
+# ============================================================================
+# SCRIPTS
+# ============================================================================
+
+curl -sL "$BASE_URL/scripts/sync-agents.sh" > scripts/sync-agents.sh
+curl -sL "$BASE_URL/scripts/validate-skill.sh" > scripts/validate-skill.sh
+chmod +x scripts/sync-agents.sh scripts/validate-skill.sh
+echo "  Created scripts (sync-agents, validate-skill)"
 
 # ============================================================================
 # GITHUB WORKFLOW
 # ============================================================================
 
 curl -sL "$BASE_URL/.github/workflows/quality-gates.yml" > .github/workflows/quality-gates.yml
-echo "✅ Created .github/workflows/quality-gates.yml"
+echo "  Created .github/workflows/quality-gates.yml"
 
 # ============================================================================
 # ENVIRONMENT VARIABLES
 # ============================================================================
 
 curl -sL "$BASE_URL/env.example" > .env.example
-echo "✅ Created .env.example"
+echo "  Created .env.example"
 
 # ============================================================================
 # DOCUMENTATION
 # ============================================================================
 
 curl -sL "$BASE_URL/BUILDWRIGHT.md" > BUILDWRIGHT.md
-echo "✅ Created BUILDWRIGHT.md"
+echo "  Created BUILDWRIGHT.md"
 
 # ============================================================================
-# OpenCode Compatibility — Same commands + agents, different directory
+# Sync: .buildwright/ → .claude/ + .opencode/ + AGENTS.md
 # ============================================================================
-mkdir -p .opencode/commands
-mkdir -p .opencode/agents
 
-# Commands (same content as .claude/commands/)
-cp .claude/commands/bw-new-feature.md .opencode/commands/bw-new-feature.md
-cp .claude/commands/bw-quick.md .opencode/commands/bw-quick.md
-cp .claude/commands/bw-ship.md .opencode/commands/bw-ship.md
-cp .claude/commands/bw-verify.md .opencode/commands/bw-verify.md
-cp .claude/commands/bw-help.md .opencode/commands/bw-help.md
-
-# Agent personas (same content as .claude/agents/)
-cp .claude/agents/staff-engineer.md .opencode/agents/staff-engineer.md
-cp .claude/agents/bw-security-engineer.md .opencode/agents/security-engineer.md
-
-# AGENTS.md — OpenCode's preferred context file (same content as CLAUDE.md)
-cp CLAUDE.md AGENTS.md
-
-echo "✅ Created OpenCode compatibility layer (.opencode/, AGENTS.md)"
+scripts/sync-agents.sh
+echo "  Synced tool-specific configs (.claude/, .opencode/, AGENTS.md)"
 
 # ============================================================================
 # COMPLETE
 # ============================================================================
 
 echo ""
-echo "═══════════════════════════════════════════════════════════════"
-echo "  ✅ SETUP COMPLETE"
-echo "═══════════════════════════════════════════════════════════════"
+echo "==============================================================="
+echo "  SETUP COMPLETE"
+echo "==============================================================="
 echo ""
-echo "  Files created:"
-echo "  ├── CLAUDE.md (agent instructions — Claude Code)"
-echo "  ├── AGENTS.md (agent instructions — OpenCode)"
-echo "  ├── BUILDWRIGHT.md (documentation)"
-echo "  ├── .env.example (environment variables)"
-echo "  ├── .claude/                    ← Claude Code"
-echo "  │   ├── settings.json"
-echo "  │   ├── agents/"
-echo "  │   │   ├── staff-engineer.md"
-echo "  │   │   ├── bw-security-engineer.md"
-echo "  │   │   └── README.md"
-echo "  │   ├── commands/"
-echo "  │   │   ├── bw-new-feature.md"
-echo "  │   │   ├── bw-quick.md"
-echo "  │   │   ├── bw-ship.md"
-echo "  │   │   ├── bw-verify.md"
-echo "  │   │   └── bw-help.md"
-echo "  │   └── steering/"
-echo "  │       ├── product.md"
-echo "  │       ├── tech.md"
-echo "  │       └── quality-gates.md"
-echo "  ├── .opencode/                  ← OpenCode"
-echo "  │   ├── agents/"
-echo "  │   │   ├── staff-engineer.md"
-echo "  │   │   └── security-engineer.md"
-echo "  │   └── commands/"
-echo "  │       ├── bw-new-feature.md"
-echo "  │       ├── bw-quick.md"
-echo "  │       ├── bw-ship.md"
-echo "  │       ├── bw-verify.md"
-echo "  │       └── bw-help.md"
-echo "  ├── docs/"
-echo "  │   ├── requirements/TEMPLATE.md"
-echo "  │   ├── specs/"
-echo "  │   └── decisions/"
-echo "  └── .github/workflows/quality-gates.yml"
+echo "  Canonical config:  .buildwright/   (edit this)"
+echo "  Claude Code:       .claude/        (generated by sync)"
+echo "  OpenCode:          .opencode/      (generated by sync)"
+echo "  OpenClaw:          SKILL.md        (install via: make openclaw)"
 echo ""
 echo "  Next steps:"
-echo "  1. Edit .claude/steering/product.md with your product context"
-echo "  2. Edit .claude/steering/tech.md with your tech stack"
-echo "  3. Optional: cp .env.example .env  # customize autonomous mode settings"
-echo "  4. Run: claude"
-echo "  5. Try: /bw-new-feature \"your feature description\""
-echo "  6. Or for small tasks: /bw-quick \"fix the bug\""
+echo "  1. Edit .buildwright/steering/product.md with your product context"
+echo "  2. Edit .buildwright/steering/tech.md with your tech stack"
+echo "  3. Optional: cp .env.example .env"
+echo "  4. Start your agent tool and try:"
+echo "     /bw-new-feature \"your feature description\""
+echo "     /bw-claw \"cross-domain feature\""
+echo "     /bw-quick \"fix the bug\""
 echo ""
-echo "═══════════════════════════════════════════════════════════════"
+echo "  After editing .buildwright/, run: scripts/sync-agents.sh"
+echo "==============================================================="
