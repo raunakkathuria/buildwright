@@ -22,6 +22,7 @@ Each "claw" is a domain-expert agent that grabs work in its area. The Architect 
 | Frontend | `frontend.md` | UI components, state, routing | `ui/`, `frontend/`, `src/components/` |
 | Backend | `backend.md` | API endpoints, middleware, auth | `api/`, `server/`, `src/routes/` |
 | Database | `database.md` | Schema, migrations, queries | `database/`, `migrations/`, `prisma/` |
+| DevOps/SRE | `devops.md` | Infrastructure | `k8s/`, `helm/`, `infra/`, `Dockerfile` |
 
 ## Adding a New Claw
 
@@ -52,6 +53,7 @@ Each "claw" is a domain-expert agent that grabs work in its area. The Architect 
 | Cross-domain, small scope | `/bw-new-feature` (sequential) |
 | Cross-domain, large scope | `/bw-claw` (multi-agent) |
 | Greenfield with multiple layers | `/bw-claw` from the start |
+| Containerize app or add local k8s | `/bw-claw "containerize with Docker and local k8s"` |
 
 ## Tool-Specific Execution
 

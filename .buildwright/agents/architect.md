@@ -34,7 +34,7 @@ Read the project structure and determine which layers exist:
 | Database | `database/`, `db/`, `migrations/`, `prisma/` | DB Claw |
 | Gateway | `gateway/`, `nginx/`, `proxy/` | Gateway Claw |
 | Business Logic | `core/`, `domain/`, `services/` | Business Claw |
-| Infrastructure | `infra/`, `terraform/`, `k8s/` | Infra Claw |
+| Infrastructure | `infra/`, `terraform/`, `k8s/`, `helm/`, `Dockerfile` | DevOps Claw (`devops.md`) |
 
 ### Step 2: Define Interfaces
 
