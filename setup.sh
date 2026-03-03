@@ -158,7 +158,8 @@ curl -sL "$BASE_URL/.buildwright/claws/TEMPLATE.md" > .buildwright/claws/TEMPLAT
 curl -sL "$BASE_URL/.buildwright/claws/frontend.md" > .buildwright/claws/frontend.md
 curl -sL "$BASE_URL/.buildwright/claws/backend.md" > .buildwright/claws/backend.md
 curl -sL "$BASE_URL/.buildwright/claws/database.md" > .buildwright/claws/database.md
-echo "  Created claw templates (frontend, backend, database)"
+curl -sL "$BASE_URL/.buildwright/claws/devops.md" > .buildwright/claws/devops.md
+echo "  Created claw templates (frontend, backend, database, devops)"
 
 # ============================================================================
 # COMMANDS
