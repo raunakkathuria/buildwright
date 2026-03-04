@@ -90,6 +90,21 @@ Use the report format below.
 - **Resource limits on k8s Deployments** — always set `requests` and `limits` for CPU and memory
 - **Consistent labels** — all k8s resources get `app`, `version`, and `component` labels
 
+## Deployment Standards (Required for Every Project)
+
+Regardless of runtime or stack, every containerized project MUST have:
+
+1. **Containerized development** — All development runs inside Docker. No "install locally and
+   run natively" setup. The container IS the environment.
+
+2. **Single `docker-compose.yml`** — One Compose file orchestrates the build and all services.
+   Expose a single port to the host. All inter-service communication stays on the internal
+   Docker network.
+
+3. **`make run`** — The Makefile must have a `run` target that starts the full environment
+   with one command: `docker compose up --build -d`. This is the universal entry point —
+   any developer on any machine runs `make run` to start working.
+
 ## What You DON'T Do
 
 - Modify application source code
