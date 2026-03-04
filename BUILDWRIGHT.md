@@ -6,6 +6,7 @@ This project uses agent-first autonomous development.
 
 ```bash
 # After cloning, generate tool-specific configs from .buildwright/
+# Creates .claude/, .opencode/, .cursor/rules/, and AGENTS.md
 make sync
 
 # Then start your agent tool
