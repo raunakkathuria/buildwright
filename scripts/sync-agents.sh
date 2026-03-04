@@ -1,19 +1,23 @@
 #!/bin/bash
-# Sync agent configurations across Claude Code, OpenCode, and OpenClaw
+# Sync agent configurations across Claude Code, OpenCode, Cursor, and OpenClaw
 #
 # Source of truth: .buildwright/ (tool-agnostic canonical config)
 # Generates:
-#   .claude/commands/    ← from .buildwright/commands/ (paths rewritten to .claude/)
-#   .claude/agents/      ← from .buildwright/agents/
-#   .claude/claws/       ← from .buildwright/claws/
-#   .claude/steering/    ← from .buildwright/steering/
-#   .claude/tasks/       ← from .buildwright/tasks/
-#   .opencode/commands/  ← from .buildwright/commands/ (paths rewritten to .opencode/)
-#   .opencode/agents/    ← from .buildwright/agents/
-#   .opencode/claws/     ← from .buildwright/claws/
-#   .opencode/steering/  ← from .buildwright/steering/
-#   AGENTS.md            ← CLAUDE.md with OpenCode header prepended
-#   dist/buildwright/    ← SKILL.md packaged for ClawHub
+#   .claude/commands/        ← from .buildwright/commands/ (paths rewritten to .claude/)
+#   .claude/agents/          ← from .buildwright/agents/
+#   .claude/claws/           ← from .buildwright/claws/
+#   .claude/steering/        ← from .buildwright/steering/
+#   .claude/tasks/           ← from .buildwright/tasks/
+#   .opencode/commands/      ← from .buildwright/commands/ (paths rewritten to .opencode/)
+#   .opencode/agents/        ← from .buildwright/agents/
+#   .opencode/claws/         ← from .buildwright/claws/
+#   .opencode/steering/      ← from .buildwright/steering/
+#   .cursor/rules/steering/  ← .mdc files with alwaysApply: true
+#   .cursor/rules/commands/  ← .mdc files with alwaysApply: false
+#   .cursor/rules/agents/    ← .mdc files with alwaysApply: false
+#   .cursor/rules/claws/     ← .mdc files with alwaysApply: false
+#   AGENTS.md                ← CLAUDE.md with OpenCode header prepended
+#   dist/buildwright/        ← SKILL.md packaged for ClawHub
 #
 # Usage: scripts/sync-agents.sh [--check]
 #   --check: Verify sync without modifying files (exit 1 if out of sync)
@@ -71,6 +75,112 @@ sync_dir() {
       find "$dst" -name "*.md" -exec sed -i "s|$rewrite_from|$rewrite_to|g" {} + 2>/dev/null || true
     fi
     echo "  synced $src → $dst"
+  fi
+}
+
+# Global vars used by set_cursor_frontmatter / sync_cursor_dir
+CURSOR_ALWAYS_APPLY=""
+CURSOR_DESCRIPTION=""
+
+# set_cursor_frontmatter PRESET FILENAME
+# Sets CURSOR_ALWAYS_APPLY and CURSOR_DESCRIPTION globals for the given file.
+set_cursor_frontmatter() {
+  local preset="$1"
+  local filename="$2"
+
+  case "$preset" in
+    steering) CURSOR_ALWAYS_APPLY="true" ;;
+    *)        CURSOR_ALWAYS_APPLY="false" ;;
+  esac
+
+  case "${preset}:${filename}" in
+    steering:product)            CURSOR_DESCRIPTION="Buildwright product context: goals, features, user personas, business constraints" ;;
+    steering:tech)               CURSOR_DESCRIPTION="Buildwright technical context: stack, commands, architecture patterns" ;;
+    steering:quality-gates)      CURSOR_DESCRIPTION="Buildwright quality gates: automated checks that must pass before merge" ;;
+    steering:naming-conventions) CURSOR_DESCRIPTION="Buildwright naming conventions: canonical field and endpoint registry" ;;
+    command:bw-new-feature)      CURSOR_DESCRIPTION="Buildwright bw-new-feature: full pipeline for new features with spec and TDD" ;;
+    command:bw-claw)             CURSOR_DESCRIPTION="Buildwright bw-claw: multi-agent cross-domain feature development" ;;
+    command:bw-quick)            CURSOR_DESCRIPTION="Buildwright bw-quick: fast path for bug fixes and small tasks" ;;
+    command:bw-ship)             CURSOR_DESCRIPTION="Buildwright bw-ship: quality pipeline then commit, push, and PR" ;;
+    command:bw-verify)           CURSOR_DESCRIPTION="Buildwright bw-verify: quick quality checks (typecheck, lint, test, build)" ;;
+    command:bw-help)             CURSOR_DESCRIPTION="Buildwright bw-help: list all available Buildwright commands" ;;
+    agent:architect)             CURSOR_DESCRIPTION="Buildwright Architect agent persona" ;;
+    agent:staff-engineer)        CURSOR_DESCRIPTION="Buildwright Staff Engineer agent persona" ;;
+    agent:security-engineer)     CURSOR_DESCRIPTION="Buildwright Security Engineer agent persona" ;;
+    claw:frontend)               CURSOR_DESCRIPTION="Buildwright Frontend domain specialist claw" ;;
+    claw:backend)                CURSOR_DESCRIPTION="Buildwright Backend domain specialist claw" ;;
+    claw:database)               CURSOR_DESCRIPTION="Buildwright Database domain specialist claw" ;;
+    claw:devops)                 CURSOR_DESCRIPTION="Buildwright DevOps domain specialist claw" ;;
+    *)                           CURSOR_DESCRIPTION="Buildwright ${preset}: ${filename}" ;;
+  esac
+}
+
+# sync_cursor_dir SRC DST_SUBDIR PRESET
+# Converts .md files in SRC to .mdc files in .cursor/rules/DST_SUBDIR,
+# prepending YAML frontmatter and rewriting @.buildwright/ → @.cursor/rules/.
+# Skips README and TEMPLATE files.
+sync_cursor_dir() {
+  local src="$1"
+  local dst_subdir="$2"
+  local preset="$3"
+  local dst=".cursor/rules/$dst_subdir"
+
+  if [ ! -d "$src" ]; then
+    return
+  fi
+
+  if [ "$CHECK_ONLY" = false ]; then
+    mkdir -p "$dst"
+  fi
+
+  for src_file in "$src"/*.md; do
+    [ -f "$src_file" ] || continue
+    local filename
+    filename=$(basename "$src_file" .md)
+
+    # Skip meta files — they're internal docs, not rules
+    case "$filename" in
+      README|TEMPLATE) continue ;;
+    esac
+
+    local dst_file="$dst/$filename.mdc"
+    set_cursor_frontmatter "$preset" "$filename"
+
+    if [ "$CHECK_ONLY" = true ]; then
+      if [ ! -f "$dst_file" ]; then
+        echo "MISSING: $dst_file"
+        SYNC_NEEDED=true
+      else
+        local tmpfile
+        tmpfile=$(mktemp)
+        {
+          printf '%s\n' "---"
+          printf 'description: "%s"\n' "$CURSOR_DESCRIPTION"
+          printf '%s\n' "globs: []"
+          printf 'alwaysApply: %s\n' "$CURSOR_ALWAYS_APPLY"
+          printf '%s\n' "---"
+          sed 's|@\.buildwright/|@.cursor/rules/|g' "$src_file"
+        } > "$tmpfile"
+        if ! diff -q "$dst_file" "$tmpfile" > /dev/null 2>&1; then
+          echo "OUT OF SYNC: $dst_file"
+          SYNC_NEEDED=true
+        fi
+        rm -f "$tmpfile"
+      fi
+    else
+      {
+        printf '%s\n' "---"
+        printf 'description: "%s"\n' "$CURSOR_DESCRIPTION"
+        printf '%s\n' "globs: []"
+        printf 'alwaysApply: %s\n' "$CURSOR_ALWAYS_APPLY"
+        printf '%s\n' "---"
+        sed 's|@\.buildwright/|@.cursor/rules/|g' "$src_file"
+      } > "$dst_file"
+    fi
+  done
+
+  if [ "$CHECK_ONLY" = false ]; then
+    echo "  synced $src → $dst (*.mdc)"
   fi
 }
 
@@ -134,7 +244,16 @@ else
 fi
 
 # ============================================================================
-# 4. Package for ClawHub (dist/)
+# 4. .buildwright/ → .cursor/rules/ (convert to .mdc with frontmatter)
+# ============================================================================
+
+sync_cursor_dir ".buildwright/steering"  "steering"  "steering"
+sync_cursor_dir ".buildwright/commands"  "commands"  "command"
+sync_cursor_dir ".buildwright/agents"    "agents"    "agent"
+sync_cursor_dir ".buildwright/claws"     "claws"     "claw"
+
+# ============================================================================
+# 5. Package for ClawHub (dist/)
 # ============================================================================
 
 if [ "$CHECK_ONLY" = false ] && [ -f "SKILL.md" ]; then
@@ -159,8 +278,9 @@ if [ "$CHECK_ONLY" = true ]; then
 else
   echo ""
   echo "Sync complete. Source of truth: .buildwright/"
-  echo "  .buildwright/ → .claude/    (paths rewritten)"
-  echo "  .buildwright/ → .opencode/  (paths rewritten)"
+  echo "  .buildwright/ → .claude/         (paths rewritten)"
+  echo "  .buildwright/ → .opencode/       (paths rewritten)"
+  echo "  .buildwright/ → .cursor/rules/   (.mdc with frontmatter)"
   echo "  CLAUDE.md     → AGENTS.md"
   echo "  SKILL.md      → dist/buildwright/SKILL.md"
 fi
