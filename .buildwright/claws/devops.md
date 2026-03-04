@@ -44,7 +44,7 @@ Before writing anything, read the project:
 ### Step 2: Write the Dockerfile (Always)
 
 - Multi-stage build: one stage to build, one minimal stage to run
-- Pin base image versions (`node:20-alpine`, not `node:latest`)
+- Read the runtime version from the project manifest (e.g. `engines.node` in `package.json`, `go` directive in `go.mod`, `rust-version` in `Cargo.toml`, `python_requires` in `pyproject.toml`). Pin the base image to that version with `-alpine` or `-slim`. Never hardcode a version not declared in the project, and never use `latest`.
 - Run as non-root user (`USER appuser`)
 - `COPY` only what's needed — respect `.dockerignore`
 - Include `HEALTHCHECK` instruction
@@ -82,7 +82,7 @@ Use the report format below.
 
 - **Multi-stage builds always** — keep runtime image as small as possible
 - **Non-root user** — `RUN addgroup -S appgroup && adduser -S appuser -G appgroup` then `USER appuser`
-- **Pin image versions** — `node:20-alpine`, never `node:latest` or `node:alpine`
+- **Pin image versions** — read the version from the project manifest (`engines.node`, `go` directive in `go.mod`, `rust-version` in `Cargo.toml`, `python_requires` in `pyproject.toml`) and pin to that version with `-alpine` or `-slim` variant. Never use `latest`, and never hardcode a runtime version that isn't declared in the project itself.
 - **`.env.example`** — document required variables with safe example values; never touch `.env` itself
 - **One process per container** — no supervisord or multiple services per container
 - **Graceful shutdown** — handle `SIGTERM` so containers drain cleanly

@@ -67,20 +67,24 @@ The Architect provides:
 ## Verification
 
 Before reporting back:
-```bash
-# Run migration up
-[migrate up command]
 
-# Run migration down (verify reversibility)
-[migrate down command]
+1. Run migration up — use the project's migration tool (e.g., `migrate up`, `prisma migrate dev`, `alembic upgrade head`, `goose up`, `diesel migration run`)
+2. Run migration down — verify reversibility
+3. Run migration up again — verify idempotency
 
-# Run migration up again (verify idempotency)
-[migrate up command]
+Then run domain-scoped tests using the project's test runner
+(from Tech Discovery Protocol in Command Discovery, CLAUDE.md).
 
-# Run database tests
-npm test -- --testPathPattern="(database|migration|db)"
+Examples by runtime — use only the discovered runner, do not hardcode:
+- Jest/Vitest: `npx jest --testPathPattern="(database|migration|db)"`
+- Go: `go test ./database/... ./migrations/...`
+- Rust: `cargo test database` or `cargo test migration`
+- Pytest: `pytest tests/database/ tests/migrations/`
 
-# Run full verify
+If no domain filter is available for this stack, run the full test suite.
+
+Then run full verify:
+```
 /bw-verify
 ```
 

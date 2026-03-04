@@ -53,10 +53,14 @@ After cloning or editing `.buildwright/`, run `make sync` to regenerate tool-spe
 7. **Show commands**: /bw-help
 
 ## Command Discovery
-When you need project commands:
-1. Check package.json / Cargo.toml / pyproject.toml / go.mod / Makefile
-2. Check .github/workflows/ for expected command sequence
-3. Document discovered commands in .buildwright/steering/tech.md
+
+Run once per session. Cache the result — do not re-detect on every step.
+
+1. Read `.buildwright/steering/tech.md`. If "Project Commands" has real commands (not template placeholders) → use them. STOP.
+2. Auto-detect from project files in priority order: `package.json` → Node.js (check lock files: `pnpm-lock.yaml`→pnpm, `yarn.lock`→yarn, `bun.lockb`→bun, else→npm) | `Cargo.toml` → cargo | `go.mod` → go | `pyproject.toml` → check `poetry.lock`→poetry, `uv.lock`→uv, else→pip/hatch | `setup.py` → pip | `requirements.txt` → pip | `Makefile` → read targets.
+3. Derive four commands — typecheck, lint, test, build. If a stack has no equivalent for an operation, mark it SKIP (not a failure). Python has no build step; that's fine.
+4. Write discovered commands to tech.md so future runs use step 1.
+5. If still ambiguous: in a greenfield context go to the Greenfield Path (see bw-new-feature). Otherwise ask: "What commands run your tests, linter, and build?"
 
 ## Credentials & Environment Variables
 
@@ -69,16 +73,15 @@ When you need project commands:
 `GITHUB_TOKEN` is the only credential. Use a fine-grained personal access token scoped to a single repository with "Contents: Read and write" and "Pull requests: Read and write" permissions. `BUILDWRIGHT_AUTO_APPROVE` is a configuration flag, not a secret.
 
 ## Verification Loop (CRITICAL)
-Before EVERY commit, run the project's verification commands:
-```bash
-# Adapt these to the project - discover actual commands first
-npm run typecheck   # or tsc, cargo check, go build, etc.
-npm run lint        # or eslint, cargo clippy, golangci-lint, etc.
-npm run test        # or jest, cargo test, go test, pytest, etc.
-npm run build       # production build must succeed
-```
 
-If ANY fail: fix and retry (max 2 attempts). If same error repeats or still failing: STOP and report blocker.
+Before EVERY commit, discover commands first (see Command Discovery above), then run:
+
+1. **Type check** — run DISCOVERED_TYPECHECK (SKIP gracefully if this stack has none)
+2. **Lint** — run DISCOVERED_LINT (SKIP gracefully if this stack has none)
+3. **Test** — run DISCOVERED_TEST
+4. **Build** — run DISCOVERED_BUILD (SKIP gracefully if this stack has no build step, e.g. Python)
+
+If ANY required step fails: fix and retry (max 2 attempts). If same error repeats or still failing: STOP and report blocker.
 
 ## Git Rules
 - Atomic commits: only commit files you changed
@@ -128,7 +131,7 @@ When a feature touches multiple domains (e.g., DB + API + UI):
 - Follow existing patterns in the codebase exactly
 - Keep files under 500 lines; split proactively
 - Write tests for all new functionality (TDD preferred)
-- No `any` types in TypeScript
+- Avoid type system escape hatches (`any` in TypeScript, untyped `interface{}` in Go, `Any` in Python) — use proper types
 - Use Decimal/BigDecimal for financial calculations, NEVER floating point
 - All user inputs must be validated
 

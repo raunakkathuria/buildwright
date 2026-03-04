@@ -68,12 +68,19 @@ The Architect provides:
 
 ## Verification
 
-Before reporting back:
-```bash
-# Run API tests
-npm test -- --testPathPattern="(api|routes|controllers)"
+Before reporting back, run domain-scoped tests using the project's test runner
+(from Tech Discovery Protocol in Command Discovery, CLAUDE.md).
 
-# Run full verify
+Examples by runtime — use only the discovered runner, do not hardcode:
+- Jest/Vitest: `npx jest --testPathPattern="(api|routes|controllers)"`
+- Go: `go test ./api/... ./routes/... ./controllers/...`
+- Rust: `cargo test api` or `cargo test routes`
+- Pytest: `pytest tests/api/ tests/routes/`
+
+If no domain filter is available for this stack, run the full test suite.
+
+Then run full verify:
+```
 /bw-verify
 ```
 
