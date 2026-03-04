@@ -97,9 +97,12 @@ Run tools from the Security Engineer persona's "Tools to Use" section:
 
 ```bash
 # Skip gracefully if tools are unavailable
-npm audit 2>/dev/null || echo "npm audit not available"
+[DISCOVERED_AUDIT_COMMAND] 2>/dev/null || echo "Dependency audit not available for this stack"
 semgrep --config p/owasp-top-ten . 2>/dev/null || echo "semgrep not available"
 ```
+
+Where DISCOVERED_AUDIT_COMMAND is the stack-appropriate audit tool, e.g.:
+`npm audit` | `cargo audit` | `pip-audit` | `bundle audit` | `go list -m -json all | nancy sleuth`
 
 ### 2.3 Manual Review (Phased)
 

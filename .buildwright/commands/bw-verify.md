@@ -7,74 +7,57 @@ Running quick verification...
 
 ## 1. Discover Project Commands
 
-First, check the project for available commands:
-- package.json scripts
-- Cargo.toml
-- Makefile
-- pyproject.toml
-- go.mod
+Follow the Tech Discovery Protocol (see Command Discovery in CLAUDE.md):
 
-Document findings in .buildwright/steering/tech.md if not already present.
+1. Read `.buildwright/steering/tech.md` — if "Project Commands" has real commands, use them.
+2. Otherwise auto-detect from project files: `package.json`, `Cargo.toml`, `go.mod`, `pyproject.toml`, `Makefile`, etc.
+3. Derive typecheck, lint, test, build commands. Mark as SKIP if a stack has no equivalent.
+4. Write discovered commands to `tech.md` for future runs.
 
 ---
 
 ## 2. Type Check
 
-```bash
-# Node/TypeScript
-npm run typecheck || npx tsc --noEmit
+Run DISCOVERED_TYPECHECK.
 
-# Rust
-cargo check
+Examples by runtime (use only what was discovered — do not hardcode):
+- Node/TypeScript: `npx tsc --noEmit` or the project's typecheck script
+- Rust: `cargo check`
+- Go: `go build ./...`
+- Python: `mypy .` or `pyright`
+- Other: SKIP if no type checker exists for this stack
 
-# Go
-go build ./...
-
-# Python
-mypy . || pyright
-```
-
-**Result:** PASS / FAIL
+**Result:** PASS / FAIL / SKIP
 **Details:** [error count and locations if failed]
 
 ---
 
 ## 3. Lint
 
-```bash
-# Node/TypeScript
-npm run lint || npx eslint .
+Run DISCOVERED_LINT.
 
-# Rust
-cargo clippy -- -D warnings
+Examples by runtime (use only what was discovered):
+- Node/TypeScript: project lint script or `npx eslint .`
+- Rust: `cargo clippy -- -D warnings`
+- Go: `golangci-lint run`
+- Python: `ruff check .` or `flake8`
+- Other: SKIP if no linter configured
 
-# Go
-golangci-lint run
-
-# Python
-ruff check . || flake8
-```
-
-**Result:** PASS / FAIL
+**Result:** PASS / FAIL / SKIP
 **Details:** [warning/error count]
 
 ---
 
 ## 4. Tests
 
-```bash
-# Node/TypeScript
-npm test
+Run DISCOVERED_TEST.
 
-# Rust
-cargo test
-
-# Go
-go test ./...
-
-# Python
-pytest
-```
+Examples by runtime (use only what was discovered):
+- Node/TypeScript: project test script or `npx jest`
+- Rust: `cargo test`
+- Go: `go test ./...`
+- Python: `pytest`
+- Other: consult Makefile or CI workflow
 
 **Result:** PASS / FAIL
 **Details:** [test count, coverage % if available]
@@ -83,21 +66,16 @@ pytest
 
 ## 5. Build
 
-```bash
-# Node/TypeScript
-npm run build
+Run DISCOVERED_BUILD.
 
-# Rust
-cargo build --release
+Examples by runtime (use only what was discovered):
+- Node/TypeScript: project build script
+- Rust: `cargo build --release`
+- Go: `go build ./...`
+- Python: SKIP — no build step for interpreted scripts
+- Other: SKIP if this stack has no build step
 
-# Go
-go build ./...
-
-# Python
-# Usually no build step, skip
-```
-
-**Result:** PASS / FAIL
+**Result:** PASS / FAIL / SKIP
 **Details:** [any warnings]
 
 ---
@@ -108,10 +86,13 @@ go build ./...
 ╔═══════════════════════════════════════════════════════════════╗
 ║                    QUICK VERIFICATION                         ║
 ╠═══════════════════════════════════════════════════════════════╣
-║  Type Check:  ✅ PASS / ❌ FAIL                               ║
-║  Lint:        ✅ PASS / ❌ FAIL  ([N] warnings)               ║
+║  Stack detected:  [runtime]                                   ║
+║  Commands used:   [list of commands actually run]             ║
+╠═══════════════════════════════════════════════════════════════╣
+║  Type Check:  ✅ PASS / ❌ FAIL / ⏭ SKIP                     ║
+║  Lint:        ✅ PASS / ❌ FAIL / ⏭ SKIP  ([N] warnings)     ║
 ║  Tests:       ✅ PASS / ❌ FAIL  ([N] tests, [X]% coverage)   ║
-║  Build:       ✅ PASS / ❌ FAIL                               ║
+║  Build:       ✅ PASS / ❌ FAIL / ⏭ SKIP                     ║
 ╠═══════════════════════════════════════════════════════════════╣
 ║  Status: PASS / BLOCKED                                       ║
 ╚═══════════════════════════════════════════════════════════════╝

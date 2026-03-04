@@ -11,7 +11,7 @@ An agent-first autonomous development workflow where humans approve specificatio
 ```mermaid
 flowchart TD
       A["/bw-new-feature"] --> B{Greenfield?}
-      B -- Yes --> C[Ask product vision<br>Suggest tech stack]
+      B -- Yes --> C[Ask product vision<br>Derive tech stack from vision]
       C --> D
       B -- No --> D["1. RESEARCH<br>Deep-read codebase"]
       D --> E["1.5. RESOLVE AMBIGUITIES<br>Auto-decide or ask user<br>(BUILDWRIGHT_AUTO_APPROVE)"]
@@ -42,21 +42,22 @@ Starting a new project? Buildwright handles it:
 ```
 /bw-new-feature "Add product catalog with search"
 
-> "This looks like a new project. What's the product vision?"
-E-commerce platform for handmade crafts
+> "This looks like a new project. What is the product vision, and do you have
+> any tech constraints (team expertise, deployment environment, integrations,
+> compliance)?"
+E-commerce platform for handmade crafts. Team knows Python. Deploying to AWS Lambda.
 
 > [AI generates steering docs + spec]
-> [Presents suggested tech stack for approval]
+> [Derives and presents tech stack for approval]
 
-SUGGESTED TECH STACK
-────────────────────
-• Frontend: React 18 + TypeScript + Vite
-• Backend: Node.js + Express  
-• Database: PostgreSQL
-• Testing: Vitest + Playwright
+PROPOSED TECH STACK
+───────────────────
+[Stack derived from your product vision and constraints]
+Chosen because: [2-3 sentences linking requirements to stack]
+Alternatives considered: [brief list]
 
 Reply "approved" to proceed with this stack.
-Or adjust: "approved, but use Vue instead of React"
+Or adjust: "approved, but use PostgreSQL instead of DynamoDB"
 ```
 
 One question. One approval. Tech stack + spec reviewed together.

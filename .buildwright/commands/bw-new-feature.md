@@ -19,6 +19,7 @@ arguments:
 ┌─────────────────────────────────────────────────────────────┐
 │                   NEW FEATURE PIPELINE                      │
 ├─────────────────────────────────────────────────────────────┤
+│  0.   DETECT             → Greenfield or existing project?         │
 │  1.   RESEARCH           → Deep-read codebase, understand context  │
 │  1.5. RESOLVE AMBIGUITIES → Auto-decide or ask user               │
 │  2.   PLAN               → Generate spec informed by research      │
@@ -28,6 +29,51 @@ arguments:
 │  6. SHIP      → verify → security → review → release        │
 └─────────────────────────────────────────────────────────────┘
 ```
+
+---
+
+## Phase 0: Detect (Greenfield or Existing?)
+
+**Check for existing tech indicators:**
+- Language manifests: `package.json`, `Cargo.toml`, `go.mod`, `pyproject.toml`, `setup.py`
+- Dependency files: `requirements.txt`, lock files
+- Build files: `Makefile`, `build.gradle`, `CMakeLists.txt`
+- Source directories: `src/`, `lib/`, `app/`, `cmd/`
+- Git history: `git log --oneline -5` (any commits = existing project)
+
+**Decision:**
+- **Any found** → **Existing Project Path**: Run Tech Discovery Protocol (Command Discovery in CLAUDE.md), read steering docs, proceed to Phase 1.
+- **None found** → **Greenfield Path** (below).
+
+### Greenfield Path
+
+1. Ask ONE question:
+   ```
+   This looks like a new project. What is the product vision, and do you have any
+   tech constraints (team expertise, deployment environment, integrations, compliance)?
+   ```
+2. **STOP and wait for the answer.** Do NOT proceed until answered.
+3. Derive the stack from the answer — reason from: product type, team knowledge, deployment constraints, scale, compliance. **No hardcoded default stack.**
+4. Generate `.buildwright/steering/product.md` and `.buildwright/steering/tech.md` from the answer.
+5. At Phase 4 (Human Approval), present the proposed tech stack alongside the spec:
+   ```
+   PROPOSED TECH STACK
+   ───────────────────
+   [Stack derived from your requirements]
+
+   Chosen because: [2-3 sentences linking requirements to stack choice]
+   Alternatives considered: [brief list]
+
+   Reply "approved" or adjust: "approved, but use X instead of Y"
+   ```
+6. After approval, finalize `tech.md` with actual commands so future runs use Step 1 of the discovery protocol.
+
+**Existing Project Priority Rule (always apply):**
+1. Team's filled-in `tech.md` > auto-detection
+2. Existing code patterns > Buildwright conventions
+3. Existing deployment config (`Dockerfile`, `k8s/`, `compose.yml`) > DevOps claw defaults
+4. Existing test patterns > TDD suggestions in claws
+5. Never modify working infrastructure to match Buildwright defaults
 
 ---
 
