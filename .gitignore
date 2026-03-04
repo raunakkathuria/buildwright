@@ -30,5 +30,8 @@ buildwright-multi-agent-evaluation.md
 # OpenCode — entire directory is generated
 .opencode/
 
+# Cursor — generated from .buildwright/ by: make sync
+.cursor/rules/
+
 # AGENTS.md — generated from CLAUDE.md for OpenCode compatibility
 AGENTS.md

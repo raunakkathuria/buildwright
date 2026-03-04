@@ -1,8 +1,8 @@
 ---
 name: buildwright
-description: Autonomous development workflow with multi-agent Claw Architecture. Single-agent mode for simple features; multi-agent mode decomposes cross-domain work into specialist claws (UI, API, DB). Includes TDD, security scan, code review, and quality gates. Works with Claude Code, OpenCode, and OpenClaw.
+description: Autonomous development workflow with multi-agent Claw Architecture. Single-agent mode for simple features; multi-agent mode decomposes cross-domain work into specialist claws (UI, API, DB). Includes TDD, security scan, code review, and quality gates. Works with Claude Code, OpenCode, OpenClaw, and Cursor.
 license: MIT
-compatibility: Requires git and gh (GitHub CLI). GITHUB_TOKEN with repo scope needed for push/PR. Optional tools for security scans (semgrep, gitleaks, trufflehog). Works with Claude Code, OpenCode, and OpenClaw.
+compatibility: Requires git and gh (GitHub CLI). GITHUB_TOKEN with repo scope needed for push/PR. Optional tools for security scans (semgrep, gitleaks, trufflehog). Works with Claude Code, OpenCode, OpenClaw, and Cursor.
 metadata:
   homepage: https://github.com/raunakkathuria/buildwright
   version: "0.0.1"
