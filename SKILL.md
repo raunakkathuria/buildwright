@@ -97,7 +97,7 @@ Full pipeline for new features. Auto-detects greenfield vs existing projects.
 /bw-new-feature "Add OAuth2 login"
 ```
 
-Flow: Research → Spec → Staff Engineer validates → Human approves → TDD build → Verify → Security scan → Code review → PR
+Flow: Detect (greenfield or existing?) → Research → Spec → Staff Engineer validates → Human approves → TDD build → Verify → Security scan → Code review → PR
 
 **Artifacts produced:**
 - `docs/specs/[feature]/research.md` — what the agent found in your codebase

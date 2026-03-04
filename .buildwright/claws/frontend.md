@@ -67,12 +67,19 @@ The Architect provides:
 
 ## Verification
 
-Before reporting back:
-```bash
-# Run component tests
-npm test -- --testPathPattern="(ui|frontend|components)"
+Before reporting back, run domain-scoped tests using the project's test runner
+(from Tech Discovery Protocol in Command Discovery, CLAUDE.md).
 
-# Run full verify
+Examples by runtime — use only the discovered runner, do not hardcode:
+- Jest/Vitest: `npx jest --testPathPattern="(ui|frontend|components)"`
+- Playwright: `npx playwright test tests/ui/`
+- Go: `go test ./ui/...`
+- Pytest: `pytest tests/frontend/ tests/components/`
+
+If no domain filter is available for this stack, run the full test suite.
+
+Then run full verify:
+```
 /bw-verify
 ```
 

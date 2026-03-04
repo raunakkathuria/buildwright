@@ -39,6 +39,12 @@ Fast path for ad-hoc tasks that don't need full planning.
 
 ## Step 1: Understand Task
 
+**First, run Tech Discovery Protocol** (Command Discovery in CLAUDE.md) to determine the project's
+test, lint, typecheck, and build commands. Cache the result for subsequent steps.
+
+If no project files are found (greenfield — no `package.json`, `Cargo.toml`, `go.mod`, etc.),
+ask for the product vision before proceeding. Quick tasks on a blank project need context.
+
 Parse: $ARGUMENTS.task
 
 Identify:
