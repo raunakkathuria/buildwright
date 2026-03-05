@@ -14,6 +14,7 @@ are codebase analysis docs (stack, architecture, conventions, concerns) generate
 - Agent personas in `.buildwright/agents/` — Architect, Staff Engineer, Security Engineer
 - Domain-specialist claws in `.buildwright/claws/` — Frontend, Backend, Database (+ TEMPLATE for custom)
 - Use `/bw-claw` for cross-domain features that need the Claw Architecture
+- For multi-claw work: use the best available model for Architect and Security review; lighter models suffice for Database and API claws.
 
 ## Project Structure
 
