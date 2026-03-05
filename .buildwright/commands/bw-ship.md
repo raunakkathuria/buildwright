@@ -41,6 +41,9 @@ This command runs the full quality pipeline before shipping.
 
 ## Step 1: Verify (Quick Checks) — Retry up to 2x
 
+Before verifying, confirm that README.md, docs/, and CHANGELOG.md reflect the
+changes being shipped. Update any that are out of date.
+
 Run quick verification checks:
 
 ```bash
