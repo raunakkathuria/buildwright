@@ -89,8 +89,8 @@ set_cursor_frontmatter() {
   local filename="$2"
 
   case "$preset" in
-    steering) CURSOR_ALWAYS_APPLY="true" ;;
-    *)        CURSOR_ALWAYS_APPLY="false" ;;
+    steering|codebase) CURSOR_ALWAYS_APPLY="true" ;;
+    *)                 CURSOR_ALWAYS_APPLY="false" ;;
   esac
 
   case "${preset}:${filename}" in
@@ -98,12 +98,17 @@ set_cursor_frontmatter() {
     steering:tech)               CURSOR_DESCRIPTION="Buildwright technical context: stack, commands, architecture patterns" ;;
     steering:quality-gates)      CURSOR_DESCRIPTION="Buildwright quality gates: automated checks that must pass before merge" ;;
     steering:naming-conventions) CURSOR_DESCRIPTION="Buildwright naming conventions: canonical field and endpoint registry" ;;
+    codebase:STACK)              CURSOR_DESCRIPTION="Codebase tech stack: languages, runtime, frameworks, dependencies, integrations" ;;
+    codebase:ARCHITECTURE)       CURSOR_DESCRIPTION="Codebase architecture: layers, data flow, entry points, directory structure" ;;
+    codebase:CONVENTIONS)        CURSOR_DESCRIPTION="Codebase conventions: naming, code style, imports, error handling, testing patterns" ;;
+    codebase:CONCERNS)           CURSOR_DESCRIPTION="Codebase concerns: tech debt, bugs, security risks, performance bottlenecks" ;;
     command:bw-new-feature)      CURSOR_DESCRIPTION="Buildwright bw-new-feature: full pipeline for new features with spec and TDD" ;;
     command:bw-claw)             CURSOR_DESCRIPTION="Buildwright bw-claw: multi-agent cross-domain feature development" ;;
     command:bw-quick)            CURSOR_DESCRIPTION="Buildwright bw-quick: fast path for bug fixes and small tasks" ;;
     command:bw-ship)             CURSOR_DESCRIPTION="Buildwright bw-ship: quality pipeline then commit, push, and PR" ;;
     command:bw-verify)           CURSOR_DESCRIPTION="Buildwright bw-verify: quick quality checks (typecheck, lint, test, build)" ;;
     command:bw-help)             CURSOR_DESCRIPTION="Buildwright bw-help: list all available Buildwright commands" ;;
+    command:bw-analyse)          CURSOR_DESCRIPTION="Buildwright bw-analyse: analyse codebase, write structured docs to .buildwright/codebase/, update tech.md" ;;
     agent:architect)             CURSOR_DESCRIPTION="Buildwright Architect agent persona" ;;
     agent:staff-engineer)        CURSOR_DESCRIPTION="Buildwright Staff Engineer agent persona" ;;
     agent:security-engineer)     CURSOR_DESCRIPTION="Buildwright Security Engineer agent persona" ;;
@@ -199,6 +204,7 @@ sync_dir ".buildwright/commands"  ".claude/commands"  ".buildwright/" ".claude/"
 sync_dir ".buildwright/agents"    ".claude/agents"    ".buildwright/" ".claude/"
 sync_dir ".buildwright/claws"     ".claude/claws"     ".buildwright/" ".claude/"
 sync_dir ".buildwright/steering"  ".claude/steering"
+sync_dir ".buildwright/codebase"  ".claude/codebase"
 sync_dir ".buildwright/tasks"     ".claude/tasks"
 
 # ============================================================================
@@ -209,6 +215,7 @@ sync_dir ".buildwright/commands"  ".opencode/commands"  ".buildwright/" ".openco
 sync_dir ".buildwright/agents"    ".opencode/agents"    ".buildwright/" ".opencode/"
 sync_dir ".buildwright/claws"     ".opencode/claws"     ".buildwright/" ".opencode/"
 sync_dir ".buildwright/steering"  ".opencode/steering"
+sync_dir ".buildwright/codebase"  ".opencode/codebase"
 
 # ============================================================================
 # 3. CLAUDE.md → AGENTS.md
@@ -248,6 +255,7 @@ fi
 # ============================================================================
 
 sync_cursor_dir ".buildwright/steering"  "steering"  "steering"
+sync_cursor_dir ".buildwright/codebase"  "codebase"  "codebase"
 sync_cursor_dir ".buildwright/commands"  "commands"  "command"
 sync_cursor_dir ".buildwright/agents"    "agents"    "agent"
 sync_cursor_dir ".buildwright/claws"     "claws"     "claw"
