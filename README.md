@@ -315,8 +315,7 @@ your-project/
 │   └── validate-skill.sh          # Validate SKILL.md against agentskills.io
 ├── docs/
 │   ├── requirements/
-│   ├── specs/
-│   └── decisions/
+│   └── specs/
 └── .github/
     └── workflows/
         └── quality-gates.yml

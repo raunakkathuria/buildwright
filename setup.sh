@@ -24,7 +24,6 @@ mkdir -p .buildwright/tasks
 mkdir -p .claude           # For settings.json (Claude Code-specific)
 mkdir -p docs/requirements
 mkdir -p docs/specs
-mkdir -p docs/decisions
 mkdir -p .github/workflows
 mkdir -p scripts
 
