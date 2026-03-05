@@ -251,8 +251,14 @@ echo "  Created templates"
 
 curl -sL "$BASE_URL/scripts/sync-agents.sh" > scripts/sync-agents.sh
 curl -sL "$BASE_URL/scripts/validate-skill.sh" > scripts/validate-skill.sh
-chmod +x scripts/sync-agents.sh scripts/validate-skill.sh
-echo "  Created scripts (sync-agents, validate-skill)"
+curl -sL "$BASE_URL/scripts/install-hooks.sh" > scripts/install-hooks.sh
+mkdir -p scripts/hooks
+curl -sL "$BASE_URL/scripts/hooks/pre-commit" > scripts/hooks/pre-commit
+curl -sL "$BASE_URL/scripts/hooks/post-merge" > scripts/hooks/post-merge
+curl -sL "$BASE_URL/scripts/hooks/post-checkout" > scripts/hooks/post-checkout
+chmod +x scripts/sync-agents.sh scripts/validate-skill.sh scripts/install-hooks.sh \
+         scripts/hooks/pre-commit scripts/hooks/post-merge scripts/hooks/post-checkout
+echo "  Created scripts (sync-agents, validate-skill, install-hooks, hooks/)"
 
 # ============================================================================
 # GITHUB WORKFLOW
