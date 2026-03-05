@@ -9,6 +9,9 @@ This project uses agent-first autonomous development.
 # Creates .claude/, .opencode/, .cursor/rules/, and AGENTS.md
 make sync
 
+# Install git hooks to auto-sync on .buildwright/ changes
+make install-hooks
+
 # Then start your agent tool
 claude
 
