@@ -1,4 +1,4 @@
-.PHONY: dist clean sync sync-check cursor opencode openclaw validate
+.PHONY: dist clean sync sync-check cursor opencode openclaw validate install-hooks uninstall-hooks
 
 # ============================================================================
 # Sync — Generate .claude/, .opencode/, .cursor/rules/ from .buildwright/ (canonical)
@@ -46,6 +46,18 @@ openclaw: sync
 validate:
 	@chmod +x scripts/validate-skill.sh
 	@scripts/validate-skill.sh SKILL.md
+
+# ============================================================================
+# Git Hooks — keep .buildwright/ ↔ generated files in sync automatically
+# ============================================================================
+
+install-hooks:
+	@chmod +x scripts/install-hooks.sh
+	@scripts/install-hooks.sh
+
+uninstall-hooks:
+	@rm -f .git/hooks/pre-commit .git/hooks/post-merge .git/hooks/post-checkout
+	@echo "Buildwright hooks removed."
 
 # ============================================================================
 # Clean

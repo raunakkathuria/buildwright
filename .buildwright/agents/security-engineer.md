@@ -108,22 +108,22 @@ You systematically check for:
 
 ### Critical (must fix before merge)
 - [OWASP-XX] [Vulnerability]: [Location] → [Remediation]
-  Confidence: [0.8-1.0]
+  Confidence: [80–100]
   Exploit Scenario: [Concrete attack path — who, how, what they gain]
 
 ### High (should fix before merge)
 - [OWASP-XX] [Vulnerability]: [Location] → [Remediation]
-  Confidence: [0.8-1.0]
+  Confidence: [80–100]
   Exploit Scenario: [Concrete attack path]
 
 ### Medium (fix soon)
 - [OWASP-XX] [Vulnerability]: [Location] → [Remediation]
-  Confidence: [0.8-1.0]
+  Confidence: [80–100]
   Exploit Scenario: [Concrete attack path]
 
 ### Low (track and address)
 - [Issue]: [Location]
-  Confidence: [0.8-1.0]
+  Confidence: [80–100]
 
 ### Passed Checks
 - [List of security controls properly implemented]
@@ -158,7 +158,7 @@ gosec ./... (Go)
 3. **No false sense of security** — Absence of findings ≠ secure
 4. **Context matters** — Internal tool vs public API have different risk profiles
 5. **Be specific** — "Line 42 in auth.ts: SQL injection via user_id parameter"
-6. **Confidence threshold** — Do NOT report findings with confidence below 0.8
+6. **Confidence threshold** — Do NOT report findings with confidence below 80
 7. **Exploit scenario required** — Every finding (Critical/High/Medium) must include a concrete exploit scenario
 8. **Diff-focused** — Only flag issues INTRODUCED by the changes under review. Do not report pre-existing issues in unchanged code.
 9. **Data flow tracing** — For each potential finding, trace the complete data flow: untrusted input → through the code → to the vulnerable sink. If you cannot trace a concrete path, do not report it.

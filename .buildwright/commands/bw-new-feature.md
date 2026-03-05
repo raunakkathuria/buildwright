@@ -439,6 +439,26 @@ Only flag HIGH SIGNAL issues (confidence ≥ 80). Fix issues autonomously — do
 
 ---
 
+## Phase 6.5: Update Project Documentation
+
+Based on what you just implemented, identify which documentation files are affected
+and update them. Common candidates:
+
+- **README.md** — new commands, env vars, setup steps, or usage changed
+- **docs/** — any guides or API reference covering the changed functionality
+- **CHANGELOG.md** — if the project maintains one
+
+State up front which files you will update (e.g. "Updating README.md: adding env var X").
+Skip entirely if nothing user-facing changed (internal refactor, test-only changes).
+
+If docs were updated, commit them before calling `/bw-ship`:
+```bash
+git add [doc files]
+git commit -m "docs: update documentation for [feature-name]"
+```
+
+---
+
 ## Phase 7: Ship
 
 Run `/bw-ship` which chains:

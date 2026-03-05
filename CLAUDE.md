@@ -14,6 +14,7 @@ are codebase analysis docs (stack, architecture, conventions, concerns) generate
 - Agent personas in `.buildwright/agents/` — Architect, Staff Engineer, Security Engineer
 - Domain-specialist claws in `.buildwright/claws/` — Frontend, Backend, Database (+ TEMPLATE for custom)
 - Use `/bw-claw` for cross-domain features that need the Claw Architecture
+- For multi-claw work: use the best available model for Architect and Security review; lighter models suffice for Database and API claws.
 
 ## Project Structure
 
@@ -94,6 +95,8 @@ If ANY required step fails: fix and retry (max 2 attempts). If same error repeat
 - Never run destructive git operations without explicit instruction
 - Multi-agent safety: NEVER use git stash (other agents may be working)
 - Only `.buildwright/` is committed — never commit `.claude/` or `.opencode/` content files
+- After editing any file in `.buildwright/`, run `make sync` before committing
+- Before committing, update README.md, docs/, or CHANGELOG.md if the change affects user-facing behavior
 
 ## Cross-Domain Features (Claw Architecture)
 When a feature touches multiple domains (e.g., DB + API + UI):

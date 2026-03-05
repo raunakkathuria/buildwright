@@ -12,6 +12,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Verify sync script runs without errors (catches broken scripts or missing deps)
+      - name: Verify sync script
+        run: make sync
+
       # Detect package manager and project type
       - name: Detect project type
         id: detect

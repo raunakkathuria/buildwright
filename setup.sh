@@ -24,7 +24,6 @@ mkdir -p .buildwright/tasks
 mkdir -p .claude           # For settings.json (Claude Code-specific)
 mkdir -p docs/requirements
 mkdir -p docs/specs
-mkdir -p docs/decisions
 mkdir -p .github/workflows
 mkdir -p scripts
 
@@ -165,6 +164,7 @@ If ANY required step fails: fix and retry (max 2 attempts). If same error repeat
 - Never run destructive git operations without explicit instruction
 - Multi-agent safety: NEVER use git stash (other agents may be working)
 - Only `.buildwright/` is committed — never commit `.claude/` or `.opencode/` content files
+- After editing any file in `.buildwright/`, run `make sync` before committing
 
 ## Cross-Domain Features (Claw Architecture)
 When a feature touches multiple domains (e.g., DB + API + UI):
@@ -251,8 +251,14 @@ echo "  Created templates"
 
 curl -sL "$BASE_URL/scripts/sync-agents.sh" > scripts/sync-agents.sh
 curl -sL "$BASE_URL/scripts/validate-skill.sh" > scripts/validate-skill.sh
-chmod +x scripts/sync-agents.sh scripts/validate-skill.sh
-echo "  Created scripts (sync-agents, validate-skill)"
+curl -sL "$BASE_URL/scripts/install-hooks.sh" > scripts/install-hooks.sh
+mkdir -p scripts/hooks
+curl -sL "$BASE_URL/scripts/hooks/pre-commit" > scripts/hooks/pre-commit
+curl -sL "$BASE_URL/scripts/hooks/post-merge" > scripts/hooks/post-merge
+curl -sL "$BASE_URL/scripts/hooks/post-checkout" > scripts/hooks/post-checkout
+chmod +x scripts/sync-agents.sh scripts/validate-skill.sh scripts/install-hooks.sh \
+         scripts/hooks/pre-commit scripts/hooks/post-merge scripts/hooks/post-checkout
+echo "  Created scripts (sync-agents, validate-skill, install-hooks, hooks/)"
 
 # ============================================================================
 # GITHUB WORKFLOW
@@ -283,6 +289,13 @@ scripts/sync-agents.sh
 echo "  Synced tool-specific configs (.claude/, .opencode/, .cursor/rules/, AGENTS.md)"
 
 # ============================================================================
+# GIT HOOKS — auto-sync on .buildwright/ changes
+# ============================================================================
+
+make install-hooks
+echo "  Installed git hooks (pre-commit, post-merge, post-checkout)"
+
+# ============================================================================
 # COMPLETE
 # ============================================================================
 
@@ -306,5 +319,5 @@ echo "     /bw-new-feature \"your feature description\""
 echo "     /bw-claw \"cross-domain feature\""
 echo "     /bw-quick \"fix the bug\""
 echo ""
-echo "  After editing .buildwright/, run: scripts/sync-agents.sh"
+echo "  After editing .buildwright/, run: make sync  (or git hooks do it automatically)"
 echo "==============================================================="
