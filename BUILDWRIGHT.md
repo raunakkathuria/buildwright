@@ -1,99 +1,18 @@
 # Buildwright Development Workflow
 
-This project uses agent-first autonomous development.
+This project uses agent-first autonomous development. See [README.md](README.md) for full setup, concepts, and workflow details.
 
 ## Quick Start
 
 ```bash
 # After cloning, generate tool-specific configs from .buildwright/
-# Creates .claude/, .opencode/, .cursor/rules/, and AGENTS.md
 make sync
 
-# Then start your agent tool
+# Install git hooks to auto-sync on .buildwright/ changes
+make install-hooks
+
+# Start your agent tool
 claude
-
-# For new features (full workflow)
-> /bw-new-feature "Add user authentication"
-> [Claude researches, generates spec, validates]
-> approved
-> [Claude implements and ships]
-
-# For small tasks (fast path)
-> /bw-quick "Fix the timeout bug"
-> [Claude fixes, verifies, commits]
-```
-
-## The Flow
-
-```
-/bw-new-feature "description"
-  │
-  ├─ 0. DETECT: Greenfield? Ask product vision, suggest tech stack
-  │
-  ├─ 1. RESEARCH: Deep-read codebase, write research.md
-  │
-  ├─ 1.5 RESOLVE AMBIGUITIES: Identify gaps, auto-decide or ask
-  │
-  ├─ 2. PLAN: Generate spec with multi-approach analysis
-  │
-  ├─ 3. VALIDATE: Staff Engineer reviews spec (auto)
-  │
-  ├─ 4. APPROVE: Human says "approved" ◄── Only human step
-  │             (For greenfield: also confirms tech stack)
-  │
-  ├─ 5. BUILD: TDD per milestone (uses patterns from research)
-  │
-  └─ 6. SHIP: verify → security → review → release
-
-
-/bw-quick "task"  ◄── Fast path for small tasks
-  │
-  ├─ Quick research (in-context)
-  ├─ Implement with TDD
-  ├─ Verify
-  └─ Commit
-```
-
-## Greenfield Projects
-
-For new projects, Buildwright:
-1. Asks ONE question: "What's the product vision?"
-2. Infers appropriate tech stack from feature + product type
-3. Generates steering docs (product.md, tech.md)
-4. Presents suggested stack at approval time
-
-```
-Reply "approved" to proceed with this stack.
-Or adjust: "approved, but use Vue instead of React"
-```
-
-## Autonomous Mode
-
-For fully autonomous operation without human approval:
-
-```bash
-# Set environment variable
-export BUILDWRIGHT_AUTO_APPROVE=true
-
-# Or pass as argument
-/bw-new-feature "Add feature" --auto-approve
-```
-
-**What changes:**
-- Spec is still generated and validated by Staff Engineer
-- All documents committed to git BEFORE implementation (audit trail)
-- No human approval required — proceeds directly to BUILD
-- Full traceability preserved in version control
-
-**Audit trail commit:**
-```
-docs(spec): add specification for user-auth
-
-- research.md: codebase analysis
-- spec.md: implementation plan  
-- Validated by Staff Engineer agent
-
-Auto-approved: BUILDWRIGHT_AUTO_APPROVE=true
 ```
 
 ## Commands
@@ -102,25 +21,19 @@ Auto-approved: BUILDWRIGHT_AUTO_APPROVE=true
 |---------|---------|
 | `/bw-new-feature` | Full pipeline: research → spec → approve → build → ship |
 | `/bw-quick` | Fast path for bug fixes, small tasks |
+| `/bw-claw` | Cross-domain features: Architect decomposes → claws execute per domain → integrate → ship |
 | `/bw-ship` | Quality gates + release: verify → security → review → push → PR |
 | `/bw-verify` | Quick checks: typecheck, lint, test, build |
+| `/bw-analyse` | Analyse existing codebase → write structured docs to `.buildwright/codebase/` → update tech.md |
 | `/bw-help` | Show available commands |
-
-## When to Use Each
-
-| Scenario | Command |
-|----------|---------|
-| New feature | `/bw-new-feature` |
-| Bug fix | `/bw-quick` |
-| Small task (<2 hrs) | `/bw-quick` |
-| Greenfield project | `/bw-new-feature` (auto-detected) |
 
 ## Environment Variables
 
-| Variable | Default | Purpose |
-|----------|---------|---------|
-| `BUILDWRIGHT_AUTO_APPROVE` | `true` | Autonomous mode — skip human approval, fail gracefully on errors |
-| `BUILDWRIGHT_AGENT_RETRIES` | `2` | Number of verify retries before giving up |
+| Variable | Default | Required | Purpose |
+|----------|---------|----------|---------|
+| `GITHUB_TOKEN` | — | Yes | Push branches and open PRs via `gh`. Needs `repo` scope. |
+| `BUILDWRIGHT_AUTO_APPROVE` | `true` | No | Autonomous mode — skip human approval, fail gracefully on errors |
+| `BUILDWRIGHT_AGENT_RETRIES` | `2` | No | Number of verify retries before giving up |
 
 ## Failure Behavior
 
@@ -135,11 +48,9 @@ Auto-approved: BUILDWRIGHT_AUTO_APPROVE=true
 3. Create PR with failure summary (see template below)
 4. Exit with error code (pipeline fails in CI/CD)
 
-**Interactive failure path**: STOP and report blocker (current behavior, unchanged).
+**Interactive failure path**: STOP and report blocker.
 
 ### PR Failure Summary Template
-
-When the autonomous pipeline fails, the PR body uses this format:
 
 ```markdown
 ## BUILDWRIGHT: Pipeline Failed
@@ -171,8 +82,6 @@ Fix the issue on this branch, then re-run the relevant command.
 
 ## Severity Triage
 
-Security and review findings are classified by severity:
-
 | Severity | Action | Example |
 |----------|--------|---------|
 | **Critical / High** | Block — must fix before merge | SQL injection, exposed secrets, auth bypass |
@@ -183,14 +92,8 @@ Only Critical/High findings block the pipeline. Medium and Low findings are repo
 
 ## Agent Personas
 
-| Agent | Purpose | Key Capabilities | Location |
-|-------|---------|-------------------|----------|
-| Staff Engineer | Spec & code review | Confidence scoring (≥80), HIGH SIGNAL criteria, false-positive exclusions | `.buildwright/agents/staff-engineer.md` |
-| Security Engineer | Security review | Confidence scoring (≥0.8), exploit scenarios, hard exclusions | `.buildwright/agents/bw-security-engineer.md` |
-
-## Customization
-
-- **Product context**: `.buildwright/steering/product.md`
-- **Tech stack**: `.buildwright/steering/tech.md`
-- **Quality gates**: `.buildwright/steering/quality-gates.md`
-- **Learned patterns**: `CLAUDE.md` (bottom section)
+| Agent | File | Purpose |
+|-------|------|---------|
+| Staff Engineer | `.buildwright/agents/staff-engineer.md` | Spec & code review, confidence scoring (≥80) |
+| Security Engineer | `.buildwright/agents/security-engineer.md` | Security review, exploit scenarios, hard exclusions |
+| Architect | `.buildwright/agents/architect.md` | Claw Architecture — decomposes cross-domain features |

@@ -112,7 +112,12 @@ Commit: `test: add test for [task]`
 - Minimal changes only
 - KISS, YAGNI
 
-### 3.3 Verify (with retry)
+### 3.3 Update Docs (if applicable)
+
+If this task changed anything user-facing, state which doc files need updating
+then update them (README.md, docs/, CHANGELOG.md). Skip for internal-only changes.
+
+### 3.4 Verify (with retry)
 
 ```bash
 # Run project's verification commands
@@ -128,7 +133,7 @@ Commit: `test: add test for [task]`
   - **Autonomous** (`BUILDWRIGHT_AUTO_APPROVE=true`, default): Commit completed work, push branch, exit(1). No PR for quick tasks.
   - **Interactive** (`BUILDWRIGHT_AUTO_APPROVE=false`): STOP and report blocker.
 
-### 3.4 Commit
+### 3.5 Commit
 
 ```bash
 git add [changed files]
