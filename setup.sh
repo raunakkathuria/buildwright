@@ -164,6 +164,7 @@ If ANY required step fails: fix and retry (max 2 attempts). If same error repeat
 - Never run destructive git operations without explicit instruction
 - Multi-agent safety: NEVER use git stash (other agents may be working)
 - Only `.buildwright/` is committed — never commit `.claude/` or `.opencode/` content files
+- After editing any file in `.buildwright/`, run `make sync` before committing
 
 ## Cross-Domain Features (Claw Architecture)
 When a feature touches multiple domains (e.g., DB + API + UI):
@@ -282,6 +283,13 @@ scripts/sync-agents.sh
 echo "  Synced tool-specific configs (.claude/, .opencode/, .cursor/rules/, AGENTS.md)"
 
 # ============================================================================
+# GIT HOOKS — auto-sync on .buildwright/ changes
+# ============================================================================
+
+make install-hooks
+echo "  Installed git hooks (pre-commit, post-merge, post-checkout)"
+
+# ============================================================================
 # COMPLETE
 # ============================================================================
 
@@ -305,5 +313,5 @@ echo "     /bw-new-feature \"your feature description\""
 echo "     /bw-claw \"cross-domain feature\""
 echo "     /bw-quick \"fix the bug\""
 echo ""
-echo "  After editing .buildwright/, run: scripts/sync-agents.sh"
+echo "  After editing .buildwright/, run: make sync  (or git hooks do it automatically)"
 echo "==============================================================="
