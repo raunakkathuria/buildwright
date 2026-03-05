@@ -17,6 +17,7 @@ WORKFLOW
 /bw-quick <task>         Fast path for bug fixes, small tasks, config changes
 /bw-ship                 Quality gates + release: verify → security → review → push → PR
 /bw-verify               Quick checks: typecheck, lint, test, build
+/bw-analyse              Analyse codebase: writes stack, architecture, conventions, concerns to .buildwright/codebase/
 /bw-help                 Show this command list
 
 ╔═══════════════════════════════════════════════════════════════╗
@@ -47,6 +48,7 @@ SHIP EXISTING WORK:
 ║                    WHEN TO USE WHAT                            ║
 ╚═══════════════════════════════════════════════════════════════╝
 
+  Brownfield, need codebase context  → /bw-analyse
   Single domain, needs planning     → /bw-new-feature
   Crosses multiple domains/layers   → /bw-claw
   Small task, clear scope           → /bw-quick
