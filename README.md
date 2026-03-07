@@ -102,6 +102,15 @@ Auto-approved: BUILDWRIGHT_AUTO_APPROVE=true
 
 ## Quick Start
 
+### npm (Recommended)
+
+```bash
+npm install -g buildwright
+cd my-project && buildwright init
+```
+
+Requires Node.js 18+. All templates are bundled — works offline after install. Run `buildwright update` to pull the latest commands/agents/claws from GitHub.
+
 ### For Claude Code
 
 ```bash
