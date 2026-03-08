@@ -1,4 +1,4 @@
-.PHONY: dist clean sync sync-check cursor opencode openclaw validate install-hooks uninstall-hooks
+.PHONY: dist clean sync sync-check cursor opencode openclaw validate install-hooks uninstall-hooks bump
 
 # ============================================================================
 # Sync — Generate .claude/, .opencode/, .cursor/rules/ from .buildwright/ (canonical)
@@ -62,6 +62,10 @@ uninstall-hooks:
 # ============================================================================
 # Clean
 # ============================================================================
+
+bump: ## Bump version: make bump [BUMP=patch|minor|major]
+	@chmod +x scripts/bump-version.sh
+	@scripts/bump-version.sh $(or $(BUMP),patch)
 
 clean:
 	rm -rf dist/
