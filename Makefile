@@ -1,4 +1,4 @@
-.PHONY: dist clean sync sync-check cursor opencode openclaw validate install-hooks uninstall-hooks bump
+.PHONY: dist clean sync sync-check cursor opencode openclaw validate install-hooks uninstall-hooks bump test-cli
 
 # ============================================================================
 # Sync — Generate .claude/, .opencode/, .cursor/rules/ from .buildwright/ (canonical)
@@ -66,6 +66,17 @@ uninstall-hooks:
 bump: ## Bump version: make bump [BUMP=patch|minor|major]
 	@chmod +x scripts/bump-version.sh
 	@scripts/bump-version.sh $(or $(BUMP),patch)
+
+test-cli: ## Pack and install CLI globally for local testing
+	@echo "Packing cli/..."
+	@cd cli && npm pack
+	@TARBALL=$$(ls cli/buildwright-*.tgz | tail -1) && \
+	  npm install -g "./$$TARBALL" && \
+	  rm -f "$$TARBALL"
+	@echo ""
+	@echo "✓ buildwright installed globally from local pack"
+	@echo "  Test it: cd /tmp && mkdir test-bw && cd test-bw && buildwright init"
+	@echo "  Uninstall: npm uninstall -g buildwright"
 
 clean:
 	rm -rf dist/
