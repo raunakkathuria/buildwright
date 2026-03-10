@@ -5,6 +5,12 @@
 
 set -e
 
+if ! git rev-parse --show-toplevel >/dev/null 2>&1; then
+  echo "Not inside a git repository — skipping hook installation."
+  echo "Run 'git init && make install-hooks' to enable auto-sync hooks."
+  exit 0
+fi
+
 HOOKS_SRC="$(cd "$(dirname "$0")/hooks" && pwd)"
 HOOKS_DEST="$(git rev-parse --show-toplevel)/.git/hooks"
 
