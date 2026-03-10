@@ -17,10 +17,10 @@ function init() {
   const cwd = process.cwd();
 
   // 1. Check git repo
-  if (!isGitRepo(cwd)) {
-    console.log(`${YELLOW}Warning: No git repository detected in this directory.${RESET}`);
-    console.log(`Buildwright works best inside a git repo. Run ${BOLD}git init${RESET} first, then try again.\n`);
-    process.exit(1);
+  const hasGit = isGitRepo(cwd);
+  if (!hasGit) {
+    console.log(`${YELLOW}Note: No git repository detected. Git hooks will be skipped.${RESET}`);
+    console.log(`Run ${BOLD}git init && make install-hooks${RESET} later to enable auto-sync hooks.\n`);
   }
 
   // 2. Check for existing installation
@@ -66,13 +66,15 @@ function init() {
   }
   console.log('');
 
-  // 6. Run make install-hooks
-  console.log(`${CYAN}Installing git hooks...${RESET}`);
-  const hooksOk = runInstallHooks(cwd);
-  if (!hooksOk) {
-    console.log(`${YELLOW}Warning: hook installation failed. Run ${BOLD}make install-hooks${RESET}${YELLOW} manually.${RESET}`);
+  // 6. Run make install-hooks (only if inside a git repo)
+  if (hasGit) {
+    console.log(`${CYAN}Installing git hooks...${RESET}`);
+    const hooksOk = runInstallHooks(cwd);
+    if (!hooksOk) {
+      console.log(`${YELLOW}Warning: hook installation failed. Run ${BOLD}make install-hooks${RESET}${YELLOW} manually.${RESET}`);
+    }
+    console.log('');
   }
-  console.log('');
 
   // 7. Success message
   console.log(`${GREEN}${BOLD}Buildwright is ready!${RESET}\n`);
