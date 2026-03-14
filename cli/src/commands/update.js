@@ -62,6 +62,26 @@ async function downloadAndExtract() {
   return { tmpDir, extractedRoot };
 }
 
+/**
+ * Copy files from src to dest, but only files that exist in src.
+ * Files in dest that have no counterpart in src are left untouched.
+ */
+function copyUpstreamOnly(src, dest) {
+  for (const entry of fs.readdirSync(src)) {
+    const srcEntry = path.join(src, entry);
+    const destEntry = path.join(dest, entry);
+    const stat = fs.statSync(srcEntry);
+    if (stat.isDirectory()) {
+      fs.mkdirSync(destEntry, { recursive: true });
+      copyUpstreamOnly(srcEntry, destEntry);
+    } else {
+      if (!fs.existsSync(destEntry)) {
+        fs.copyFileSync(srcEntry, destEntry);  // only new files
+      }
+    }
+  }
+}
+
 async function update() {
   const cwd = process.cwd();
 
@@ -86,7 +106,8 @@ async function update() {
       throw new Error('Downloaded archive is missing .buildwright/ directory');
     }
 
-    // Update only the specified directories
+    // Update only the specified directories — overwrite upstream files only,
+    // never delete files the user added that don't exist in the upstream source.
     for (const dir of UPDATE_DIRS) {
       const src = path.join(srcBuildwright, dir);
       const dest = path.join(cwd, '.buildwright', dir);
@@ -94,17 +115,18 @@ async function update() {
         console.log(`  ${YELLOW}Skipping ${dir}/ (not found in latest release)${RESET}`);
         continue;
       }
-      console.log(`  Updating .buildwright/${dir}/`);
-      // Remove old and replace
-      fs.rmSync(dest, { recursive: true, force: true });
-      copyDir(src, dest);
+      console.log(`  Updating .buildwright/${dir}/ (adding new files only)`);
+      fs.mkdirSync(dest, { recursive: true });
+      // Copy only files that exist in upstream — preserves user-added files
+      copyUpstreamOnly(src, dest);
     }
 
-    // Also update CLAUDE.md if it exists in the download
+    // Also add CLAUDE.md if it doesn't already exist locally
     const srcClaude = path.join(extractedRoot, 'CLAUDE.md');
-    if (fs.existsSync(srcClaude)) {
-      console.log(`  Updating CLAUDE.md`);
-      fs.copyFileSync(srcClaude, path.join(cwd, 'CLAUDE.md'));
+    const destClaude = path.join(cwd, 'CLAUDE.md');
+    if (fs.existsSync(srcClaude) && !fs.existsSync(destClaude)) {
+      console.log(`  Adding CLAUDE.md`);
+      fs.copyFileSync(srcClaude, destClaude);
     }
 
     console.log('');
@@ -118,8 +140,8 @@ async function update() {
 
     console.log('');
     console.log(`${GREEN}${BOLD}Update complete!${RESET}`);
-    console.log('commands, agents, and claws are now up to date.');
-    console.log('Your steering docs (.buildwright/steering/) are unchanged.\n');
+    console.log('commands, agents, and claws: new files added. Existing files unchanged.');
+    console.log('Your custom files and steering docs are unchanged.\n');
 
   } catch (err) {
     console.error(`\nUpdate failed: ${err.message}`);

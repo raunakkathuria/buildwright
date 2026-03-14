@@ -10,9 +10,11 @@ const path = require('path');
  * @param {string} dest - Destination directory path
  * @param {object} [opts]
  * @param {string[]} [opts.skip] - Relative paths (from src) to skip
+ * @param {boolean} [opts.skipExisting] - Skip files that already exist at dest
  */
 function copyDir(src, dest, opts = {}) {
   const skip = opts.skip || [];
+  const skipExisting = opts.skipExisting || false;
   const entries = fs.readdirSync(src, { withFileTypes: true });
   fs.mkdirSync(dest, { recursive: true });
 
@@ -32,7 +34,11 @@ function copyDir(src, dest, opts = {}) {
     if (stat.isDirectory()) {
       copyDir(realSrcPath, destPath, opts);
     } else {
-      fs.copyFileSync(realSrcPath, destPath);
+      if (skipExisting && fs.existsSync(destPath)) {
+        // leave existing file untouched
+      } else {
+        fs.copyFileSync(realSrcPath, destPath);
+      }
     }
   }
 }
