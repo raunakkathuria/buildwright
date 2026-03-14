@@ -46,11 +46,15 @@ function init() {
     const stat = fs.statSync(fs.realpathSync(src));
 
     if (stat.isDirectory()) {
-      console.log(`  Copying ${entry}/`);
-      copyDir(src, dest);
+      console.log(`  Copying ${entry}/ (adding new files only)`);
+      copyDir(src, dest, { skipExisting: true });
     } else {
-      console.log(`  Copying ${entry}`);
-      fs.copyFileSync(fs.realpathSync(src), dest);
+      if (fs.existsSync(dest)) {
+        console.log(`  Skipping ${entry} (already exists)`);
+      } else {
+        console.log(`  Copying ${entry}`);
+        fs.copyFileSync(fs.realpathSync(src), dest);
+      }
     }
   }
 
