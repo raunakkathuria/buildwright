@@ -2,37 +2,30 @@
 /**
  * postpack.js — Run after `npm pack` or `npm publish`.
  *
- * Restores the symlinks in cli/templates/ that were replaced with real
- * files by prepack.js, so the development setup stays in sync with the
- * canonical source files.
+ * Restores the templates/ entries that prepack.js replaced with real copies.
+ * Uses `git checkout` to restore the originals, which correctly handles both:
+ *   - core.symlinks=true  → restores as real symlinks
+ *   - core.symlinks=false → restores as text stub files
  */
 'use strict';
 
+const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-const templatesDir = path.join(__dirname, '..', 'templates');
-const symlinkMapFile = path.join(__dirname, '..', '.symlink-map.json');
+const cliDir = path.join(__dirname, '..');
+const symlinkMapFile = path.join(cliDir, '.symlink-map.json');
 
 if (!fs.existsSync(symlinkMapFile)) {
   console.log('postpack: .symlink-map.json not found — nothing to restore.');
   process.exit(0);
 }
 
-const symlinkMap = JSON.parse(fs.readFileSync(symlinkMapFile, 'utf8'));
-
-for (const [entry, linkTarget] of Object.entries(symlinkMap)) {
-  const entryPath = path.join(templatesDir, entry);
-
-  if (fs.existsSync(entryPath)) {
-    console.log(`  Removing real copy: templates/${entry}`);
-    fs.rmSync(entryPath, { recursive: true, force: true });
-  }
-
-  console.log(`  Restoring symlink: templates/${entry} -> ${linkTarget}`);
-  fs.symlinkSync(linkTarget, entryPath);
+try {
+  execSync('git checkout -- templates/', { cwd: cliDir, stdio: 'inherit' });
+  console.log('postpack: templates/ restored from git.');
+} catch (err) {
+  console.warn('postpack: git checkout failed — templates/ may need manual restore.');
 }
 
-// Clean up the map file
 fs.unlinkSync(symlinkMapFile);
-console.log('postpack: symlinks restored.');
