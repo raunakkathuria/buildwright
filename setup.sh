@@ -271,7 +271,7 @@ echo "  Created .github/workflows/quality-gates.yml"
 # ENVIRONMENT VARIABLES
 # ============================================================================
 
-curl -sL "$BASE_URL/env.example" > .env.example
+curl -sL "$BASE_URL/.env.example" > .env.example
 echo "  Created .env.example"
 
 # ============================================================================
