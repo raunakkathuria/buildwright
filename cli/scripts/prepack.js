@@ -2,10 +2,13 @@
 /**
  * prepack.js — Run before `npm pack` or `npm publish`.
  *
- * npm pack does not follow symlinks pointing outside the package root.
- * This script resolves each symlink in cli/templates/ to a real copy of its
- * target, so `npm pack` bundles actual content. Run postpack.js after
- * packing to restore the symlinks for development.
+ * When git core.symlinks=true  → templates/ entries are real symlinks.
+ * When git core.symlinks=false → templates/ entries are text files whose
+ *   entire content is the symlink target path (e.g. "../../scripts").
+ *
+ * In both cases npm pack does not follow directory symlinks outside the
+ * package root, so this script resolves each entry to a real copy of its
+ * target before packing. postpack.js restores the originals afterwards.
  */
 'use strict';
 
@@ -35,21 +38,33 @@ for (const entry of entries) {
   const entryPath = path.join(templatesDir, entry);
   const lstat = fs.lstatSync(entryPath);
 
+  let linkTarget = null;
+
   if (lstat.isSymbolicLink()) {
-    const linkTarget = fs.readlinkSync(entryPath);
-    const realTarget = path.resolve(path.dirname(entryPath), linkTarget);
-
-    console.log(`  Resolving symlink: templates/${entry} -> ${linkTarget}`);
-
-    // Save the link target so postpack.js can restore it
-    symlinkMap[entry] = linkTarget;
-
-    // Remove the symlink and copy real content
-    fs.unlinkSync(entryPath);
-    copyRecursive(realTarget, entryPath);
+    // core.symlinks=true: real symlink
+    linkTarget = fs.readlinkSync(entryPath);
+  } else if (lstat.isFile()) {
+    // core.symlinks=false: git stores symlinks as text files containing the target path
+    const content = fs.readFileSync(entryPath, 'utf8').trim();
+    if (/^\.\.\//.test(content) && !content.includes('\n')) {
+      linkTarget = content;
+    }
   }
+
+  if (!linkTarget) continue;
+
+  const realTarget = path.resolve(path.dirname(entryPath), linkTarget);
+  if (!fs.existsSync(realTarget)) {
+    console.warn(`  Warning: target not found for templates/${entry} -> ${linkTarget}`);
+    continue;
+  }
+
+  console.log(`  Resolving: templates/${entry} -> ${linkTarget}`);
+  symlinkMap[entry] = linkTarget;
+
+  fs.rmSync(entryPath, { recursive: true, force: true });
+  copyRecursive(realTarget, entryPath);
 }
 
-// Write the symlink map so postpack.js can restore
 fs.writeFileSync(symlinkMapFile, JSON.stringify(symlinkMap, null, 2));
-console.log(`prepack: templates/ resolved to real files. Map saved to .symlink-map.json`);
+console.log(`prepack: templates/ resolved. Map saved to .symlink-map.json`);
