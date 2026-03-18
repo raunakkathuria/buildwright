@@ -125,7 +125,9 @@ Flow: Architect analyzes → Decomposes into claw tasks → Defines interface co
 
 ### /bw-quick \<task\>
 
-Fast path for bug fixes and small tasks (<2 hrs). No spec, no approval step.
+Fast path for bug fixes and small tasks (<2 hrs). No spec, no approval step. Runs security scan and code review on the changed diff before committing.
+
+Flow: Understand → Research → TDD → Verify → Security scan → Code review → Commit
 
 ```
 /bw-quick "Fix the login timeout bug"
