@@ -96,7 +96,7 @@ If ANY required step fails: fix and retry (max 2 attempts). If same error repeat
 - Multi-agent safety: NEVER use git stash (other agents may be working)
 - Only `.buildwright/` is committed — never commit `.claude/` or `.opencode/` content files
 - After editing any file in `.buildwright/`, run `make sync` before committing
-- Before committing, update README.md, docs/, or CHANGELOG.md if the change affects user-facing behavior
+- Before committing, update README.md, SKILL.md, docs/, or CHANGELOG.md if the change affects user-facing behavior
 
 ## Cross-Domain Features (Claw Architecture)
 When a feature touches multiple domains (e.g., DB + API + UI):
