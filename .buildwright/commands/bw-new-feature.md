@@ -446,7 +446,7 @@ and update them. Common candidates:
 
 - **README.md** — new commands, env vars, setup steps, or usage changed
 - **docs/** — any guides or API reference covering the changed functionality
-- **CHANGELOG.md** — if the project maintains one
+- **CHANGELOG.md** — add an entry for any user-facing change
 
 State up front which files you will update (e.g. "Updating README.md: adding env var X").
 Skip entirely if nothing user-facing changed (internal refactor, test-only changes).

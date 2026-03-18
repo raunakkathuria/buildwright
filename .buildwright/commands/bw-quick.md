@@ -31,7 +31,9 @@ Fast path for ad-hoc tasks that don't need full planning.
 │  2. Quick research (relevant files only)                    │
 │  3. Implement with TDD                                      │
 │  4. Verify (typecheck, lint, test, build)                   │
-│  5. Commit                                                  │
+│  5. Security (OWASP + secrets + dependencies)               │
+│  6. Code Review (Staff Engineer)                            │
+│  7. Commit                                                  │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -112,10 +114,23 @@ Commit: `test: add test for [task]`
 - Minimal changes only
 - KISS, YAGNI
 
-### 3.3 Update Docs (if applicable)
+### 3.3 Update Documentation
 
-If this task changed anything user-facing, state which doc files need updating
-then update them (README.md, docs/, CHANGELOG.md). Skip for internal-only changes.
+Based on what you just implemented, identify which documentation files are affected and update them.
+
+Common candidates:
+- **README.md** — new behaviour, changed commands, updated flags, usage examples
+- **docs/** — any guides or reference covering the changed functionality
+- **CHANGELOG.md** — add an entry for any user-facing change
+
+State up front which files you will update (e.g. "Updating README.md: correcting pipeline steps").
+Skip entirely if nothing user-facing changed (internal refactor, test-only changes).
+
+If docs were updated, commit them separately before the next step:
+```bash
+git add [doc files]
+git commit -m "docs: update documentation for [task]"
+```
 
 ### 3.4 Verify (with retry)
 
@@ -133,7 +148,68 @@ then update them (README.md, docs/, CHANGELOG.md). Skip for internal-only change
   - **Autonomous** (`BUILDWRIGHT_AUTO_APPROVE=true`, default): Commit completed work, push branch, exit(1). No PR for quick tasks.
   - **Interactive** (`BUILDWRIGHT_AUTO_APPROVE=false`): STOP and report blocker.
 
-### 3.5 Commit
+### 3.5 Security Review
+
+Adopt Security Engineer persona from `.buildwright/agents/security-engineer.md`.
+
+Scope: `git diff HEAD` (uncommitted changes only).
+
+Run automated scans:
+- Dependency vulnerabilities (stack-appropriate audit tool) — skip gracefully if unavailable
+- Secrets detection (pattern scan for API keys, passwords, tokens, private keys)
+- SAST (`semgrep --config p/owasp-top-ten .` if available — skip gracefully if unavailable)
+
+Then perform manual OWASP Top 10 review of changed files only.
+
+**If CRITICAL vulnerabilities found → Handle failure:**
+- **Autonomous** (`BUILDWRIGHT_AUTO_APPROVE=true`, default): Commit completed work, push branch, exit(1).
+- **Interactive** (`BUILDWRIGHT_AUTO_APPROVE=false`): STOP immediately.
+
+```
+╔═══════════════════════════════════════════════════════════════╗
+║  SECURITY                                                     ║
+╠═══════════════════════════════════════════════════════════════╣
+║  Dependencies:  ✅/❌  ([N] vulnerabilities)                   ║
+║  Secrets:       ✅/❌  ([N] found)                             ║
+║  OWASP Scan:    ✅/❌  ([N] issues)                            ║
+╠═══════════════════════════════════════════════════════════════╣
+║  Status: SECURE / CRITICAL VULNERABILITIES                    ║
+╚═══════════════════════════════════════════════════════════════╝
+```
+
+---
+
+### 3.6 Code Review
+
+Adopt Staff Engineer persona from `.buildwright/agents/staff-engineer.md`.
+
+Scope: `git diff HEAD` (same diff as security step).
+
+Review changed code for:
+- Logic errors and edge cases
+- Error handling completeness
+- Missing validation at system boundaries
+- Unnecessary complexity introduced
+
+**If CHANGES REQUESTED → Handle failure:**
+- **Autonomous** (`BUILDWRIGHT_AUTO_APPROVE=true`, default): Commit completed work, push branch, exit(1).
+- **Interactive** (`BUILDWRIGHT_AUTO_APPROVE=false`): STOP immediately.
+
+```
+╔═══════════════════════════════════════════════════════════════╗
+║  CODE REVIEW                                                  ║
+╠═══════════════════════════════════════════════════════════════╣
+║  Logic:          ✅/❌                                         ║
+║  Error Handling: ✅/❌                                         ║
+║  Validation:     ✅/❌                                         ║
+╠═══════════════════════════════════════════════════════════════╣
+║  Status: APPROVED / CHANGES REQUESTED                         ║
+╚═══════════════════════════════════════════════════════════════╝
+```
+
+---
+
+### 3.7 Commit
 
 ```bash
 git add [changed files]
@@ -167,13 +243,15 @@ Commit types:
 ║  ✅ Lint                                                      ║
 ║  ✅ Tests                                                     ║
 ║  ✅ Build                                                     ║
+║  ✅ Security                                                  ║
+║  ✅ Code Review                                               ║
 ║                                                               ║
 ║  Commit: [hash] [message]                                     ║
 ║                                                               ║
 ╠═══════════════════════════════════════════════════════════════╣
 ║                                                               ║
 ║  Ready to push? Run: git push                                 ║
-║  Or run /bw-ship for full security + code review                 ║
+║  Or run /bw-ship to push + open PR                              ║
 ║                                                               ║
 ╚═══════════════════════════════════════════════════════════════╝
 ```
@@ -238,8 +316,8 @@ If during implementation you discover:
 |--------|--------|--------------|
 | Research | Quick (in-context) | Full (research.md) |
 | Spec | None | Full spec.md |
-| Staff Engineer Review | None | Spec + Code |
-| Security Review | Optional (via /bw-ship) | Required |
+| Staff Engineer Review | Required (diff-scoped) | Spec + Code |
+| Security Review | Required (diff-scoped) | Required |
 | Estimated Time | < 2 hours | Any |
 | Scope | Clear, bounded | Any |
 | Commits | 1-2 | Per milestone |
