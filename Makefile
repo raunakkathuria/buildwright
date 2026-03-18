@@ -1,4 +1,4 @@
-.PHONY: dist clean sync sync-check cursor opencode openclaw validate install-hooks uninstall-hooks bump test-cli
+.PHONY: dist clean sync sync-check cursor opencode openclaw validate install-hooks uninstall-hooks bump release test-cli
 
 # ============================================================================
 # Sync — Generate .claude/, .opencode/, .cursor/rules/ from .buildwright/ (canonical)
@@ -63,9 +63,13 @@ uninstall-hooks:
 # Clean
 # ============================================================================
 
-bump: ## Bump version: make bump [BUMP=patch|minor|major]
+bump: ## Bump version files only (no git ops): make bump [BUMP=patch|minor|major]
 	@chmod +x scripts/bump-version.sh
 	@scripts/bump-version.sh $(or $(BUMP),patch)
+
+release: ## Full release: bump, commit, tag, push, GitHub release, npm publish: make release [BUMP=patch|minor|major]
+	@chmod +x scripts/release.sh
+	@scripts/release.sh $(or $(BUMP),patch)
 
 test-cli: ## Pack and install CLI globally for local testing
 	@echo "Packing cli/..."
