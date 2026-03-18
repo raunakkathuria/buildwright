@@ -19,16 +19,20 @@ flowchart TD
       F --> G["3. VALIDATE<br>Staff Engineer review (auto)"]
       G --> H["4. APPROVE<br>Human or auto<br>(BUILDWRIGHT_AUTO_APPROVE)"]
       H --> I["5. BUILD<br>TDD per milestone<br>→ verify after each"]
-      I --> J["6. SHIP"]
-      J --> K[Verify]
-      K --> L[Security]
-      L --> M[Review]
-      M --> N["PR Ready ✓"]
+      I --> J["6.5 UPDATE DOCS<br>README · CHANGELOG · docs/"]
+      J --> K["7. SHIP"]
+      K --> L[Verify]
+      L --> M[Security]
+      M --> N[Review]
+      N --> O["PR Ready ✓"]
 
       P["/bw-quick"] --> Q[Quick research]
       Q --> R[Implement TDD]
       R --> S[Verify]
-      S --> T["PR Ready ✓"]
+      S --> U[Security]
+      U --> V[Code Review]
+      V --> W[Update Docs]
+      W --> T["Commit Ready ✓"]
 ```
 
 > If anything fails → commit completed work, push, PR with failure report, exit(1). No orphaned branches.
@@ -196,9 +200,9 @@ Cursor rules are generated automatically in `.cursor/rules/` by the sync step. O
 |----------|----------|-----|
 | New feature, unclear scope | `/bw-new-feature` | Research prevents building the wrong thing |
 | New feature, clear scope | `/bw-new-feature` | Spec creates audit trail + validation |
-| Bug fix | `/bw-quick` | Fast path, no ceremony needed |
-| Small task (< 2 hrs) | `/bw-quick` | Overhead not justified |
-| Config change | `/bw-quick` | Minimal risk, quick verification |
+| Bug fix | `/bw-quick` | Fast path with full quality gates |
+| Small task (< 2 hrs) | `/bw-quick` | Lightweight planning, full quality gates |
+| Config change | `/bw-quick` | Quick path with security scan + code review |
 | Refactor, clear scope | `/bw-quick` | You already know what to change |
 | Refactor, unclear scope | `/bw-new-feature` | Research phase prevents breaking things |
 | Unfamiliar / brownfield codebase | `/bw-analyse` | Generates stack, architecture, conventions, and concerns docs so every session starts with real context |
@@ -406,7 +410,7 @@ No. `/bw-ship` handles security review and code review automatically using Staff
 - **Interactive mode** (`BUILDWRIGHT_AUTO_APPROVE=false`): STOP immediately — human fixes in-session.
 
 ### Can I skip security review?
-No. `/bw-ship` chains all steps. Use `/bw-verify` for quick checks during development.
+No. Both `/bw-ship` and `/bw-quick` include mandatory security and code review steps. Use `/bw-verify` for quick checks during active development, before committing.
 
 ### How do I add project-specific rules?
 Add to `CLAUDE.md` under "Learned Patterns" or create a new agent.

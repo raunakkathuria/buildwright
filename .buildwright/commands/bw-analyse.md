@@ -29,7 +29,10 @@ Skip when:
 </when_to_use>
 
 <process>
-1. If `.buildwright/codebase/` already has files, ask: refresh or skip?
+1. Check `.buildwright/codebase/`:
+   - If empty or missing → proceed to Step 2.
+   - If it already has files AND `BUILDWRIGHT_AUTO_APPROVE=true` → refresh automatically (overwrite all docs), proceed to Step 2.
+   - If it already has files AND `BUILDWRIGHT_AUTO_APPROVE=false` → ask the user: "Codebase docs already exist. Refresh (overwrite) or skip?"
 2. Create `.buildwright/codebase/` if it does not exist
 3. Explore and write STACK.md
    - Read package.json / Cargo.toml / go.mod / pyproject.toml (whichever exists)
@@ -52,11 +55,12 @@ Skip when:
    - Note missing tests, security gaps, fragile areas
    - Write `.buildwright/codebase/CONCERNS.md`
 7. Update `.buildwright/steering/tech.md`:
-   - Replace placeholder in ## Stack with discovered languages, runtime, frameworks
-   - Replace placeholder in ## Architecture with 3-5 line summary
-   - Replace placeholder in ## Code Patterns with top 3 patterns from CONVENTIONS.md
-   - Replace placeholder in ## Dependencies with key packages and their purpose
-   - Leave ## Project Commands unchanged if already populated; populate if still placeholder
+   - If the file does not exist, create it using the standard template (## Stack, ## Project Commands, ## Architecture, ## Code Patterns, ## Dependencies sections with placeholder values), then proceed.
+   - Replace placeholder in ## Stack with discovered languages, runtime, frameworks.
+   - Replace placeholder in ## Architecture with 3-5 line summary.
+   - Replace placeholder in ## Code Patterns with top 3 patterns from CONVENTIONS.md.
+   - Replace placeholder in ## Dependencies with key packages and their purpose.
+   - Leave ## Project Commands unchanged if already populated; populate if still a placeholder.
 8. Run `scripts/sync-agents.sh` to propagate codebase docs to all tool directories
 9. Commit: `chore: add codebase analysis to .buildwright/codebase/`
 10. Report: list 4 docs with line counts, summarise key findings, suggest next step
