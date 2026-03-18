@@ -16,7 +16,7 @@ make bump BUMP="$BUMP"
 NEW_VERSION=$(node -p "require('./cli/package.json').version")
 
 # Step 2: commit version files
-git add cli/package.json SKILL.md
+git add cli/package.json cli/package-lock.json SKILL.md
 git commit -m "chore: bump version to v$NEW_VERSION"
 
 # Step 3: annotated tag
