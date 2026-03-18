@@ -153,7 +153,7 @@ Quick checks only: typecheck → lint → test → build.
 
 ### /bw-analyse
 
-Analyse an existing codebase and write structured docs to `.buildwright/codebase/`. Updates `tech.md` with the discovered stack and commands. Run this first on any brownfield project to give every subsequent session real context.
+Analyse an existing codebase and write structured docs to `.buildwright/codebase/`. Creates docs from scratch if missing; auto-refreshes existing docs when `BUILDWRIGHT_AUTO_APPROVE=true` (only asks in interactive mode). Creates `tech.md` from template if it doesn't exist, then populates it with the discovered stack and commands. Run this first on any brownfield project to give every subsequent session real context.
 
 ```
 /bw-analyse
