@@ -219,7 +219,9 @@ Cursor rules are generated automatically in `.cursor/rules/` by the sync step. O
 |---------|---------|
 | `/bw-analyse` | Analyse codebase: writes stack, architecture, conventions, concerns to `.buildwright/codebase/`, updates `tech.md` |
 | `/bw-new-feature` | Full pipeline: research → spec → approve → build → ship |
+| `/bw-claw` | Multi-agent: architect decomposes → claws execute per domain |
 | `/bw-quick` | Fast path for bug fixes, small tasks |
+| `/bw-plan` | Research a question, produce a written deliverable — no implementation, no commits |
 | `/bw-ship` | Quality gates + release: verify → security → review → push → PR |
 | `/bw-verify` | Quick checks: typecheck, lint, test, build |
 | `/bw-help` | Show available commands |
@@ -307,13 +309,14 @@ your-project/
 │   │   ├── CONVENTIONS.md
 │   │   └── CONCERNS.md
 │   ├── commands/                  # Slash commands
-│   │   ├── bw-new-feature.md
+│   │   ├── bw-analyse.md
 │   │   ├── bw-claw.md
+│   │   ├── bw-new-feature.md
+│   │   ├── bw-plan.md
 │   │   ├── bw-quick.md
 │   │   ├── bw-ship.md
 │   │   ├── bw-verify.md
-│   │   ├── bw-help.md
-│   │   └── bw-analyse.md
+│   │   └── bw-help.md
 │   ├── steering/                  # Project context
 │   │   ├── product.md
 │   │   ├── tech.md

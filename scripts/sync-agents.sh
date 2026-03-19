@@ -291,4 +291,10 @@ else
   echo "  .buildwright/ → .cursor/rules/   (.mdc with frontmatter)"
   echo "  CLAUDE.md     → AGENTS.md"
   echo "  SKILL.md      → dist/buildwright/SKILL.md"
+
+  # Validate all commands are documented in SKILL.md and README.md
+  if [ -f "scripts/validate-docs.sh" ]; then
+    echo ""
+    bash scripts/validate-docs.sh || true
+  fi
 fi
