@@ -1,3 +1,12 @@
+---
+name: bw-plan
+description: Research a question or topic and produce a written deliverable — no implementation, no commits
+arguments:
+  - name: question
+    description: A question, topic, or path to a structured task file (.md)
+    required: true
+---
+
 # /bw-plan — Research and Planning Without Implementation
 
 ## When to use
