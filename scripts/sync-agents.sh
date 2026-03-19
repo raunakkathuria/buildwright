@@ -261,7 +261,21 @@ sync_cursor_dir ".buildwright/agents"    "agents"    "agent"
 sync_cursor_dir ".buildwright/claws"     "claws"     "claw"
 
 # ============================================================================
-# 5. Package for ClawHub (dist/)
+# 5. .buildwright/commands/ → skills/ (Codex CLI skill discovery)
+# ============================================================================
+
+if [ "$CHECK_ONLY" = false ]; then
+  for file in .buildwright/commands/bw-*.md; do
+    [ -f "$file" ] || continue
+    name=$(basename "$file" .md)
+    mkdir -p "skills/$name"
+    cp "$file" "skills/$name/SKILL.md"
+    echo "  synced $file → skills/$name/SKILL.md"
+  done
+fi
+
+# ============================================================================
+# 6. Package for ClawHub (dist/)
 # ============================================================================
 
 if [ "$CHECK_ONLY" = false ] && [ -f "SKILL.md" ]; then
@@ -291,4 +305,11 @@ else
   echo "  .buildwright/ → .cursor/rules/   (.mdc with frontmatter)"
   echo "  CLAUDE.md     → AGENTS.md"
   echo "  SKILL.md      → dist/buildwright/SKILL.md"
+  echo "  .buildwright/commands/ → skills/          (Codex CLI skill discovery)"
+
+  # Validate all commands are documented in SKILL.md and README.md
+  if [ -f "scripts/validate-docs.sh" ]; then
+    echo ""
+    bash scripts/validate-docs.sh || true
+  fi
 fi

@@ -5,6 +5,7 @@ const { Command } = require('commander');
 const { init } = require('../src/commands/init');
 const { update } = require('../src/commands/update');
 const { sync } = require('../src/commands/sync');
+const { commands } = require('../src/commands/commands');
 
 const pkg = require('../package.json');
 
@@ -34,6 +35,13 @@ program
   .description('Re-sync .buildwright/ to .claude/, .opencode/, and .cursor/rules/')
   .action(() => {
     sync();
+  });
+
+program
+  .command('commands')
+  .description('List available agent slash commands (/bw-*)')
+  .action(() => {
+    commands();
   });
 
 program.parse(process.argv);

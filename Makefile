@@ -1,4 +1,4 @@
-.PHONY: dist clean sync sync-check cursor opencode openclaw validate install-hooks uninstall-hooks bump release test-cli
+.PHONY: dist clean sync sync-check cursor opencode openclaw codex validate install-hooks uninstall-hooks bump release test-cli
 
 # ============================================================================
 # Sync — Generate .claude/, .opencode/, .cursor/rules/ from .buildwright/ (canonical)
@@ -38,6 +38,13 @@ openclaw: sync
 	@mkdir -p ~/.openclaw/skills/buildwright
 	@cp SKILL.md ~/.openclaw/skills/buildwright/SKILL.md
 	@echo "Installed to ~/.openclaw/skills/buildwright/"
+
+# Codex CLI — install skills for native skill discovery
+codex: sync
+	@mkdir -p ~/.agents/skills
+	@ln -sfn $(PWD)/skills ~/.agents/skills/buildwright
+	@echo "Installed to ~/.agents/skills/buildwright"
+	@echo "Restart Codex to discover Buildwright skills."
 
 # ============================================================================
 # Validate SKILL.md against Agent Skills spec (agentskills.io)
