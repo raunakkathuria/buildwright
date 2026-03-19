@@ -71,6 +71,17 @@ Continue with /bw-quick anyway? (say "continue" or use /bw-new-feature)
 
 **Lightweight research - only what's needed for this task.**
 
+**First, check for pre-analysed codebase docs:**
+
+```bash
+ls .buildwright/codebase/ 2>/dev/null
+```
+
+If present, read `CONVENTIONS.md` and `ARCHITECTURE.md` — they give you naming patterns
+and layer boundaries without scanning the whole codebase. Check `CONCERNS.md` to avoid
+introducing more of the same issues. Then narrow your search to the specific files for
+this task.
+
 ```bash
 # Find directly relevant files
 grep -r "[relevant terms]" --include="*.ts" --include="*.tsx" -l .

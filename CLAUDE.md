@@ -98,6 +98,7 @@ If ANY required step fails: fix and retry (max 2 attempts). If same error repeat
 - Only `.buildwright/` is committed — never commit `.claude/` or `.opencode/` content files
 - After editing any file in `.buildwright/`, run `make sync` before committing
 - Before committing, update README.md, SKILL.md, docs/, or CHANGELOG.md if the change affects user-facing behavior
+- After editing any `.buildwright/commands/` file, run `make sync` — it automatically checks that every command is documented in README.md and SKILL.md and warns about gaps
 
 ## Cross-Domain Features (Claw Architecture)
 When a feature touches multiple domains (e.g., DB + API + UI):
