@@ -285,6 +285,15 @@ if [ "$CHECK_ONLY" = false ] && [ -f "SKILL.md" ]; then
 fi
 
 # ============================================================================
+# 7. README.md → cli/README.md (single source of truth for npm package page)
+# ============================================================================
+
+if [ "$CHECK_ONLY" = false ] && [ -f "README.md" ]; then
+  cp README.md cli/README.md
+  echo "  README.md → cli/README.md"
+fi
+
+# ============================================================================
 # Result
 # ============================================================================
 
@@ -306,6 +315,7 @@ else
   echo "  CLAUDE.md     → AGENTS.md"
   echo "  SKILL.md      → dist/buildwright/SKILL.md"
   echo "  .buildwright/commands/ → skills/          (Codex CLI skill discovery)"
+  echo "  README.md     → cli/README.md             (npm package page)"
 
   # Validate all commands are documented in SKILL.md and README.md
   if [ -f "scripts/validate-docs.sh" ]; then

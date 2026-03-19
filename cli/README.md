@@ -1,81 +1,437 @@
-# buildwright
+# Buildwright
 
-Agent-first autonomous development workflow. Ship code you don't read.
+**Ship code you don't read. Let automated systems be your reviewer.**
 
-## Install
+An agent-first autonomous development workflow where humans approve specifications and agents handle everything else — implementation, testing, security review, code review, and shipping.
 
-```bash
-npm install -g buildwright
+---
+
+## The Flow
+
+```mermaid
+flowchart TD
+      A["/bw-new-feature"] --> B{Greenfield?}
+      B -- Yes --> C[Ask product vision<br>Derive tech stack from vision]
+      C --> D
+      B -- No --> D["1. RESEARCH<br>Deep-read codebase"]
+      D --> E["1.5. RESOLVE AMBIGUITIES<br>Auto-decide or ask user<br>(BUILDWRIGHT_AUTO_APPROVE)"]
+      E --> F["2. PLAN<br>Generate spec"]
+      F --> G["3. VALIDATE<br>Staff Engineer review (auto)"]
+      G --> H["4. APPROVE<br>Human or auto<br>(BUILDWRIGHT_AUTO_APPROVE)"]
+      H --> I["5. BUILD<br>TDD per milestone<br>→ verify after each"]
+      I --> J["6.5 UPDATE DOCS<br>README · CHANGELOG · docs/"]
+      J --> K["7. SHIP"]
+      K --> L[Verify]
+      L --> M[Security]
+      M --> N[Review]
+      N --> O["PR Ready ✓"]
+
+      P["/bw-quick"] --> Q[Quick research]
+      Q --> R[Implement TDD]
+      R --> S[Verify]
+      S --> U[Security]
+      U --> V[Code Review]
+      V --> W[Update Docs]
+      W --> T["Commit Ready ✓"]
 ```
 
-Requires Node.js 18+.
+> If anything fails → commit completed work, push, PR with failure report, exit(1). No orphaned branches.
+
+---
+
+## Greenfield Projects
+
+Starting a new project? Buildwright handles it:
+
+```
+/bw-new-feature "Add product catalog with search"
+
+> "This looks like a new project. What is the product vision, and do you have
+> any tech constraints (team expertise, deployment environment, integrations,
+> compliance)?"
+E-commerce platform for handmade crafts. Team knows Python. Deploying to AWS Lambda.
+
+> [AI generates steering docs + spec]
+> [Derives and presents tech stack for approval]
+
+PROPOSED TECH STACK
+───────────────────
+[Stack derived from your product vision and constraints]
+Chosen because: [2-3 sentences linking requirements to stack]
+Alternatives considered: [brief list]
+
+Reply "approved" to proceed with this stack.
+Or adjust: "approved, but use PostgreSQL instead of DynamoDB"
+```
+
+One question. One approval. Tech stack + spec reviewed together.
+
+---
+
+## Autonomous Mode
+
+Want fully autonomous operation? Skip human approval entirely:
+
+```bash
+# Set environment variable
+export BUILDWRIGHT_AUTO_APPROVE=true
+
+# Then run as usual
+/bw-new-feature "Add user authentication"
+```
+
+**What happens:**
+- Research, plan, validate still run (quality preserved)
+- Spec documents committed to git BEFORE implementation
+- No approval wait — proceeds directly to build
+- Full audit trail in version control
+
+```
+docs(spec): add specification for user-auth
+
+- research.md: codebase analysis
+- spec.md: implementation plan
+- Validated by Staff Engineer agent
+
+Auto-approved: BUILDWRIGHT_AUTO_APPROVE=true
+```
+
+**Use autonomous mode when:**
+- You trust the workflow for routine features
+- Running in CI/CD pipelines
+- Batch processing multiple features
+- You want to review specs via git history instead of real-time
+
+---
 
 ## Quick Start
 
+### npm (Recommended)
+
 ```bash
-# Navigate to your project
-cd my-project
-git init  # if not already a git repo
+npm install -g buildwright
+cd my-project && buildwright init
+```
 
-# Set up Buildwright
-buildwright init
+Requires Node.js 18+. All templates are bundled — works offline after install. Run `buildwright update` to pull the latest commands/agents/claws from GitHub.
 
-# Customize for your project
-nano .buildwright/steering/product.md   # add product context
-nano .buildwright/steering/tech.md      # add tech stack + commands
+### For Claude Code
+
+```bash
+# Add to any project
+curl -sL https://raw.githubusercontent.com/raunakkathuria/buildwright/main/setup.sh | bash
+
+# Customize steering docs
+nano .buildwright/steering/product.md   # Your product context
+nano .buildwright/steering/tech.md      # Your tech stack
 
 # Start building
 claude
-> /bw-new-feature "Add user authentication"
+> /bw-new-feature "Add user authentication with OAuth2"
 ```
+
+### For an existing clone
+
+```bash
+# After cloning the repo, generate tool-specific configs
+make sync
+
+# This creates:
+#   .claude/        (commands, agents, claws, steering — from .buildwright/)
+#   .opencode/      (commands, agents, claws, steering — from .buildwright/)
+#   .cursor/rules/  (commands, agents, claws, steering — from .buildwright/)
+#   AGENTS.md       (from CLAUDE.md — for OpenCode compatibility)
+
+# Install git hooks to auto-sync on .buildwright/ changes
+make install-hooks
+```
+
+### For OpenClaw
+
+The recommended approach is to run the setup script, which installs the full workflow (commands, agents, claws, steering docs) into your project:
+
+```bash
+curl -sL https://raw.githubusercontent.com/raunakkathuria/buildwright/main/setup.sh | bash
+make sync
+```
+
+Alternatively, install just the skill globally for reference across all projects:
+
+```bash
+mkdir -p ~/.openclaw/skills/buildwright
+curl -s https://raw.githubusercontent.com/raunakkathuria/buildwright/main/SKILL.md > ~/.openclaw/skills/buildwright/SKILL.md
+```
+
+> **Note:** The global skill install provides buildwright's workflow guidance via SKILL.md. The slash commands (`/bw-new-feature`, `/bw-claw`, etc.) require the full project setup above.
+
+### For OpenCode
+
+Same as above — run the setup script for the full workflow:
+
+```bash
+curl -sL https://raw.githubusercontent.com/raunakkathuria/buildwright/main/setup.sh | bash
+make sync
+```
+
+Or install the skill globally:
+
+```bash
+mkdir -p ~/.config/opencode/skills/buildwright
+curl -s https://raw.githubusercontent.com/raunakkathuria/buildwright/main/SKILL.md > ~/.config/opencode/skills/buildwright/SKILL.md
+```
+
+> **Note:** The global skill install provides buildwright's workflow guidance via SKILL.md. The slash commands require the full project setup.
+
+### For Cursor
+
+Same setup — run the setup script for the full workflow:
+
+```bash
+curl -sL https://raw.githubusercontent.com/raunakkathuria/buildwright/main/setup.sh | bash
+```
+
+Cursor rules are generated automatically in `.cursor/rules/` by the sync step. Open the project in Cursor — steering rules apply always, commands/agents/claws apply intelligently.
+
+### For Codex CLI
+
+Buildwright skills are discovered by Codex via `~/.agents/skills/`. After cloning:
+
+```bash
+cd ~/.codex/buildwright && make codex
+# Creates: ~/.agents/skills/buildwright → skills/
+```
+
+Or follow the detailed guide in [`.codex/INSTALL.md`](.codex/INSTALL.md).
+
+Each `bw-*` command is available as a Codex skill. `AGENTS.md` (generated by `make sync`) is also read automatically by Codex at the project level.
+
+---
+
+## When to Use What
+
+| Scenario | Approach | Why |
+|----------|----------|-----|
+| New feature, unclear scope | `/bw-new-feature` | Research prevents building the wrong thing |
+| New feature, clear scope | `/bw-new-feature` | Spec creates audit trail + validation |
+| Bug fix | `/bw-quick` | Fast path with full quality gates |
+| Small task (< 2 hrs) | `/bw-quick` | Lightweight planning, full quality gates |
+| Config change | `/bw-quick` | Quick path with security scan + code review |
+| Refactor, clear scope | `/bw-quick` | You already know what to change |
+| Refactor, unclear scope | `/bw-new-feature` | Research phase prevents breaking things |
+| Unfamiliar / brownfield codebase | `/bw-analyse` | Generates stack, architecture, conventions, and concerns docs so every session starts with real context |
+| Greenfield project | `/bw-new-feature` | Auto-generates steering docs + tech stack |
+| Prototype / spike | Just code it | Ceremony kills exploration speed |
+| One-off script | Just code it | No need for spec, review, or CI |
+| Learning / experimenting | Just code it | Pipeline adds friction to discovery |
+
+---
 
 ## Commands
 
-| Command | Description |
-|---------|-------------|
-| `buildwright init` | Set up Buildwright in the current project |
-| `buildwright update` | Update commands/agents/claws from GitHub (preserves your steering docs) |
-| `buildwright sync` | Re-sync `.buildwright/` to `.claude/`, `.opencode/`, `.cursor/rules/` |
-
-## What `init` Does
-
-1. Copies all Buildwright templates to your project:
-   - `.buildwright/` — canonical config (agents, claws, commands, steering)
-   - `scripts/` — sync and hook scripts
-   - `Makefile`, `CLAUDE.md`, `BUILDWRIGHT.md`
-2. Makes scripts executable
-3. Runs `make sync` to generate `.claude/`, `.opencode/`, `.cursor/rules/`
-4. Installs git hooks for auto-sync on `.buildwright/` changes
-
-## What `update` Does
-
-Downloads the latest release from GitHub and updates:
-- `.buildwright/commands/` — slash command definitions
-- `.buildwright/agents/` — agent personas
-- `.buildwright/claws/` — domain specialist prompts
-- `CLAUDE.md` — agent instructions
-
-**Preserves** your customizations in `.buildwright/steering/` (product.md, tech.md, etc.).
-
-## Slash Commands (inside AI editors)
-
 | Command | Purpose |
 |---------|---------|
+| `/bw-analyse` | Analyse codebase: writes stack, architecture, conventions, concerns to `.buildwright/codebase/`, updates `tech.md` |
 | `/bw-new-feature` | Full pipeline: research → spec → approve → build → ship |
+| `/bw-claw` | Multi-agent: architect decomposes → claws execute per domain |
 | `/bw-quick` | Fast path for bug fixes, small tasks |
-| `/bw-claw` | Cross-domain features (DB + API + UI) |
-| `/bw-ship` | Quality gates + push + PR |
-| `/bw-verify` | Quick typecheck/lint/test/build |
-| `/bw-analyse` | Analyse brownfield codebase |
-| `/bw-help` | Show all commands |
+| `/bw-plan` | Research a question, produce a written deliverable — no implementation, no commits |
+| `/bw-ship` | Quality gates + release: verify → security → review → push → PR |
+| `/bw-verify` | Quick checks: typecheck, lint, test, build |
+| `/bw-help` | Show available commands |
 
-## Offline Support
+---
 
-All templates are bundled in the npm package — `buildwright init` works without internet access after installation. Use `buildwright update` to pull the latest templates from GitHub.
+## Agent Personas
 
-## More Information
+Modular, extensible agent personas in `.buildwright/agents/`:
 
-See the [full documentation](https://github.com/raunakkathuria/buildwright) on GitHub.
+| Agent | File | Used By | Purpose |
+|-------|------|---------|---------|
+| Staff Engineer | `staff-engineer.md` | `/bw-new-feature`, `/bw-ship` | Spec & code review |
+| Security Engineer | `bw-security-engineer.md` | `/bw-ship` | OWASP, SAST, security review |
+
+### Adding New Agents
+
+```bash
+# Create new agent persona
+cat > .buildwright/agents/qa-engineer.md << 'EOF'
+# QA Engineer Agent
+
+You are a QA Engineer specialized in test coverage...
+
+## What You Look For
+...
+
+## Output Format
+...
+EOF
+```
+
+Then reference in commands:
+```markdown
+## Adopt Persona
+Read and adopt persona from `.buildwright/agents/qa-engineer.md`
+```
+
+---
+
+## Security Review
+
+The security phase in `/bw-ship` covers:
+
+| Category | Checks |
+|----------|--------|
+| **OWASP Top 10** | All 10 categories (A01-A10:2021) |
+| **SAST** | Static analysis via Semgrep |
+| **Secrets** | API keys, passwords, tokens, private keys |
+| **Dependencies** | npm audit, cargo audit, pip-audit |
+| **Financial** | No float for currency, transaction integrity, audit logging |
+
+### Severity Triage
+
+Findings are classified by severity to avoid blocking on low-risk items:
+
+| Severity | Action | Example |
+|----------|--------|---------|
+| **Critical / High** | Block — must fix before merge | SQL injection, exposed secrets, auth bypass |
+| **Medium** | Fix in this PR if feasible, otherwise track | Missing rate limiting, verbose error messages |
+| **Low / Info** | Advisory — log and move on | Minor header hardening, informational findings |
+
+---
+
+## Project Structure
+
+```
+your-project/
+├── CLAUDE.md                      # Agent instructions (committed)
+├── BUILDWRIGHT.md                 # Human documentation (committed)
+├── SKILL.md                       # Agent Skills standard (committed)
+├── .buildwright/                  # Canonical config (committed)
+│   ├── agents/                    # Reusable personas
+│   │   ├── architect.md
+│   │   ├── staff-engineer.md
+│   │   └── security-engineer.md
+│   ├── claws/                     # Domain specialists
+│   │   ├── frontend.md
+│   │   ├── backend.md
+│   │   ├── database.md
+│   │   └── TEMPLATE.md
+│   ├── codebase/                  # Analysis docs (generated by /bw-analyse)
+│   │   ├── STACK.md
+│   │   ├── ARCHITECTURE.md
+│   │   ├── CONVENTIONS.md
+│   │   └── CONCERNS.md
+│   ├── commands/                  # Slash commands
+│   │   ├── bw-analyse.md
+│   │   ├── bw-claw.md
+│   │   ├── bw-new-feature.md
+│   │   ├── bw-plan.md
+│   │   ├── bw-quick.md
+│   │   ├── bw-ship.md
+│   │   ├── bw-verify.md
+│   │   └── bw-help.md
+│   ├── steering/                  # Project context
+│   │   ├── product.md
+│   │   ├── tech.md
+│   │   ├── quality-gates.md
+│   │   └── naming-conventions.md
+│   └── tasks/
+├── .claude/                       # Generated by `make sync` (gitignored)
+│   ├── settings.json              # Claude Code permissions (committed)
+│   └── agents/, claws/, commands/, steering/  (generated)
+├── .opencode/                     # Generated by `make sync` (gitignored)
+├── .cursor/rules/                 # Generated by `make sync` (gitignored)
+├── AGENTS.md                      # Generated by `make sync` (gitignored)
+├── scripts/
+│   ├── sync-agents.sh             # Sync .buildwright/ → .claude/ + .opencode/ + .cursor/rules/
+│   ├── install-hooks.sh           # Install git hooks (run via: make install-hooks)
+│   ├── validate-skill.sh          # Validate SKILL.md against agentskills.io
+│   └── hooks/                     # Git hooks source (committed, installed to .git/hooks/)
+│       ├── pre-commit             # Auto-sync when .buildwright/ files are staged
+│       ├── post-merge             # Auto-sync after git pull/merge
+│       └── post-checkout          # Auto-sync on branch switches
+├── docs/
+│   ├── requirements/
+│   └── specs/
+└── .github/
+    └── workflows/
+        └── quality-gates.yml
+```
+
+> **Note:** After cloning, run `make sync && make install-hooks` to generate tool-specific configs and install git hooks that auto-sync on `.buildwright/` changes.
+
+---
+
+## Design Principles (Built-In)
+
+Every spec and implementation follows:
+
+| Principle | Meaning |
+|-----------|---------|
+| **KISS** | Keep It Simple — prefer simple over clever |
+| **YAGNI** | You Aren't Gonna Need It — build only what's needed now |
+| **No Premature Optimization** | Make it work first, optimize with data |
+| **Boring Technology** | Proven tools over shiny new ones |
+| **Fail Fast** | Validate early, error loudly |
+
+---
+
+## Extending the Workflow
+
+### Add New Agent
+
+1. Create `.buildwright/agents/[role].md`
+2. Define mindset, checklist, output format
+3. Reference in commands with `Adopt persona from...`
+
+### Add New Command
+
+1. Create `.buildwright/commands/[name].md`
+2. Define arguments, phases, output format
+3. Reference agents as needed
+
+### Planned Agents (Future)
+
+| Agent | Purpose |
+|-------|---------|
+| QA Engineer | Test coverage, edge cases |
+| Performance Engineer | Bottleneck identification |
+| DevOps Engineer | Infrastructure review |
+| Database Engineer | Schema review, query optimization |
+| UX Engineer | API design review |
+
+---
+
+## Customization
+
+| File | Purpose | Edit Frequency |
+|------|---------|----------------|
+| `.buildwright/steering/product.md` | Product context | Per project |
+| `.buildwright/steering/tech.md` | Tech stack & commands | Per project |
+| `.buildwright/agents/*.md` | Agent personas | Rarely |
+| `.buildwright/commands/*.md` | Slash commands | Rarely |
+| `CLAUDE.md` | Learned patterns | As discovered |
+
+---
+
+## FAQ
+
+### Do I need to review code?
+No. `/bw-ship` handles security review and code review automatically using Staff Engineer and Security Engineer personas.
+
+### What if a step fails?
+- **Verify fails**: Retries up to 2x automatically.
+- **Security/Review fails**: No retry — requires judgment.
+- **Autonomous mode** (`BUILDWRIGHT_AUTO_APPROVE=true`): Commits completed work, pushes, creates PR with failure details, exits with error code.
+- **Interactive mode** (`BUILDWRIGHT_AUTO_APPROVE=false`): STOP immediately — human fixes in-session.
+
+### Can I skip security review?
+No. Both `/bw-ship` and `/bw-quick` include mandatory security and code review steps. Use `/bw-verify` for quick checks during active development, before committing.
+
+### How do I add project-specific rules?
+Add to `CLAUDE.md` under "Learned Patterns" or create a new agent.
+
+---
 
 ## License
 
