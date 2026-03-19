@@ -18,6 +18,7 @@ WORKFLOW
 /bw-ship                 Quality gates + release: verify → security → review → push → PR
 /bw-verify               Quick checks: typecheck, lint, test, build
 /bw-analyse              Analyse codebase: writes stack, architecture, conventions, concerns to .buildwright/codebase/
+/bw-plan <question>      Research a question, produce a written deliverable — no implementation, no commits
 /bw-help                 Show this command list
 
 ╔═══════════════════════════════════════════════════════════════╗
@@ -49,6 +50,7 @@ SHIP EXISTING WORK:
 ╚═══════════════════════════════════════════════════════════════╝
 
   Brownfield, need codebase context  → /bw-analyse
+  Question/analysis, no coding      → /bw-plan
   Single domain, needs planning     → /bw-new-feature
   Crosses multiple domains/layers   → /bw-claw
   Small task, clear scope           → /bw-quick
@@ -74,7 +76,8 @@ SHIP EXISTING WORK:
 ║                         TIPS                                  ║
 ╚═══════════════════════════════════════════════════════════════╝
 
-• Use /bw-new-feature for anything that needs planning
+• Use /bw-plan for research, analysis, or planning without implementation
+• Use /bw-new-feature for anything that needs planning + implementation
 • Use /bw-claw when feature crosses domain boundaries
 • Use /bw-quick for clear, bounded tasks
 • Verify retries 2x automatically; security/review stops immediately
