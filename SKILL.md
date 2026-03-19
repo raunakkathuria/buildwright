@@ -163,6 +163,33 @@ Produces: `STACK.md`, `ARCHITECTURE.md`, `CONVENTIONS.md`, `CONCERNS.md` under `
 
 ---
 
+### /bw-plan \<question or task file\>
+
+Research a question or topic and produce a written deliverable — no implementation, no commits.
+Use when someone asks a question or needs an analysis, plan, or report before (or instead of) writing code.
+
+```
+/bw-plan "what are the performance risks in this Flutter app?"
+/bw-plan "plan a migration from monolith to microservices"
+/bw-plan tasks/flutter-perf-review.md
+```
+
+Flow: Understand question/task → Clarify if needed → Research (read code + run read-only tools) → Synthesize findings → Write deliverable → Summarize
+
+**Accepts two invocation styles:**
+- **Inline question** — describe the question or topic directly; the agent infers scope and writes to `docs/plans/<slug>/<date>/plan.md`
+- **Task file** — a structured `.md` file with `Inputs`, `Rules`, `Research Areas`, and `Outputs` blocks; the agent parses and executes it exactly
+
+**Use `/bw-plan` when you want:** a performance review, architecture decision record, migration plan, technology evaluation, static analysis report, or any "research this and give me a written output" task.
+
+**Use `/bw-new-feature` instead** when you want the plan executed (research + spec + implement + ship).
+
+**Artifacts produced:** whatever the task specifies; at minimum `plan.md` in the output directory.
+
+**Hard constraints:** never modifies source files, never commits or creates PRs, every finding must cite evidence.
+
+---
+
 ### /bw-help
 
 Show all available commands.
