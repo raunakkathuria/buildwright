@@ -148,6 +148,7 @@ find . -type f -name "*.ts" | xargs grep -l "[relevant terms]"
 - How does similar functionality work today?
 - What patterns are used for this type of feature?
 - What services/utilities already exist that I should use?
+- What types/structs already exist that I can reuse instead of creating new ones?
 - What would break if I change this?
 
 ### 2.3 Read Existing Tests
@@ -207,6 +208,13 @@ Create `docs/specs/[feature-name]/research.md`:
 ### Services/Utilities to Reuse
 - [Service]: [what it does, how to use]
 - [Utility]: [what it does, how to use]
+
+### Reusable Types & Functions
+- [Function/Type]: [location] — [what it does, how to reuse]
+- [Function/Type]: [location] — [what it does, how to reuse]
+
+Flag any near-duplicates found during research. If two utilities do similar things,
+recommend which one to use and whether to consolidate.
 
 ### Integration Points
 - [System A]: Will need to integrate via [method]
@@ -433,9 +441,11 @@ For each milestone:
 
 2. **Implement**
    - Follow patterns identified in research.md
-   - Use existing services/utilities discovered
+   - Use existing services/utilities discovered — do NOT reimplement
+   - Reuse existing types and structures — create new ones only when no existing type fits
+   - If you find yourself writing logic that resembles something in the codebase, stop and reuse or extract
    - Write minimal code to pass tests
-   - Remember: KISS, YAGNI
+   - Remember: KISS, YAGNI, DRY
 
 3. **Verify (with retry)**
    ```bash
@@ -453,6 +463,8 @@ For each milestone:
 
 After each milestone passes verification, briefly self-review for:
 - **Simplicity**: Is this the simplest solution? Any unnecessary complexity?
+- **Duplication**: Does this duplicate existing functions, types, or logic? Can anything be reused or extracted?
+- **Necessity**: Is every new type, abstraction, and code path required by the current requirements? Remove anything speculative.
 - **Correctness**: Any logic errors or missed edge cases in the new code?
 - **Conventions**: Does the new code follow established project patterns?
 

@@ -153,7 +153,7 @@ git diff HEAD
 
 **Phase A — Repository Context:** Understand existing patterns, conventions, error handling, and testing approaches.
 
-**Phase B — Comparative Analysis:** Does new code follow established patterns? Does it bypass or weaken existing controls?
+**Phase B — Comparative Analysis:** Does new code follow established patterns? Does it reuse existing utilities and types instead of reimplementing? Does it bypass or weaken existing controls?
 
 **Phase C — Issue Assessment:** Review changes for real issues. For each: verify it's real, confirm it was INTRODUCED by these changes, assign confidence (only report ≥ 80).
 

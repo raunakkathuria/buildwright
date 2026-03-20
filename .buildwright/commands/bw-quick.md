@@ -96,6 +96,7 @@ find . -name "*.test.*" -o -name "*.spec.*" | xargs grep -l "[relevant terms]"
 Understand:
 - Current implementation
 - Patterns used in these files
+- Existing functions, types, and utilities that can be reused instead of reimplemented
 - Related tests
 
 **Do NOT write a research document. Keep it in context.**
@@ -122,8 +123,9 @@ Commit: `test: add test for [task]`
 
 - Fix the bug / add the feature
 - Follow existing patterns in the file
+- Reuse existing functions and types — do NOT reimplement what already exists
 - Minimal changes only
-- KISS, YAGNI
+- KISS, YAGNI, DRY
 
 ### 3.3 Update Documentation
 

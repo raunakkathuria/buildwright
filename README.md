@@ -369,7 +369,8 @@ Every spec and implementation follows:
 | Principle | Meaning |
 |-----------|---------|
 | **KISS** | Keep It Simple — prefer simple over clever |
-| **YAGNI** | You Aren't Gonna Need It — build only what's needed now |
+| **YAGNI** | You Aren't Gonna Need It — build only what's needed now, no speculative abstractions |
+| **DRY** | Don't Repeat Yourself — reuse existing code, extract common logic |
 | **No Premature Optimization** | Make it work first, optimize with data |
 | **Boring Technology** | Proven tools over shiny new ones |
 | **Fail Fast** | Validate early, error loudly |
