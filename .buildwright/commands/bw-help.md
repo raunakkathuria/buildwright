@@ -19,6 +19,8 @@ WORKFLOW
 /bw-verify               Quick checks: typecheck, lint, test, build
 /bw-analyse              Analyse codebase: writes stack, architecture, conventions, concerns to .buildwright/codebase/
 /bw-plan <question>      Research a question, produce a written deliverable — no implementation, no commits
+/bw-worktree-start       Set up isolated git worktree before implementation
+/bw-worktree-finish      Complete development branch: merge, PR, keep, or discard + cleanup
 /bw-help                 Show this command list
 
 ╔═══════════════════════════════════════════════════════════════╗
@@ -68,9 +70,9 @@ SHIP EXISTING WORK:
        🎨 UI    ⚙️ API    🗄️ DB
        Claw     Claw     Claw
 
-  Claws are domain-specialist agents in .buildwright/claws/
+  Claws are domain-specialist agents in @@.buildwright/claws/
   Available: frontend.md, backend.md, database.md
-  Add your own: copy .buildwright/claws/TEMPLATE.md
+  Add your own: copy @@.buildwright/claws/TEMPLATE.md
 
 ╔═══════════════════════════════════════════════════════════════╗
 ║                         TIPS                                  ║
