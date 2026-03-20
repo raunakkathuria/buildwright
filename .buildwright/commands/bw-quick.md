@@ -27,13 +27,14 @@ Fast path for ad-hoc tasks that don't need full planning.
 ┌─────────────────────────────────────────────────────────────┐
 │                      QUICK MODE                             │
 ├─────────────────────────────────────────────────────────────┤
-│  1. Understand task                                         │
-│  2. Quick research (relevant files only)                    │
-│  3. Implement with TDD                                      │
-│  4. Verify (typecheck, lint, test, build)                   │
-│  5. Security (OWASP + secrets + dependencies)               │
-│  6. Code Review (Staff Engineer)                            │
-│  7. Commit                                                  │
+│  1.   Understand task                                       │
+│  1.5  Set up isolated workspace (worktree)                  │
+│  2.   Quick research (relevant files only)                  │
+│  3.   Implement with TDD                                    │
+│  4.   Verify (typecheck, lint, test, build)                 │
+│  5.   Security (OWASP + secrets + dependencies)             │
+│  6.   Code Review (Staff Engineer)                          │
+│  7.   Commit                                                │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -63,6 +64,25 @@ This task seems complex. Consider using /bw-new-feature instead for:
 • Staff Engineer review
 
 Continue with /bw-quick anyway? (say "continue" or use /bw-new-feature)
+```
+
+---
+
+## Step 1.5: Set Up Isolated Workspace (REQUIRED — BEFORE RESEARCH)
+
+> **⚠️ CRITICAL: This MUST happen before Step 2 (Quick Research).** All subsequent
+> steps — research, implementation, verification, review, commit — happen
+> inside the worktree directory. Do NOT read codebase files or make any changes
+> from the main workspace.
+
+Read and execute the full instructions in `@@.buildwright/commands/bw-worktree-start.md`.
+
+This creates an isolated git worktree on a feature branch. After the worktree is
+ready, `cd` into it and **stay there for every remaining step**.
+
+```
+Worktree ready at <path>
+All subsequent work (research, TDD, commit) happens here.
 ```
 
 ---
@@ -161,7 +181,7 @@ git commit -m "docs: update documentation for [task]"
 
 ### 3.5 Security Review
 
-Adopt Security Engineer persona from `.buildwright/agents/security-engineer.md`.
+Adopt Security Engineer persona from `@@.buildwright/agents/security-engineer.md`.
 
 Scope: `git diff HEAD` (uncommitted changes only).
 
@@ -192,7 +212,7 @@ Then perform manual OWASP Top 10 review of changed files only.
 
 ### 3.6 Code Review
 
-Adopt Staff Engineer persona from `.buildwright/agents/staff-engineer.md`.
+Adopt Staff Engineer persona from `@@.buildwright/agents/staff-engineer.md`.
 
 Scope: `git diff HEAD` (same diff as security step).
 
@@ -234,6 +254,14 @@ Commit types:
 - `chore:` for config/maintenance
 
 ---
+
+### 3.8 Finish Development Branch (REQUIRED)
+
+> **⚠️ CRITICAL: Do NOT skip this step.** The worktree must be properly finished
+> — merged, PR'd, or cleaned up. Orphaned worktrees cause confusion and waste disk.
+
+Read and execute the full instructions in `@@.buildwright/commands/bw-worktree-finish.md`
+to merge, create PR, or clean up the worktree created in Step 1.5.
 
 ## Step 4: Report
 

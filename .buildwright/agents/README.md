@@ -12,7 +12,7 @@ This directory contains reusable agent personas that commands can reference.
 
 ## Claw Architecture
 
-For domain-specialist agents (claws), see `.buildwright/claws/`.
+For domain-specialist agents (claws), see `@@.buildwright/claws/`.
 
 The Architect agent coordinates claws:
 ```
@@ -31,7 +31,7 @@ The Architect agent coordinates claws:
    - What they look for
    - Output format
    - Rules/guidelines
-3. Reference in commands via: `Read and adopt persona from .buildwright/agents/[role-name].md`
+3. Reference in commands via: `Read and adopt persona from @@.buildwright/agents/[role-name].md`
 
 ## Planned Agents (Future)
 
