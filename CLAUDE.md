@@ -119,6 +119,8 @@ When a feature touches multiple domains (e.g., DB + API + UI):
    - Build only what's required NOW
    - No speculative features "for later"
    - Avoid abstractions until they're proven needed
+   - No wrapper types, adapter layers, or extension points "just in case"
+   - If the requirements don't ask for it, don't build it
 
 3. **No Premature Optimization**
    - Make it work first, then make it fast (if needed)
@@ -134,6 +136,12 @@ When a feature touches multiple domains (e.g., DB + API + UI):
    - Validate inputs at boundaries
    - Throw errors early with clear messages
    - No silent failures
+
+6. **DRY (Don't Repeat Yourself)**
+   - Before writing new code, search for existing functions, types, and utilities that already do the job
+   - Reuse existing structures — if `User` exists, don't create `UserDTO` or `UserEntity` unless the codebase already separates those concerns
+   - If two pieces of code do similar things, extract the common part rather than duplicating
+   - Prefer importing over reimplementing
 
 ## Code Standards
 - Follow existing patterns in the codebase exactly
