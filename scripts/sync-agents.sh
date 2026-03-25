@@ -60,11 +60,7 @@ sync_dir() {
     tmpdir=$(mktemp -d)
     cp -R "$src/"* "$tmpdir/" 2>/dev/null || true
     if [ -n "$rewrite_from" ] && [ -n "$rewrite_to" ]; then
-      # Only rewrite @@.buildwright/ (read instructions) → tool-specific path
-      # Bare .buildwright/ (write/canonical instructions) stays untouched
-      find "$tmpdir" -name "*.md" -exec sed -i '' \
-        -e "s|@@${rewrite_from}|${rewrite_to}|g" \
-        {} + 2>/dev/null || true
+      find "$tmpdir" -name "*.md" -exec sed -i "s|$rewrite_from|$rewrite_to|g" {} + 2>/dev/null || true
     fi
     if ! diff -rq "$tmpdir" "$dst" > /dev/null 2>&1; then
       echo "OUT OF SYNC: $dst differs from $src"
@@ -75,12 +71,8 @@ sync_dir() {
     mkdir -p "$dst"
     rsync -a --delete "$src/" "$dst/" 2>/dev/null || (rm -rf "$dst"/* && cp -R "$src/"* "$dst/")
     # Rewrite path references for tool-specific copies
-    # @@.buildwright/ = "resolve to tool-specific dir" → gets rewritten
-    # Bare .buildwright/ = "canonical path" → stays untouched
     if [ -n "$rewrite_from" ] && [ -n "$rewrite_to" ]; then
-      find "$dst" -name "*.md" -exec sed -i '' \
-        -e "s|@@${rewrite_from}|${rewrite_to}|g" \
-        {} + 2>/dev/null || true
+      find "$dst" -name "*.md" -exec sed -i "s|$rewrite_from|$rewrite_to|g" {} + 2>/dev/null || true
     fi
     echo "  synced $src → $dst"
   fi

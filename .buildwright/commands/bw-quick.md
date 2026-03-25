@@ -75,7 +75,7 @@ Continue with /bw-quick anyway? (say "continue" or use /bw-new-feature)
 > inside the worktree directory. Do NOT read codebase files or make any changes
 > from the main workspace.
 
-Read and execute the full instructions in `@@.buildwright/commands/bw-worktree-start.md`.
+Read and execute the full instructions in `.buildwright/commands/bw-worktree-start.md`.
 
 This creates an isolated git worktree on a feature branch. After the worktree is
 ready, `cd` into it and **stay there for every remaining step**.
@@ -181,7 +181,7 @@ git commit -m "docs: update documentation for [task]"
 
 ### 3.5 Security Review
 
-Adopt Security Engineer persona from `@@.buildwright/agents/security-engineer.md`.
+Adopt Security Engineer persona from `.buildwright/agents/security-engineer.md`.
 
 Scope: `git diff HEAD` (uncommitted changes only).
 
@@ -212,7 +212,7 @@ Then perform manual OWASP Top 10 review of changed files only.
 
 ### 3.6 Code Review
 
-Adopt Staff Engineer persona from `@@.buildwright/agents/staff-engineer.md`.
+Adopt Staff Engineer persona from `.buildwright/agents/staff-engineer.md`.
 
 Scope: `git diff HEAD` (same diff as security step).
 
@@ -260,7 +260,7 @@ Commit types:
 > **⚠️ CRITICAL: Do NOT skip this step.** The worktree must be properly finished
 > — merged, PR'd, or cleaned up. Orphaned worktrees cause confusion and waste disk.
 
-Read and execute the full instructions in `@@.buildwright/commands/bw-worktree-finish.md`
+Read and execute the full instructions in `.buildwright/commands/bw-worktree-finish.md`
 to merge, create PR, or clean up the worktree created in Step 1.5.
 
 ## Step 4: Report

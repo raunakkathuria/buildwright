@@ -70,9 +70,9 @@ SHIP EXISTING WORK:
        🎨 UI    ⚙️ API    🗄️ DB
        Claw     Claw     Claw
 
-  Claws are domain-specialist agents in @@.buildwright/claws/
+  Claws are domain-specialist agents in .buildwright/claws/
   Available: frontend.md, backend.md, database.md
-  Add your own: copy @@.buildwright/claws/TEMPLATE.md
+  Add your own: copy .buildwright/claws/TEMPLATE.md
 
 ╔═══════════════════════════════════════════════════════════════╗
 ║                         TIPS                                  ║

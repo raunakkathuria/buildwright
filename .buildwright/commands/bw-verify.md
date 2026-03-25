@@ -9,7 +9,7 @@ Running quick verification...
 
 Follow the Tech Discovery Protocol (see Command Discovery in CLAUDE.md):
 
-1. Read `@@.buildwright/steering/tech.md` — if "Project Commands" has real commands, use them.
+1. Read `.buildwright/steering/tech.md` — if "Project Commands" has real commands, use them.
 2. Otherwise auto-detect from project files: `package.json`, `Cargo.toml`, `go.mod`, `pyproject.toml`, `Makefile`, etc.
 3. Derive typecheck, lint, test, build commands. Mark as SKIP if a stack has no equivalent.
 4. Write discovered commands to `tech.md` for future runs.
