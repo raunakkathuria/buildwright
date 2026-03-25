@@ -61,10 +61,10 @@ Each "claw" is a domain-expert agent that grabs work in its area. The Architect 
 Claws run as sub-agents via the Task tool or parallel terminal sessions:
 ```bash
 # Terminal 1: UI Claw
-claude --agent @@.buildwright/claws/frontend.md
+claude --agent .buildwright/claws/frontend.md
 
 # Terminal 2: API Claw
-claude --agent @@.buildwright/claws/backend.md
+claude --agent .buildwright/claws/backend.md
 ```
 
 ### OpenCode
