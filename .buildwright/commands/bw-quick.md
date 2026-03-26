@@ -75,10 +75,7 @@ Continue with /bw-quick anyway? (say "continue" or use /bw-new-feature)
 > inside the worktree directory. Do NOT read codebase files or make any changes
 > from the main workspace.
 
-Read and execute the full instructions in `.buildwright/commands/bw-worktree-start.md`.
-
-This creates an isolated git worktree on a feature branch. After the worktree is
-ready, `cd` into it and **stay there for every remaining step**.
+You must use the `bw-worktree-start` skill. This creates an isolated git worktree on a feature branch. After the worktree is ready, `cd` into it and **stay there for every remaining phase**.
 
 ```
 Worktree ready at <path>
@@ -260,8 +257,7 @@ Commit types:
 > **⚠️ CRITICAL: Do NOT skip this step.** The worktree must be properly finished
 > — merged, PR'd, or cleaned up. Orphaned worktrees cause confusion and waste disk.
 
-Read and execute the full instructions in `.buildwright/commands/bw-worktree-finish.md`
-to merge, create PR, or clean up the worktree created in Step 1.5.
+You must use the `bw-worktree-finish` skill to merge, create PR, or clean up the worktree created in Step 1.5.
 
 ## Step 4: Report
 
