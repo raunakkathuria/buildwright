@@ -190,28 +190,6 @@ Flow: Understand question/task → Clarify if needed → Research (read code + r
 
 ---
 
-### /bw-worktree-start
-
-Set up an isolated git worktree before starting implementation. Creates a new branch in a separate directory so multiple features can be worked on simultaneously without switching branches.
-
-Called automatically by `/bw-new-feature`, `/bw-claw`, and `/bw-quick` before their implementation phases. Can also be invoked directly when you need an isolated workspace.
-
-Flow: Check for existing worktree directory → Verify `.gitignore` → Create worktree + branch → Install dependencies → Verify clean test baseline → Report ready
-
----
-
-### /bw-worktree-finish
-
-Complete a development branch after implementation is done. Presents structured options for integrating the work and cleans up the worktree.
-
-Called automatically by `/bw-new-feature`, `/bw-claw`, and `/bw-quick` after their shipping/commit phases.
-
-Options: Merge locally | Push + create PR | Keep as-is | Discard
-
-In autonomous mode (`BUILDWRIGHT_AUTO_APPROVE=true`), defaults to Push + create PR.
-
----
-
 ### /bw-help
 
 Show all available commands.

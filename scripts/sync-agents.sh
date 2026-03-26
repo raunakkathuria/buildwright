@@ -12,6 +12,7 @@
 #   .opencode/agents/        ← from .buildwright/agents/
 #   .opencode/claws/         ← from .buildwright/claws/
 #   .opencode/steering/      ← from .buildwright/steering/
+#   .opencode/skills/        ← from .buildwright/skills/
 #   .cursor/rules/steering/  ← .mdc files with alwaysApply: true
 #   .cursor/rules/commands/  ← .mdc files with alwaysApply: false
 #   .cursor/rules/agents/    ← .mdc files with alwaysApply: false
@@ -109,8 +110,6 @@ set_cursor_frontmatter() {
     command:bw-verify)           CURSOR_DESCRIPTION="Buildwright bw-verify: quick quality checks (typecheck, lint, test, build)" ;;
     command:bw-help)             CURSOR_DESCRIPTION="Buildwright bw-help: list all available Buildwright commands" ;;
     command:bw-analyse)          CURSOR_DESCRIPTION="Buildwright bw-analyse: analyse codebase, write structured docs to .buildwright/codebase/, update tech.md" ;;
-    command:bw-worktree-start)   CURSOR_DESCRIPTION="Buildwright bw-worktree-start: set up isolated git worktree before implementation" ;;
-    command:bw-worktree-finish)  CURSOR_DESCRIPTION="Buildwright bw-worktree-finish: complete development branch with merge, PR, keep, or discard + worktree cleanup" ;;
     command:bw-plan)             CURSOR_DESCRIPTION="Buildwright bw-plan: research a question, produce a written deliverable — no implementation" ;;
     agent:architect)             CURSOR_DESCRIPTION="Buildwright Architect agent persona" ;;
     agent:staff-engineer)        CURSOR_DESCRIPTION="Buildwright Staff Engineer agent persona" ;;
@@ -219,6 +218,7 @@ sync_dir ".buildwright/agents"    ".opencode/agents"    ".buildwright/" ".openco
 sync_dir ".buildwright/claws"     ".opencode/claws"     ".buildwright/" ".opencode/"
 sync_dir ".buildwright/steering"  ".opencode/steering"
 sync_dir ".buildwright/codebase"  ".opencode/codebase"
+sync_dir ".buildwright/skills"    ".opencode/skills"
 
 # ============================================================================
 # 3. CLAUDE.md → AGENTS.md
@@ -264,10 +264,11 @@ sync_cursor_dir ".buildwright/agents"    "agents"    "agent"
 sync_cursor_dir ".buildwright/claws"     "claws"     "claw"
 
 # ============================================================================
-# 5. .buildwright/commands/ → skills/ (Codex CLI skill discovery)
+# 5. .buildwright/commands/ and .buildwright/skills/ → skills/ (Codex CLI skill discovery)
 # ============================================================================
 
 if [ "$CHECK_ONLY" = false ]; then
+  cp -r .buildwright/skills skills
   for file in .buildwright/commands/bw-*.md; do
     [ -f "$file" ] || continue
     name=$(basename "$file" .md)
