@@ -133,18 +133,3 @@ jobs:
             go) govulncheck ./... || echo "govulncheck not installed" ;;
             python) pip-audit || safety check || echo "No Python audit tool" ;;
           esac
-
-  auto-merge:
-    needs: quality
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
-    permissions:
-      contents: write
-      pull-requests: write
-    steps:
-      - name: Auto-merge on quality pass
-        uses: pascalgn/automerge-action@v0.15.6
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          MERGE_METHOD: squash
-          MERGE_LABELS: ""
