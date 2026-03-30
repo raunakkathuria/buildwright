@@ -261,6 +261,18 @@ chmod +x scripts/sync-agents.sh scripts/validate-skill.sh scripts/install-hooks.
 echo "  Created scripts (sync-agents, validate-skill, install-hooks, hooks/)"
 
 # ============================================================================
+# MAKEFILE
+# ============================================================================
+
+curl -sL "$BASE_URL/Makefile" > Makefile
+
+# ============================================================================
+# SKILL.md
+# ============================================================================
+
+curl -sL "$BASE_URL/SKILL.md" > SKILL.md
+
+# ============================================================================
 # GITHUB WORKFLOW
 # ============================================================================
 
@@ -292,6 +304,7 @@ echo "  Synced tool-specific configs (.claude/, .opencode/, .cursor/rules/, AGEN
 # GIT HOOKS — auto-sync on .buildwright/ changes
 # ============================================================================
 
+git init
 make install-hooks
 echo "  Installed git hooks (pre-commit, post-merge, post-checkout)"
 
