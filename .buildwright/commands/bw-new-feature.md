@@ -534,6 +534,6 @@ PIPELINE STATUS
 ✅ Code Reviewed (Staff Engineer)
 ✅ Shipped
 
-Quality gates running in CI. Will auto-merge on pass.
+Quality gates running in CI. PR ready for team review.
 ═══════════════════════════════════════════════════════════════
 ```

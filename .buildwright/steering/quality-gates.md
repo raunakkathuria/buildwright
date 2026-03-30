@@ -31,5 +31,5 @@ These automated gates replace human code review. ALL must pass for merge.
 - [ ] Rate limiting on sensitive endpoints
 - [ ] Audit logging for transactions
 
-## Auto-Merge Criteria
-When ALL gates pass → PR auto-merges → Deploy triggers
+## Merge Policy
+When ALL gates pass → PR is ready for merge (team follows their own merge process)

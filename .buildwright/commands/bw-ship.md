@@ -236,7 +236,7 @@ If `gh` is not available, provide the PR creation URL.
 ╠═══════════════════════════════════════════════════════════════╣
 ║                                                               ║
 ║  Quality gates will run in CI.                                ║
-║  PR will auto-merge when all gates pass.                      ║
+║  PR ready for team review when all gates pass.                ║
 ║                                                               ║
 ╚═══════════════════════════════════════════════════════════════╝
 ```
