@@ -19,11 +19,11 @@ NEW_VERSION=$(node -p "require('./cli/package.json').version")
 git add cli/package.json cli/package-lock.json SKILL.md
 git commit -m "chore: bump version to v$NEW_VERSION"
 
-# Step 3: annotated tag
-git tag -a "v$NEW_VERSION" -m "Release v$NEW_VERSION"
-
-# Step 4: push commit + tag
+# Step 3: push commit first
 git push
+
+# Step 4: annotated tag (after commit is on remote)
+git tag -a "v$NEW_VERSION" -m "Release v$NEW_VERSION"
 git push origin "v$NEW_VERSION"
 
 # Step 5: GitHub release with auto-generated notes
