@@ -53,6 +53,13 @@ codex: sync
 validate:
 	@chmod +x scripts/validate-skill.sh
 	@scripts/validate-skill.sh SKILL.md
+	@if [ -d ".buildwright/skills" ]; then \
+		for dir in .buildwright/skills/*; do \
+			if [ -f "$$dir/SKILL.md" ]; then \
+				scripts/validate-skill.sh "$$dir/SKILL.md"; \
+			fi \
+		done \
+	fi
 
 # ============================================================================
 # Git Hooks — keep .buildwright/ ↔ generated files in sync automatically

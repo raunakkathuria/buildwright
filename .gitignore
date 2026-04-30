@@ -43,4 +43,4 @@ buildwright-multi-agent-evaluation.md
 AGENTS.md
 
 # Codex CLI — generated from .buildwright/commands/ by: make sync
-skills/
+/skills/

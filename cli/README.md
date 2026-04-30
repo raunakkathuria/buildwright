@@ -330,6 +330,11 @@ your-project/
 │   │   ├── bw-ship.md
 │   │   ├── bw-verify.md
 │   │   └── bw-help.md
+│   ├── skills/                    # Skills
+│   │   ├── bw-worktree-start
+│   │   │   └── SKILL.md
+│   │   └── bw-worktree-finish
+│   │       └── SKILL.md
 │   ├── steering/                  # Project context
 │   │   ├── product.md
 │   │   ├── tech.md

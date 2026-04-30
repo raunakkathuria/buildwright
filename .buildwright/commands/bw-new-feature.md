@@ -20,6 +20,7 @@ arguments:
 │                   NEW FEATURE PIPELINE                      │
 ├─────────────────────────────────────────────────────────────┤
 │  0.   DETECT             → Greenfield or existing project?         │
+│  0.5  WORKTREE           → Isolated workspace (BEFORE research)    │
 │  1.   RESEARCH           → Deep-read codebase, understand context  │
 │  1.5. RESOLVE AMBIGUITIES → Auto-decide or ask user               │
 │  2.   PLAN               → Generate spec informed by research      │
@@ -74,6 +75,22 @@ arguments:
 3. Existing deployment config (`Dockerfile`, `k8s/`, `compose.yml`) > DevOps claw defaults
 4. Existing test patterns > TDD suggestions in claws
 5. Never modify working infrastructure to match Buildwright defaults
+
+---
+
+## Phase 0.5: Set Up Isolated Workspace (REQUIRED — BEFORE ANYTHING ELSE)
+
+> **⚠️ CRITICAL: This MUST happen before Phase 1 (Research).** All subsequent
+> phases — research, planning, spec writing, implementation, shipping — happen
+> inside the worktree directory. Do NOT read codebase files, write specs, or
+> make any changes from the main workspace.
+
+You must use the `bw-worktree-start` skill. This creates an isolated git worktree on a feature branch. After the worktree is ready, `cd` into it and **stay there for every remaining phase**.
+
+```
+Worktree ready at <path>
+All subsequent work (research, spec, build, ship) happens here.
+```
 
 ---
 
@@ -503,6 +520,13 @@ Run `/bw-ship` which chains:
 4. release → commit, push, PR
 
 `/bw-ship` handles autonomous failure internally — if any step fails in autonomous mode, it commits completed work, pushes, creates a failed PR, and exits(1). See ship.md for details.
+
+### 7.1 Finish Development Branch (REQUIRED)
+
+> **⚠️ CRITICAL: Do NOT skip this step.** The worktree must be properly finished
+> — merged, PR'd, or cleaned up. Orphaned worktrees cause confusion and waste disk.
+
+You must use the `bw-worktree-finish` skill to merge, create PR, or clean up the worktree created in Phase 0.5.
 
 ---
 
