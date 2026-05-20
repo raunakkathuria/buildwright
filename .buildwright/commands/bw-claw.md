@@ -17,13 +17,15 @@ arguments:
 │                   CLAW ARCHITECTURE                          │
 ├─────────────────────────────────────────────────────────────┤
 │                                                              │
-│  1. ANALYZE      → Architect reads codebase structure        │
-│  2. DECOMPOSE    → Break into domain-specific claw tasks     │
-│  3. CONTRACT     → Define interfaces + naming conventions    │
-│  4. APPROVE      → Human reviews decomposition plan          │
-│  5. EXECUTE      → Each claw grabs its domain work           │
-│  6. INTEGRATE    → Architect combines + verifies             │
-│  7. SHIP         → Buildwright quality gates → PR            │
+│  0. ARCHITECT    → Adopt Architect persona                   │
+│  0.5 WORKTREE   → Isolated workspace (BEFORE analysis)      │
+│  1. ANALYZE     → Architect reads codebase structure         │
+│  2. DECOMPOSE   → Break into domain-specific claw tasks      │
+│  3. CONTRACT    → Define interfaces + naming conventions     │
+│  4. APPROVE     → Human reviews decomposition plan           │
+│  5. EXECUTE     → Each claw grabs its domain work            │
+│  6. INTEGRATE   → Architect combines + verifies              │
+│  7. SHIP        → Buildwright quality gates → PR             │
 │                                                              │
 │         🧠 Architect (Brain)                                 │
 │              │                                               │
@@ -40,6 +42,22 @@ arguments:
 ## Phase 1: Adopt Architect Persona
 
 Read and adopt the Architect persona from `.buildwright/agents/architect.md`.
+
+---
+
+## Phase 1.5: Set Up Isolated Workspace (REQUIRED — BEFORE ANALYSIS)
+
+> **⚠️ CRITICAL: This MUST happen before Phase 2 (Analyze Project Structure).** All
+> subsequent phases — analysis, decomposition, claw execution, integration,
+> shipping — happen inside the worktree directory. Do NOT read codebase files,
+> write plans, or make any changes from the main workspace.
+
+You must use the `bw-worktree-start` skill. This creates an isolated git worktree on a feature branch. After the worktree is ready, `cd` into it and **stay there for every remaining phase**.
+
+```
+Worktree ready at <path>
+All subsequent work (analysis, claw execution, integration, ship) happens here.
+```
 
 ---
 
@@ -276,6 +294,13 @@ If interfaces don't align:
 ## Phase 8: Ship
 
 Run `/bw-ship` which chains: verify → security → review → release.
+
+### 8.1 Finish Development Branch (REQUIRED)
+
+> **⚠️ CRITICAL: Do NOT skip this step.** The worktree must be properly finished
+> — merged, PR'd, or cleaned up. Orphaned worktrees cause confusion and waste disk.
+
+You must use the `bw-worktree-finish` skill to merge, create PR, or clean up the worktree created in Phase 1.5.
 
 ---
 
