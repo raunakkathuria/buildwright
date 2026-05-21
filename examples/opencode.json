@@ -8,10 +8,6 @@
     }
   },
   "agents": {
-    "architect": {
-      "instructions": ".opencode/agents/architect.md",
-      "mode": "primary"
-    },
     "staff-engineer": {
       "instructions": ".opencode/agents/staff-engineer.md",
       "mode": "subagent"

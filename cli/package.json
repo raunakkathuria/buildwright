@@ -1,7 +1,7 @@
 {
   "name": "buildwright",
   "version": "0.0.12",
-  "description": "Agent-first autonomous development workflow. Ship code you don't read.",
+  "description": "Lightweight engineering workflow for agent-led development.",
   "license": "MIT",
   "engines": {
     "node": ">=18.0.0"
