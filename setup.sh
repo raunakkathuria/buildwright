@@ -13,7 +13,6 @@ mkdir -p .buildwright/steering
 mkdir -p .buildwright/agents
 mkdir -p .buildwright/codebase
 mkdir -p .claude
-mkdir -p docs/requirements
 mkdir -p docs/specs
 mkdir -p .github/workflows
 mkdir -p scripts/hooks
@@ -32,8 +31,6 @@ curl -sL "$BASE_URL/.buildwright/commands/bw-ship.md" > .buildwright/commands/bw
 curl -sL "$BASE_URL/.buildwright/commands/bw-analyse.md" > .buildwright/commands/bw-analyse.md
 
 curl -sL "$BASE_URL/.buildwright/steering/philosophy.md" > .buildwright/steering/philosophy.md
-
-curl -sL "$BASE_URL/docs/requirements/TEMPLATE.md" > docs/requirements/TEMPLATE.md
 
 curl -sL "$BASE_URL/scripts/sync-agents.sh" > scripts/sync-agents.sh
 curl -sL "$BASE_URL/scripts/validate-skill.sh" > scripts/validate-skill.sh
