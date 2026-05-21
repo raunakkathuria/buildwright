@@ -25,11 +25,8 @@ missing=0
 for file in "$COMMANDS_DIR"/bw-*.md; do
   [ -f "$file" ] || continue
 
-  # Skip bw-help.md — it IS the help output, doesn't need its own docs section
-  basename=$(basename "$file")
-  [ "$basename" = "bw-help.md" ] && continue
-
   # Extract name from YAML frontmatter
+  basename=$(basename "$file")
   name=$(awk '/^---/{f=!f;next} f && /^name:/{print $2;exit}' "$file" 2>/dev/null | tr -d '\r')
 
   if [ -z "$name" ]; then

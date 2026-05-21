@@ -26,7 +26,7 @@ function init() {
   // 2. Check for existing installation
   if (isBuildwrightInstalled(cwd)) {
     console.log(`${YELLOW}Buildwright is already installed in this directory.${RESET}`);
-    console.log(`To update commands/agents/claws to the latest version, run: ${BOLD}buildwright update${RESET}`);
+    console.log(`To update commands and agents to the latest version, run: ${BOLD}buildwright update${RESET}`);
     process.exit(1);
   }
 
@@ -83,9 +83,9 @@ function init() {
   // 7. Success message
   console.log(`${GREEN}${BOLD}Buildwright is ready!${RESET}\n`);
   console.log('Next steps:');
-  console.log(`  1. Edit ${BOLD}.buildwright/steering/product.md${RESET} — add your product context`);
-  console.log(`  2. Edit ${BOLD}.buildwright/steering/tech.md${RESET}  — add your tech stack`);
-  console.log(`  3. Open your AI editor and run ${BOLD}/bw-new-feature "your feature"${RESET}\n`);
+  console.log(`  1. Run ${BOLD}/bw-analyse${RESET} first on unfamiliar brownfield projects`);
+  console.log(`  2. Open your AI editor and run ${BOLD}/bw-work "your task"${RESET}`);
+  console.log(`  3. Buildwright creates tech.md/product.md only when it has real project context\n`);
   console.log(`For help: ${BOLD}buildwright --help${RESET}`);
 }
 

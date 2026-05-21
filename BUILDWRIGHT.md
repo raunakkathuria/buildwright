@@ -19,13 +19,11 @@ claude
 
 | Command | Purpose |
 |---------|---------|
-| `/bw-new-feature` | Full pipeline: research → spec → approve → build → ship |
-| `/bw-quick` | Fast path for bug fixes, small tasks |
-| `/bw-claw` | Cross-domain features: Architect decomposes → claws execute per domain → integrate → ship |
+| `/bw-plan` | Think/research only; no code changes |
+| `/bw-work` | Implement bug fixes, refactors, and features |
 | `/bw-ship` | Quality gates + release: verify → security → review → push → PR |
 | `/bw-verify` | Quick checks: typecheck, lint, test, build |
 | `/bw-analyse` | Analyse existing codebase → write structured docs to `.buildwright/codebase/` → update tech.md |
-| `/bw-help` | Show available commands |
 
 ## Environment Variables
 
@@ -96,4 +94,3 @@ Only Critical/High findings block the pipeline. Medium and Low findings are repo
 |-------|------|---------|
 | Staff Engineer | `.buildwright/agents/staff-engineer.md` | Spec & code review, confidence scoring (≥80) |
 | Security Engineer | `.buildwright/agents/security-engineer.md` | Security review, exploit scenarios, hard exclusions |
-| Architect | `.buildwright/agents/architect.md` | Claw Architecture — decomposes cross-domain features |
