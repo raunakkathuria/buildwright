@@ -14,7 +14,6 @@ mkdir -p .buildwright/agents
 mkdir -p .buildwright/codebase
 mkdir -p .claude
 mkdir -p docs/specs
-mkdir -p .github/workflows
 mkdir -p scripts/hooks
 
 curl -sL "$BASE_URL/CLAUDE.md" > CLAUDE.md

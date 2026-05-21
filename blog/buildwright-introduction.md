@@ -62,7 +62,6 @@ tool-specific directories used by Claude Code, OpenCode, Cursor, and Codex.
   agents/
   commands/
   steering/
-  tasks/
 
 .claude/
 .opencode/
