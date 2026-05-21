@@ -58,7 +58,8 @@ Analyse a brownfield codebase and write `.buildwright/codebase/STACK.md`,
 
 ## Steering
 
-Buildwright installs one default steering file:
+Buildwright recursively reads every `.md` file under `.buildwright/steering/`.
+It installs one default steering file:
 
 - `.buildwright/steering/philosophy.md` — KISS, YAGNI, DRY, boring technology,
   fail fast, Red -> Green -> Refactor, documentation discipline, and financial

@@ -78,7 +78,8 @@ sensible defaults and proceed. Note any assumptions in the deliverable.
 
 ## Phase 3 — Research
 
-Read `.buildwright/steering/philosophy.md` first. It defines the engineering
+Recursively discover and read all `.md` files under `.buildwright/steering/`.
+Read `philosophy.md` first when present because it defines the engineering
 principles that should shape recommendations.
 
 **Then, check for pre-analysed codebase docs:**
