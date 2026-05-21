@@ -18,9 +18,10 @@ features. The command chooses the lightest workflow that still protects quality.
 Understand -> Research -> Plan if needed -> Red -> Green -> Refactor -> Docs -> Verify -> Security -> Review -> Commit/Ship
 ```
 
-Always read `.buildwright/steering/philosophy.md` first. Also read
-`.buildwright/codebase/*.md`, `.buildwright/steering/tech.md`, and
-`.buildwright/steering/product.md` if they exist.
+Always recursively discover and read all `.md` files under
+`.buildwright/steering/`. Read `philosophy.md` first when present because it is
+the default baseline. Also recursively read `.buildwright/codebase/*.md` if
+that directory exists.
 
 ## Phase 1: Understand
 

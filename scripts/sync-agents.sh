@@ -91,13 +91,15 @@ CURSOR_DESCRIPTION=""
 set_cursor_frontmatter() {
   local preset="$1"
   local filename="$2"
+  local base_filename
+  base_filename=$(basename "$filename")
 
   case "$preset" in
     steering|codebase) CURSOR_ALWAYS_APPLY="true" ;;
     *)                 CURSOR_ALWAYS_APPLY="false" ;;
   esac
 
-  case "${preset}:${filename}" in
+  case "${preset}:${base_filename}" in
     steering:product)            CURSOR_DESCRIPTION="Buildwright product context: goals, features, user personas, business constraints" ;;
     steering:tech)               CURSOR_DESCRIPTION="Buildwright technical context: stack, commands, architecture patterns" ;;
     steering:philosophy)         CURSOR_DESCRIPTION="Buildwright engineering philosophy: KISS, YAGNI, TDD, docs discipline" ;;
@@ -135,17 +137,21 @@ sync_cursor_dir() {
     mkdir -p "$dst"
   fi
 
-  for src_file in "$src"/*.md; do
+  while IFS= read -r src_file; do
     [ -f "$src_file" ] || continue
-    local filename
-    filename=$(basename "$src_file" .md)
+    local rel_file filename base_filename
+    rel_file="${src_file#$src/}"
+    filename="${rel_file%.md}"
+    base_filename=$(basename "$filename")
 
     # Skip meta files — they're internal docs, not rules
-    case "$filename" in
+    case "$base_filename" in
       README|TEMPLATE) continue ;;
     esac
 
     local dst_file="$dst/$filename.mdc"
+    local dst_parent
+    dst_parent=$(dirname "$dst_file")
     set_cursor_frontmatter "$preset" "$filename"
 
     if [ "$CHECK_ONLY" = true ]; then
@@ -170,6 +176,7 @@ sync_cursor_dir() {
         rm -f "$tmpfile"
       fi
     else
+      mkdir -p "$dst_parent"
       {
         printf '%s\n' "---"
         printf 'description: "%s"\n' "$CURSOR_DESCRIPTION"
@@ -179,7 +186,7 @@ sync_cursor_dir() {
         sed 's|@\.buildwright/|@.cursor/rules/|g' "$src_file"
       } > "$dst_file"
     fi
-  done
+  done < <(find "$src" -type f -name "*.md" | sort)
 
   if [ "$CHECK_ONLY" = false ]; then
     echo "  synced $src → $dst (*.mdc)"
