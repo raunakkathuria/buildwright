@@ -42,46 +42,39 @@ jobs:
       - name: Smoke test CLI command listing
         run: node cli/bin/buildwright.js commands
 
-      - name: Check stale Buildwright references
+      - name: Check Buildwright structure
         run: |
           set -e
 
-          assert_absent() {
-            if git grep -n -F -- "$1"; then
+          actual_commands="$(find .buildwright/commands -maxdepth 1 -name 'bw-*.md' -exec basename {} .md \; | sort | tr '\n' ' ' | sed 's/ $//')"
+          expected_commands="bw-analyse bw-plan bw-ship bw-verify bw-work"
+          if [ "$actual_commands" != "$expected_commands" ]; then
+            echo "Unexpected command set: $actual_commands"
+            echo "Expected command set: $expected_commands"
+            exit 1
+          fi
+
+          for command in $expected_commands; do
+            test -d "skills/$command"
+            test -f "skills/$command/SKILL.md"
+            test -f ".claude/commands/$command.md"
+            test -f ".opencode/commands/$command.md"
+            test -f ".cursor/rules/commands/$command.mdc"
+          done
+
+          test -f ".buildwright/steering/philosophy.md"
+          test -f ".claude/steering/philosophy.md"
+          test -f ".opencode/steering/philosophy.md"
+          test -f ".cursor/rules/steering/philosophy.mdc"
+
+          top_level="$(find .buildwright -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | sort | tr '\n' ' ' | sed 's/ $//')"
+          case "$top_level" in
+            "agents commands steering"|"agents codebase commands steering")
+              ;;
+            *)
+              echo "Unexpected .buildwright directories: $top_level"
               exit 1
-            fi
-          }
+              ;;
+          esac
 
-          old_feature="bw-new""-feature"
-          old_quick="bw""-quick"
-          old_claw="bw""-claw"
-          old_help="bw""-help"
-          old_tasks=".buildwright""/tasks"
-          old_task_template="tasks""/TEMPLATE"
-          old_requirements="docs""/requirements"
-          old_requirements_template="requirements""/TEMPLATE"
-          old_skills=".buildwright""/skills"
-          old_worktree="bw""-worktree"
-          old_isolated="isolated"" workspace"
-          old_quality="quality-gates"".md"
-          old_naming="naming-conventions"".md"
-          old_philosophy="engineering-philosophy"".md"
-          old_architect_file="architect"".md"
-          old_architect="Arch""itect"
-
-          assert_absent "$old_feature"
-          assert_absent "$old_quick"
-          assert_absent "$old_claw"
-          assert_absent "$old_help"
-          assert_absent "$old_tasks"
-          assert_absent "$old_task_template"
-          assert_absent "$old_requirements"
-          assert_absent "$old_requirements_template"
-          assert_absent "$old_skills"
-          assert_absent "$old_worktree"
-          assert_absent "$old_isolated"
-          assert_absent "$old_quality"
-          assert_absent "$old_naming"
-          assert_absent "$old_philosophy"
-          assert_absent "$old_architect_file"
-          assert_absent "$old_architect"
+          test ! -e "cli/templates/.github"
