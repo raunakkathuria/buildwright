@@ -20,8 +20,14 @@ jobs:
       - name: Install CLI dependencies
         run: npm --prefix cli ci
 
+      - name: Generate synced files
+        run: make sync
+
       - name: Sync check
         run: make sync-check
+
+      - name: Check tracked generated docs
+        run: git diff --exit-code -- cli/README.md
 
       - name: Validate skill metadata
         run: make validate
@@ -38,6 +44,14 @@ jobs:
 
       - name: Check stale Buildwright references
         run: |
+          set -e
+
+          assert_absent() {
+            if git grep -n -F -- "$1"; then
+              exit 1
+            fi
+          }
+
           old_feature="bw-new""-feature"
           old_quick="bw""-quick"
           old_claw="bw""-claw"
@@ -55,7 +69,19 @@ jobs:
           old_architect_file="architect"".md"
           old_architect="Arch""itect"
 
-          ! git grep -n "$old_feature\|$old_quick\|$old_claw\|$old_help"
-          ! git grep -n "$old_tasks\|$old_task_template\|$old_requirements\|$old_requirements_template"
-          ! git grep -n "$old_skills\|$old_worktree\|$old_isolated"
-          ! git grep -n "$old_quality\|$old_naming\|$old_philosophy\|$old_architect_file\|$old_architect"
+          assert_absent "$old_feature"
+          assert_absent "$old_quick"
+          assert_absent "$old_claw"
+          assert_absent "$old_help"
+          assert_absent "$old_tasks"
+          assert_absent "$old_task_template"
+          assert_absent "$old_requirements"
+          assert_absent "$old_requirements_template"
+          assert_absent "$old_skills"
+          assert_absent "$old_worktree"
+          assert_absent "$old_isolated"
+          assert_absent "$old_quality"
+          assert_absent "$old_naming"
+          assert_absent "$old_philosophy"
+          assert_absent "$old_architect_file"
+          assert_absent "$old_architect"
