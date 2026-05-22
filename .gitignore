@@ -25,10 +25,8 @@ buildwright-multi-agent-evaluation.md
 
 # Claude Code — generated dirs (sync rewrites .buildwright/ → .claude/ paths)
 .claude/agents/
-.claude/claws/
 .claude/commands/
 .claude/steering/
-.claude/tasks/
 
 # Claude Code — user-specific local settings
 .claude/settings.local.json

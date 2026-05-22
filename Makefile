@@ -25,7 +25,7 @@ dist: sync
 cursor: sync
 	@echo "Cursor rules generated at .cursor/rules/"
 	@echo "Open this project in Cursor — rules are applied automatically."
-	@echo "Settings > Rules shows steering rules as 'Always' and commands/agents/claws as 'Intelligent'."
+	@echo "Settings > Rules shows steering rules as 'Always' and commands/agents as 'Intelligent'."
 
 # OpenCode — install skill to user global config
 opencode: sync
@@ -53,13 +53,6 @@ codex: sync
 validate:
 	@chmod +x scripts/validate-skill.sh
 	@scripts/validate-skill.sh SKILL.md
-	@if [ -d ".buildwright/skills" ]; then \
-		for dir in .buildwright/skills/*; do \
-			if [ -f "$$dir/SKILL.md" ]; then \
-				scripts/validate-skill.sh "$$dir/SKILL.md"; \
-			fi \
-		done \
-	fi
 
 # ============================================================================
 # Git Hooks — keep .buildwright/ ↔ generated files in sync automatically

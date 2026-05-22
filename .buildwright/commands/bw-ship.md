@@ -41,8 +41,10 @@ This command runs the full quality pipeline before shipping.
 
 ## Step 1: Verify (Quick Checks) — Retry up to 2x
 
-Before verifying, confirm that README.md, docs/, and CHANGELOG.md reflect the
-changes being shipped. Update any that are out of date.
+Before verifying, confirm documentation reflects the changes being shipped.
+Update affected README, docs, command text, API docs, examples, or CHANGELOG.
+If no docs need updating, record why in the final report. Documentation is part
+of done.
 
 Run quick verification checks:
 
@@ -227,6 +229,7 @@ If `gh` is not available, provide the PR creation URL.
 ║  ✅ Verify:    PASSED                                         ║
 ║  ✅ Security:  PASSED                                         ║
 ║  ✅ Review:    APPROVED                                       ║
+║  ✅ Docs:      UPDATED / NOT APPLICABLE                       ║
 ║  ✅ Release:   SHIPPED                                        ║
 ║                                                               ║
 ╠═══════════════════════════════════════════════════════════════╣

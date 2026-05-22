@@ -30,7 +30,6 @@
       "Bash(git -C:*)",
       "Bash(git -c:*)",
       "Bash(git log:*)",
-      "Bash(git worktree:*)",
       "Bash(git init:*)",
       "Bash(git remote:*)",
       "Bash(git clone:*)",

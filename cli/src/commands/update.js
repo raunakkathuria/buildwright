@@ -16,7 +16,7 @@ const BOLD = '\x1b[1m';
 const RESET = '\x1b[0m';
 
 const GITHUB_REPO = 'raunakkathuria/buildwright';
-const UPDATE_DIRS = ['commands', 'agents', 'claws'];
+const UPDATE_DIRS = ['commands', 'agents', 'steering'];
 
 /**
  * Download a URL following redirects. Returns a Buffer.
@@ -62,26 +62,6 @@ async function downloadAndExtract() {
   return { tmpDir, extractedRoot };
 }
 
-/**
- * Copy files from src to dest, but only files that exist in src.
- * Files in dest that have no counterpart in src are left untouched.
- */
-function copyUpstreamOnly(src, dest) {
-  for (const entry of fs.readdirSync(src)) {
-    const srcEntry = path.join(src, entry);
-    const destEntry = path.join(dest, entry);
-    const stat = fs.statSync(srcEntry);
-    if (stat.isDirectory()) {
-      fs.mkdirSync(destEntry, { recursive: true });
-      copyUpstreamOnly(srcEntry, destEntry);
-    } else {
-      if (!fs.existsSync(destEntry)) {
-        fs.copyFileSync(srcEntry, destEntry);  // only new files
-      }
-    }
-  }
-}
-
 async function update() {
   const cwd = process.cwd();
 
@@ -93,7 +73,7 @@ async function update() {
 
   console.log(`${BOLD}Updating Buildwright in ${cwd}...${RESET}\n`);
   console.log(`Updating: ${UPDATE_DIRS.map(d => `.buildwright/${d}/`).join(', ')}`);
-  console.log(`Preserving: .buildwright/steering/ (your customizations)\n`);
+  console.log(`Preserving: project-created steering files such as tech.md and product.md\n`);
 
   let tmpDir;
   try {
@@ -106,8 +86,8 @@ async function update() {
       throw new Error('Downloaded archive is missing .buildwright/ directory');
     }
 
-    // Update only the specified directories — overwrite upstream files only,
-    // never delete files the user added that don't exist in the upstream source.
+    // This version is not backward compatible with the older command model.
+    // Update only adds current files; users should re-run init for a clean tree.
     for (const dir of UPDATE_DIRS) {
       const src = path.join(srcBuildwright, dir);
       const dest = path.join(cwd, '.buildwright', dir);
@@ -115,10 +95,9 @@ async function update() {
         console.log(`  ${YELLOW}Skipping ${dir}/ (not found in latest release)${RESET}`);
         continue;
       }
-      console.log(`  Updating .buildwright/${dir}/ (adding new files only)`);
+      console.log(`  Updating .buildwright/${dir}/`);
       fs.mkdirSync(dest, { recursive: true });
-      // Copy only files that exist in upstream — preserves user-added files
-      copyUpstreamOnly(src, dest);
+      copyDir(src, dest, { skipExisting: dir === 'steering' });
     }
 
     // Also add CLAUDE.md if it doesn't already exist locally
@@ -140,8 +119,8 @@ async function update() {
 
     console.log('');
     console.log(`${GREEN}${BOLD}Update complete!${RESET}`);
-    console.log('commands, agents, and claws: new files added. Existing files unchanged.');
-    console.log('Your custom files and steering docs are unchanged.\n');
+    console.log('commands, agents, and default steering: new files added. Existing files unchanged.');
+    console.log('Your custom files are unchanged.\n');
 
   } catch (err) {
     console.error(`\nUpdate failed: ${err.message}`);

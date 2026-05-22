@@ -5,18 +5,13 @@
 # Generates:
 #   .claude/commands/        ← from .buildwright/commands/ (paths rewritten to .claude/)
 #   .claude/agents/          ← from .buildwright/agents/
-#   .claude/claws/           ← from .buildwright/claws/
 #   .claude/steering/        ← from .buildwright/steering/
-#   .claude/tasks/           ← from .buildwright/tasks/
 #   .opencode/commands/      ← from .buildwright/commands/ (paths rewritten to .opencode/)
 #   .opencode/agents/        ← from .buildwright/agents/
-#   .opencode/claws/         ← from .buildwright/claws/
 #   .opencode/steering/      ← from .buildwright/steering/
-#   .opencode/skills/        ← from .buildwright/skills/
 #   .cursor/rules/steering/  ← .mdc files with alwaysApply: true
 #   .cursor/rules/commands/  ← .mdc files with alwaysApply: false
 #   .cursor/rules/agents/    ← .mdc files with alwaysApply: false
-#   .cursor/rules/claws/     ← .mdc files with alwaysApply: false
 #   AGENTS.md                ← CLAUDE.md with OpenCode header prepended
 #   dist/buildwright/        ← SKILL.md packaged for ClawHub
 #
@@ -96,36 +91,29 @@ CURSOR_DESCRIPTION=""
 set_cursor_frontmatter() {
   local preset="$1"
   local filename="$2"
+  local base_filename
+  base_filename=$(basename "$filename")
 
   case "$preset" in
     steering|codebase) CURSOR_ALWAYS_APPLY="true" ;;
     *)                 CURSOR_ALWAYS_APPLY="false" ;;
   esac
 
-  case "${preset}:${filename}" in
+  case "${preset}:${base_filename}" in
     steering:product)            CURSOR_DESCRIPTION="Buildwright product context: goals, features, user personas, business constraints" ;;
     steering:tech)               CURSOR_DESCRIPTION="Buildwright technical context: stack, commands, architecture patterns" ;;
-    steering:quality-gates)      CURSOR_DESCRIPTION="Buildwright quality gates: automated checks that must pass before merge" ;;
-    steering:naming-conventions) CURSOR_DESCRIPTION="Buildwright naming conventions: canonical field and endpoint registry" ;;
+    steering:philosophy)         CURSOR_DESCRIPTION="Buildwright engineering philosophy: KISS, YAGNI, TDD, docs discipline" ;;
     codebase:STACK)              CURSOR_DESCRIPTION="Codebase tech stack: languages, runtime, frameworks, dependencies, integrations" ;;
     codebase:ARCHITECTURE)       CURSOR_DESCRIPTION="Codebase architecture: layers, data flow, entry points, directory structure" ;;
     codebase:CONVENTIONS)        CURSOR_DESCRIPTION="Codebase conventions: naming, code style, imports, error handling, testing patterns" ;;
     codebase:CONCERNS)           CURSOR_DESCRIPTION="Codebase concerns: tech debt, bugs, security risks, performance bottlenecks" ;;
-    command:bw-new-feature)      CURSOR_DESCRIPTION="Buildwright bw-new-feature: full pipeline for new features with spec and TDD" ;;
-    command:bw-claw)             CURSOR_DESCRIPTION="Buildwright bw-claw: multi-agent cross-domain feature development" ;;
-    command:bw-quick)            CURSOR_DESCRIPTION="Buildwright bw-quick: fast path for bug fixes and small tasks" ;;
+    command:bw-work)             CURSOR_DESCRIPTION="Buildwright bw-work: implement bug fixes, refactors, and features" ;;
     command:bw-ship)             CURSOR_DESCRIPTION="Buildwright bw-ship: quality pipeline then commit, push, and PR" ;;
     command:bw-verify)           CURSOR_DESCRIPTION="Buildwright bw-verify: quick quality checks (typecheck, lint, test, build)" ;;
-    command:bw-help)             CURSOR_DESCRIPTION="Buildwright bw-help: list all available Buildwright commands" ;;
     command:bw-analyse)          CURSOR_DESCRIPTION="Buildwright bw-analyse: analyse codebase, write structured docs to .buildwright/codebase/, update tech.md" ;;
     command:bw-plan)             CURSOR_DESCRIPTION="Buildwright bw-plan: research a question, produce a written deliverable — no implementation" ;;
-    agent:architect)             CURSOR_DESCRIPTION="Buildwright Architect agent persona" ;;
     agent:staff-engineer)        CURSOR_DESCRIPTION="Buildwright Staff Engineer agent persona" ;;
     agent:security-engineer)     CURSOR_DESCRIPTION="Buildwright Security Engineer agent persona" ;;
-    claw:frontend)               CURSOR_DESCRIPTION="Buildwright Frontend domain specialist claw" ;;
-    claw:backend)                CURSOR_DESCRIPTION="Buildwright Backend domain specialist claw" ;;
-    claw:database)               CURSOR_DESCRIPTION="Buildwright Database domain specialist claw" ;;
-    claw:devops)                 CURSOR_DESCRIPTION="Buildwright DevOps domain specialist claw" ;;
     *)                           CURSOR_DESCRIPTION="Buildwright ${preset}: ${filename}" ;;
   esac
 }
@@ -145,20 +133,25 @@ sync_cursor_dir() {
   fi
 
   if [ "$CHECK_ONLY" = false ]; then
+    rm -rf "$dst"
     mkdir -p "$dst"
   fi
 
-  for src_file in "$src"/*.md; do
+  while IFS= read -r src_file; do
     [ -f "$src_file" ] || continue
-    local filename
-    filename=$(basename "$src_file" .md)
+    local rel_file filename base_filename
+    rel_file="${src_file#$src/}"
+    filename="${rel_file%.md}"
+    base_filename=$(basename "$filename")
 
     # Skip meta files — they're internal docs, not rules
-    case "$filename" in
+    case "$base_filename" in
       README|TEMPLATE) continue ;;
     esac
 
     local dst_file="$dst/$filename.mdc"
+    local dst_parent
+    dst_parent=$(dirname "$dst_file")
     set_cursor_frontmatter "$preset" "$filename"
 
     if [ "$CHECK_ONLY" = true ]; then
@@ -183,6 +176,7 @@ sync_cursor_dir() {
         rm -f "$tmpfile"
       fi
     else
+      mkdir -p "$dst_parent"
       {
         printf '%s\n' "---"
         printf 'description: "%s"\n' "$CURSOR_DESCRIPTION"
@@ -192,7 +186,7 @@ sync_cursor_dir() {
         sed 's|@\.buildwright/|@.cursor/rules/|g' "$src_file"
       } > "$dst_file"
     fi
-  done
+  done < <(find "$src" -type f -name "*.md" | sort)
 
   if [ "$CHECK_ONLY" = false ]; then
     echo "  synced $src → $dst (*.mdc)"
@@ -212,10 +206,8 @@ SYNC_NEEDED=false
 
 sync_dir ".buildwright/commands"  ".claude/commands"  ".buildwright/" ".claude/"
 sync_dir ".buildwright/agents"    ".claude/agents"    ".buildwright/" ".claude/"
-sync_dir ".buildwright/claws"     ".claude/claws"     ".buildwright/" ".claude/"
 sync_dir ".buildwright/steering"  ".claude/steering"
 sync_dir ".buildwright/codebase"  ".claude/codebase"
-sync_dir ".buildwright/tasks"     ".claude/tasks"
 
 # ============================================================================
 # 2. .buildwright/ → .opencode/ (rewrite .buildwright/ → .opencode/)
@@ -223,10 +215,8 @@ sync_dir ".buildwright/tasks"     ".claude/tasks"
 
 sync_dir ".buildwright/commands"  ".opencode/commands"  ".buildwright/" ".opencode/"
 sync_dir ".buildwright/agents"    ".opencode/agents"    ".buildwright/" ".opencode/"
-sync_dir ".buildwright/claws"     ".opencode/claws"     ".buildwright/" ".opencode/"
 sync_dir ".buildwright/steering"  ".opencode/steering"
 sync_dir ".buildwright/codebase"  ".opencode/codebase"
-sync_dir ".buildwright/skills"    ".opencode/skills"
 
 # ============================================================================
 # 3. CLAUDE.md → AGENTS.md
@@ -269,14 +259,13 @@ sync_cursor_dir ".buildwright/steering"  "steering"  "steering"
 sync_cursor_dir ".buildwright/codebase"  "codebase"  "codebase"
 sync_cursor_dir ".buildwright/commands"  "commands"  "command"
 sync_cursor_dir ".buildwright/agents"    "agents"    "agent"
-sync_cursor_dir ".buildwright/claws"     "claws"     "claw"
 
 # ============================================================================
-# 5. .buildwright/commands/ and .buildwright/skills/ → skills/ (Codex CLI skill discovery)
+# 5. .buildwright/commands/ → skills/ (Codex CLI skill discovery)
 # ============================================================================
 
 if [ "$CHECK_ONLY" = false ]; then
-  cp -r .buildwright/skills skills
+  rm -rf skills
   for file in .buildwright/commands/bw-*.md; do
     [ -f "$file" ] || continue
     name=$(basename "$file" .md)
