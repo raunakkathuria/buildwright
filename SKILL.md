@@ -5,7 +5,7 @@ license: MIT
 compatibility: Requires git and gh for shipping. Optional tools for security scans include semgrep, gitleaks, and trufflehog. Works with Claude Code, OpenCode, Cursor, and Codex CLI.
 metadata:
   homepage: https://github.com/raunakkathuria/buildwright
-  version: "0.0.12"
+  version: "0.0.13"
   author: raunakkathuria
   tags:
     - development
