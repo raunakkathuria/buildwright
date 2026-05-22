@@ -1,6 +1,6 @@
 ---
 name: bw-analyse
-description: Analyse the codebase and write structured docs to .buildwright/codebase/. Updates tech.md with discovered stack and architecture.
+description: Analyse the codebase and write structured docs to .buildwright/codebase/. Creates or updates tech.md with discovered stack and commands.
 allowed-tools:
   - Read
   - Bash
@@ -12,16 +12,16 @@ allowed-tools:
 
 <objective>
 Analyse the existing codebase and produce structured reference documents in
-`.buildwright/codebase/`. Then update `.buildwright/steering/tech.md` with a summary
-so every session starts with real project context instead of template placeholders.
+`.buildwright/codebase/`. Then create or update `.buildwright/steering/tech.md`
+with real project context so future sessions do not rely on detection.
 </objective>
 
 <when_to_use>
 Run /bw-analyse when:
 - Starting on an unfamiliar or brownfield codebase
 - .buildwright/codebase/ is missing or stale
-- tech.md still contains template placeholders
-- Before /bw-new-feature or /bw-claw on an existing project
+- `.buildwright/steering/tech.md` is missing or stale
+- Before `/bw-work` on an unfamiliar existing project
 
 Skip when:
 - Greenfield project with no code yet
@@ -54,13 +54,12 @@ Skip when:
    - Find large files (potential complexity)
    - Note missing tests, security gaps, fragile areas
    - Write `.buildwright/codebase/CONCERNS.md`
-7. Update `.buildwright/steering/tech.md`:
-   - If the file does not exist, create it using the standard template (## Stack, ## Project Commands, ## Architecture, ## Code Patterns, ## Dependencies sections with placeholder values), then proceed.
-   - Replace placeholder in ## Stack with discovered languages, runtime, frameworks.
-   - Replace placeholder in ## Architecture with 3-5 line summary.
-   - Replace placeholder in ## Code Patterns with top 3 patterns from CONVENTIONS.md.
-   - Replace placeholder in ## Dependencies with key packages and their purpose.
-   - Leave ## Project Commands unchanged if already populated; populate if still a placeholder.
+7. Create or update `.buildwright/steering/tech.md` with real content:
+   - Stack: discovered languages, runtime, frameworks.
+   - Project Commands: typecheck, lint, test, build, and dev commands where available.
+   - System layout: 3-5 line summary.
+   - Code Patterns: top 3 patterns from CONVENTIONS.md.
+   - Dependencies: key packages and their purpose.
 8. Run `scripts/sync-agents.sh` to propagate codebase docs to all tool directories
 9. Commit: `chore: add codebase analysis to .buildwright/codebase/`
 10. Report: list 4 docs with line counts, summarise key findings, suggest next step
@@ -80,7 +79,7 @@ Note their existence only. Never quote their contents.
 
 <success_criteria>
 - [ ] .buildwright/codebase/ contains STACK.md, ARCHITECTURE.md, CONVENTIONS.md, CONCERNS.md
-- [ ] tech.md placeholder sections replaced with real content
+- [ ] tech.md exists with real stack and command content
 - [ ] No secrets or credentials in any written file
 - [ ] Changes committed
 </success_criteria>

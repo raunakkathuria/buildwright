@@ -25,7 +25,7 @@ program
 
 program
   .command('update')
-  .description('Update commands, agents, and claws from GitHub (preserves steering docs)')
+  .description('Update commands, agents, and default steering from GitHub')
   .action(async () => {
     await update();
   });

@@ -12,124 +12,69 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Verify sync script runs without errors (catches broken scripts or missing deps)
-      - name: Verify sync script
-        run: make sync
-
-      # Detect package manager and project type
-      - name: Detect project type
-        id: detect
-        run: |
-          if [ -f "package.json" ]; then
-            echo "type=node" >> $GITHUB_OUTPUT
-            if [ -f "pnpm-lock.yaml" ]; then
-              echo "pm=pnpm" >> $GITHUB_OUTPUT
-            elif [ -f "yarn.lock" ]; then
-              echo "pm=yarn" >> $GITHUB_OUTPUT
-            elif [ -f "bun.lockb" ]; then
-              echo "pm=bun" >> $GITHUB_OUTPUT
-            else
-              echo "pm=npm" >> $GITHUB_OUTPUT
-            fi
-          elif [ -f "Cargo.toml" ]; then
-            echo "type=rust" >> $GITHUB_OUTPUT
-          elif [ -f "go.mod" ]; then
-            echo "type=go" >> $GITHUB_OUTPUT
-          elif [ -f "pyproject.toml" ] || [ -f "setup.py" ]; then
-            echo "type=python" >> $GITHUB_OUTPUT
-          fi
-
-      # Node.js setup
       - name: Setup Node.js
-        if: steps.detect.outputs.type == 'node'
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      - name: Setup pnpm
-        if: steps.detect.outputs.pm == 'pnpm'
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8
+      - name: Install CLI dependencies
+        run: npm --prefix cli ci
 
-      - name: Install dependencies (Node)
-        if: steps.detect.outputs.type == 'node'
+      - name: Generate synced files
+        run: make sync
+
+      - name: Sync check
+        run: make sync-check
+
+      - name: Check tracked generated docs
+        run: git diff --exit-code -- cli/README.md
+
+      - name: Validate skill metadata
+        run: make validate
+
+      - name: Validate command docs
+        run: scripts/validate-docs.sh
+
+      - name: Check CLI JavaScript syntax
         run: |
-          case "${{ steps.detect.outputs.pm }}" in
-            pnpm) pnpm install --frozen-lockfile ;;
-            yarn) yarn install --frozen-lockfile ;;
-            bun) bun install ;;
-            *) npm ci ;;
+          find cli/bin cli/src cli/scripts -name "*.js" -print0 | xargs -0 -n1 node -c
+
+      - name: Smoke test CLI command listing
+        run: node cli/bin/buildwright.js commands
+
+      - name: Check Buildwright structure
+        run: |
+          set -e
+
+          actual_commands="$(find .buildwright/commands -maxdepth 1 -name 'bw-*.md' -exec basename {} .md \; | sort | tr '\n' ' ' | sed 's/ $//')"
+          expected_commands="bw-analyse bw-plan bw-ship bw-verify bw-work"
+          if [ "$actual_commands" != "$expected_commands" ]; then
+            echo "Unexpected command set: $actual_commands"
+            echo "Expected command set: $expected_commands"
+            exit 1
+          fi
+
+          for command in $expected_commands; do
+            test -d "skills/$command"
+            test -f "skills/$command/SKILL.md"
+            test -f ".claude/commands/$command.md"
+            test -f ".opencode/commands/$command.md"
+            test -f ".cursor/rules/commands/$command.mdc"
+          done
+
+          test -f ".buildwright/steering/philosophy.md"
+          test -f ".claude/steering/philosophy.md"
+          test -f ".opencode/steering/philosophy.md"
+          test -f ".cursor/rules/steering/philosophy.mdc"
+
+          top_level="$(find .buildwright -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | sort | tr '\n' ' ' | sed 's/ $//')"
+          case "$top_level" in
+            "agents commands steering"|"agents codebase commands steering")
+              ;;
+            *)
+              echo "Unexpected .buildwright directories: $top_level"
+              exit 1
+              ;;
           esac
 
-      # Rust setup
-      - name: Setup Rust
-        if: steps.detect.outputs.type == 'rust'
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          components: clippy
-
-      # Go setup
-      - name: Setup Go
-        if: steps.detect.outputs.type == 'go'
-        uses: actions/setup-go@v5
-        with:
-          go-version: '1.21'
-
-      # Python setup
-      - name: Setup Python
-        if: steps.detect.outputs.type == 'python'
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-
-      - name: Install dependencies (Python)
-        if: steps.detect.outputs.type == 'python'
-        run: |
-          pip install -e ".[dev]" || pip install -r requirements.txt
-
-      # Quality checks
-      - name: Type Check
-        run: |
-          case "${{ steps.detect.outputs.type }}" in
-            node) ${{ steps.detect.outputs.pm }} run typecheck || npx tsc --noEmit ;;
-            rust) cargo check ;;
-            go) go build ./... ;;
-            python) mypy . || pyright || echo "No type checker configured" ;;
-          esac
-
-      - name: Lint
-        run: |
-          case "${{ steps.detect.outputs.type }}" in
-            node) ${{ steps.detect.outputs.pm }} run lint || npx eslint . ;;
-            rust) cargo clippy -- -D warnings ;;
-            go) golangci-lint run || echo "golangci-lint not installed" ;;
-            python) ruff check . || flake8 ;;
-          esac
-
-      - name: Test
-        run: |
-          case "${{ steps.detect.outputs.type }}" in
-            node) ${{ steps.detect.outputs.pm }} test ;;
-            rust) cargo test ;;
-            go) go test ./... ;;
-            python) pytest ;;
-          esac
-
-      - name: Build
-        run: |
-          case "${{ steps.detect.outputs.type }}" in
-            node) ${{ steps.detect.outputs.pm }} run build ;;
-            rust) cargo build --release ;;
-            go) go build ./... ;;
-            python) echo "No build step" ;;
-          esac
-
-      - name: Security Audit
-        run: |
-          case "${{ steps.detect.outputs.type }}" in
-            node) ${{ steps.detect.outputs.pm }} audit --audit-level=high || true ;;
-            rust) cargo audit || echo "cargo-audit not installed" ;;
-            go) govulncheck ./... || echo "govulncheck not installed" ;;
-            python) pip-audit || safety check || echo "No Python audit tool" ;;
-          esac
+          test ! -e "cli/templates/.github"

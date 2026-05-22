@@ -10,12 +10,10 @@ const DIM = '\x1b[2m';
 
 const HARDCODED = [
   { name: 'bw-analyse',     description: 'Analyse codebase: writes stack, architecture, conventions, concerns to .buildwright/codebase/' },
-  { name: 'bw-claw',        description: 'Multi-agent: architect decomposes → claws execute per domain' },
-  { name: 'bw-new-feature', description: 'Full pipeline: research → spec → approve → build → ship' },
   { name: 'bw-plan',        description: 'Research a question, produce a written deliverable — no implementation, no commits' },
-  { name: 'bw-quick',       description: 'Fast path for bug fixes, small tasks, config changes' },
   { name: 'bw-ship',        description: 'Quality gates + release: verify → security → review → push → PR' },
   { name: 'bw-verify',      description: 'Quick checks: typecheck, lint, test, build' },
+  { name: 'bw-work',        description: 'Implement bug fixes, refactors, and features' },
 ];
 
 function parseFrontmatter(content) {
@@ -28,7 +26,7 @@ function parseFrontmatter(content) {
 }
 
 function loadFromDir(dir) {
-  const files = fs.readdirSync(dir).filter(f => f.startsWith('bw-') && f.endsWith('.md') && f !== 'bw-help.md');
+  const files = fs.readdirSync(dir).filter(f => f.startsWith('bw-') && f.endsWith('.md'));
   const entries = [];
   for (const file of files) {
     const content = fs.readFileSync(path.join(dir, file), 'utf8');
@@ -74,7 +72,7 @@ function commands() {
     console.log(`${DIM}(Showing default commands. Run inside a Buildwright project to see project-specific commands.)${RESET}`);
     console.log('');
   }
-  console.log(`Run ${BOLD}buildwright help${RESET} for CLI setup commands.`);
+  console.log(`Run ${BOLD}buildwright --help${RESET} for CLI setup commands.`);
   console.log('');
 }
 
