@@ -17,6 +17,53 @@ const RESET = '\x1b[0m';
 
 const GITHUB_REPO = 'raunakkathuria/buildwright';
 const UPDATE_DIRS = ['commands', 'agents', 'steering'];
+const SUPPORT_FILES = [
+  'scripts/sync-agents.sh',
+  'scripts/validate-docs.sh',
+  'scripts/validate-skill.sh',
+  'scripts/install-hooks.sh',
+  'scripts/hooks/pre-commit',
+  'scripts/hooks/post-merge',
+  'scripts/hooks/post-checkout',
+];
+const REMOVED_PATHS = [
+  '.buildwright/commands/bw-new-feature.md',
+  '.buildwright/commands/bw-quick.md',
+  '.buildwright/commands/bw-claw.md',
+  '.buildwright/commands/bw-help.md',
+  '.buildwright/agents/architect.md',
+  '.buildwright/claws',
+  '.buildwright/skills',
+  '.buildwright/tasks/TEMPLATE.md',
+  '.buildwright/steering/quality-gates.md',
+  '.buildwright/steering/naming-conventions.md',
+  '.buildwright/steering/engineering-philosophy.md',
+  'docs/requirements/TEMPLATE.md',
+  '.claude/commands/bw-new-feature.md',
+  '.claude/commands/bw-quick.md',
+  '.claude/commands/bw-claw.md',
+  '.claude/commands/bw-help.md',
+  '.claude/agents/architect.md',
+  '.claude/claws',
+  '.claude/tasks',
+  '.opencode/commands/bw-new-feature.md',
+  '.opencode/commands/bw-quick.md',
+  '.opencode/commands/bw-claw.md',
+  '.opencode/commands/bw-help.md',
+  '.opencode/agents/architect.md',
+  '.opencode/claws',
+  '.opencode/skills',
+  '.cursor/rules/commands/bw-new-feature.mdc',
+  '.cursor/rules/commands/bw-quick.mdc',
+  '.cursor/rules/commands/bw-claw.mdc',
+  '.cursor/rules/commands/bw-help.mdc',
+  '.cursor/rules/agents/architect.mdc',
+  '.cursor/rules/claws',
+  'skills/bw-new-feature',
+  'skills/bw-quick',
+  'skills/bw-claw',
+  'skills/bw-help',
+];
 
 /**
  * Download a URL following redirects. Returns a Buffer.
@@ -86,8 +133,27 @@ async function update() {
       throw new Error('Downloaded archive is missing .buildwright/ directory');
     }
 
-    // This version is not backward compatible with the older command model.
-    // Update only adds current files; users should re-run init for a clean tree.
+    const removed = [];
+    for (const relativePath of REMOVED_PATHS) {
+      const target = path.join(cwd, relativePath);
+      if (!fs.existsSync(target)) continue;
+      fs.rmSync(target, { recursive: true, force: true });
+      removed.push(relativePath);
+    }
+    for (const relativePath of ['.buildwright/tasks', 'docs/requirements']) {
+      const target = path.join(cwd, relativePath);
+      if (!fs.existsSync(target)) continue;
+      if (fs.statSync(target).isDirectory() && fs.readdirSync(target).length === 0) {
+        fs.rmdirSync(target);
+      }
+    }
+    if (removed.length > 0) {
+      console.log(`  Removed old Buildwright paths:`);
+      for (const relativePath of removed) {
+        console.log(`    - ${relativePath}`);
+      }
+    }
+
     for (const dir of UPDATE_DIRS) {
       const src = path.join(srcBuildwright, dir);
       const dest = path.join(cwd, '.buildwright', dir);
@@ -99,6 +165,15 @@ async function update() {
       fs.mkdirSync(dest, { recursive: true });
       copyDir(src, dest, { skipExisting: dir === 'steering' });
     }
+
+    for (const file of SUPPORT_FILES) {
+      const src = path.join(extractedRoot, file);
+      const dest = path.join(cwd, file);
+      if (!fs.existsSync(src)) continue;
+      fs.mkdirSync(path.dirname(dest), { recursive: true });
+      fs.copyFileSync(src, dest);
+    }
+    console.log(`  Updated Buildwright support scripts`);
 
     // Also add CLAUDE.md if it doesn't already exist locally
     const srcClaude = path.join(extractedRoot, 'CLAUDE.md');
@@ -119,7 +194,7 @@ async function update() {
 
     console.log('');
     console.log(`${GREEN}${BOLD}Update complete!${RESET}`);
-    console.log('commands, agents, and default steering: new files added. Existing files unchanged.');
+    console.log('commands, agents, and default steering updated.');
     console.log('Your custom files are unchanged.\n');
 
   } catch (err) {
