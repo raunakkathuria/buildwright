@@ -82,6 +82,19 @@ Then open your AI editor and run:
 /bw-work "your task"
 ```
 
+### Update
+
+```bash
+npm install -g buildwright@latest
+cd your-project
+buildwright update
+```
+
+`buildwright update` refreshes Buildwright commands, agents, default steering,
+and Buildwright-owned support scripts. It also removes paths from the old
+pre-`/bw-work` model so generated tool configs do not contain both old and new
+workflows.
+
 ### From Source
 
 ```bash
