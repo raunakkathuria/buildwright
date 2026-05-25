@@ -1,6 +1,6 @@
 {
   "name": "buildwright",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "description": "Lightweight engineering workflow for agent-led development.",
   "license": "MIT",
   "engines": {
