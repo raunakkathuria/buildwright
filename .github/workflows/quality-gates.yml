@@ -42,6 +42,16 @@ jobs:
       - name: Smoke test CLI command listing
         run: node cli/bin/buildwright.js commands
 
+      - name: Check broken symlinks
+        run: |
+          set -e
+          find . -path ./node_modules -prune -o -type l -print | while IFS= read -r link; do
+            if [ ! -e "$link" ]; then
+              echo "broken symlink: $link"
+              exit 1
+            fi
+          done
+
       - name: Check Buildwright structure
         run: |
           set -e
@@ -78,3 +88,4 @@ jobs:
           esac
 
           test ! -e "cli/templates/.github"
+          test ! -e "cli/templates/docs"

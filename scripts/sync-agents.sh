@@ -33,6 +33,17 @@ cd "$ROOT_DIR"
 # Helpers
 # ============================================================================
 
+sed_inplace() {
+  local expression="$1"
+  local file="$2"
+
+  if sed --version >/dev/null 2>&1; then
+    sed -i -e "$expression" "$file"
+  else
+    sed -i '' -e "$expression" "$file"
+  fi
+}
+
 # sync_dir SRC DST [REWRITE_FROM REWRITE_TO]
 # Copies directory, optionally rewriting path references in .md files
 sync_dir() {
@@ -58,9 +69,9 @@ sync_dir() {
     if [ -n "$rewrite_from" ] && [ -n "$rewrite_to" ]; then
       # Only rewrite @@.buildwright/ (read instructions) → tool-specific path
       # Bare .buildwright/ (write/canonical instructions) stays untouched
-      find "$tmpdir" -name "*.md" -exec sed -i '' \
-        -e "s|@@${rewrite_from}|${rewrite_to}|g" \
-        {} + 2>/dev/null || true
+      while IFS= read -r file; do
+        sed_inplace "s|@@${rewrite_from}|${rewrite_to}|g" "$file"
+      done < <(find "$tmpdir" -name "*.md" -type f)
     fi
     if ! diff -rq "$tmpdir" "$dst" > /dev/null 2>&1; then
       echo "OUT OF SYNC: $dst differs from $src"
@@ -74,9 +85,9 @@ sync_dir() {
     # @@.buildwright/ = "resolve to tool-specific dir" → gets rewritten
     # Bare .buildwright/ = "canonical path" → stays untouched
     if [ -n "$rewrite_from" ] && [ -n "$rewrite_to" ]; then
-      find "$dst" -name "*.md" -exec sed -i '' \
-        -e "s|@@${rewrite_from}|${rewrite_to}|g" \
-        {} + 2>/dev/null || true
+      while IFS= read -r file; do
+        sed_inplace "s|@@${rewrite_from}|${rewrite_to}|g" "$file"
+      done < <(find "$dst" -name "*.md" -type f)
     fi
     echo "  synced $src → $dst"
   fi
