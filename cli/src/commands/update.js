@@ -2,6 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 const https = require('https');
 const { execSync } = require('child_process');
 const { isBuildwrightInstalled } = require('../utils/detect');
@@ -35,9 +36,6 @@ const REMOVED_PATHS = [
   '.buildwright/claws',
   '.buildwright/skills',
   '.buildwright/tasks/TEMPLATE.md',
-  '.buildwright/steering/quality-gates.md',
-  '.buildwright/steering/naming-conventions.md',
-  '.buildwright/steering/engineering-philosophy.md',
   'docs/requirements/TEMPLATE.md',
   '.claude/commands/bw-new-feature.md',
   '.claude/commands/bw-quick.md',
@@ -64,6 +62,60 @@ const REMOVED_PATHS = [
   'skills/bw-claw',
   'skills/bw-help',
 ];
+
+// Steering files Buildwright ships and may update in place. Keyed by filename,
+// each value is the set of SHA-256 hashes of every version Buildwright has ever
+// shipped for that file. An existing steering file is overwritten on update ONLY
+// when its hash is in this set (i.e. it is an unmodified, previously-shipped
+// copy); a customized file (hash absent) is preserved. Files Buildwright does not
+// ship at all are never touched.
+//
+// RELEASE STEP: whenever a managed steering file changes, append the superseded
+// version's SHA-256 here so unmodified installs keep auto-updating.
+const MANAGED_STEERING_HASHES = {
+  'philosophy.md': new Set([
+    '476fe491e139a211d9483942bd60435513813227c589ae0c29ba1e082672757a',
+  ]),
+};
+
+function sha256(filePath) {
+  return crypto.createHash('sha256').update(fs.readFileSync(filePath)).digest('hex');
+}
+
+/**
+ * Copy shipped steering files into dest. New shipped files are added. An existing
+ * file is overwritten only when its content matches a known shipped hash (i.e. the
+ * user has not customized it); customized or unmanaged files are preserved. Files
+ * not shipped by Buildwright are never touched. Steering is a flat dir of .md files.
+ * @param {object} [managedHashes] - filename -> Set of known shipped hashes
+ * @returns {{updated: string[], preserved: string[]}}
+ */
+function updateSteering(src, dest, managedHashes = MANAGED_STEERING_HASHES) {
+  fs.mkdirSync(dest, { recursive: true });
+  const updated = [];
+  const preserved = [];
+  for (const entry of fs.readdirSync(src, { withFileTypes: true })) {
+    if (!entry.isFile()) continue;
+    const realSrc = fs.realpathSync(path.join(src, entry.name));
+    const destPath = path.join(dest, entry.name);
+    if (!fs.existsSync(destPath)) {
+      fs.copyFileSync(realSrc, destPath);
+      updated.push(entry.name);
+      continue;
+    }
+    const known = managedHashes[entry.name];
+    const localHash = sha256(destPath);
+    if (known && known.has(localHash)) {
+      if (sha256(realSrc) !== localHash) {
+        fs.copyFileSync(realSrc, destPath);
+        updated.push(entry.name);
+      }
+    } else {
+      preserved.push(entry.name);
+    }
+  }
+  return { updated, preserved };
+}
 
 /**
  * Download a URL following redirects. Returns a Buffer.
@@ -120,7 +172,7 @@ async function update() {
 
   console.log(`${BOLD}Updating Buildwright in ${cwd}...${RESET}\n`);
   console.log(`Updating: ${UPDATE_DIRS.map(d => `.buildwright/${d}/`).join(', ')}`);
-  console.log(`Preserving: project-created steering files such as tech.md and product.md\n`);
+  console.log(`Preserving: customized and org-injected steering files (only an unmodified philosophy.md is refreshed)\n`);
 
   let tmpDir;
   try {
@@ -163,7 +215,14 @@ async function update() {
       }
       console.log(`  Updating .buildwright/${dir}/`);
       fs.mkdirSync(dest, { recursive: true });
-      copyDir(src, dest, { skipExisting: dir === 'steering' });
+      if (dir === 'steering') {
+        const { preserved } = updateSteering(src, dest);
+        if (preserved.length > 0) {
+          console.log(`    Preserved customized steering files: ${preserved.join(', ')}`);
+        }
+      } else {
+        copyDir(src, dest);
+      }
     }
 
     for (const file of SUPPORT_FILES) {
@@ -208,4 +267,4 @@ async function update() {
   }
 }
 
-module.exports = { update };
+module.exports = { update, updateSteering, REMOVED_PATHS, MANAGED_STEERING_HASHES };
