@@ -95,6 +95,12 @@ and Buildwright-owned support scripts. It also removes paths from the old
 pre-`/bw-work` model so generated tool configs do not contain both old and new
 workflows.
 
+Steering is only touched if Buildwright ships the file. The default
+`philosophy.md` is refreshed in place only when it is unmodified (a known shipped
+version); a customized `philosophy.md` is preserved. Any steering file Buildwright
+does not ship — your `tech.md`, `product.md`, or org-injected docs such as
+`quality-gates.md` — is never deleted or overwritten.
+
 ### From Source
 
 ```bash

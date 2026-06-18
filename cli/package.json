@@ -15,6 +15,7 @@
     "templates/"
   ],
   "scripts": {
+    "test": "node --test",
     "prepack": "node scripts/prepack.js",
     "postpack": "node scripts/postpack.js"
   },
