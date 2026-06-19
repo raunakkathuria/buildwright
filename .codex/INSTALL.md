@@ -2,6 +2,13 @@
 
 Enable Buildwright workflow skills in Codex via native skill discovery.
 
+Codex gets Buildwright in two complementary ways:
+
+- **Project instructions** — `AGENTS.md` at the repo root. Codex reads it
+  natively when run inside the project; no install step is required. This is the
+  single canonical instruction file shared by Claude Code, OpenCode, and Cursor.
+- **Workflow skills** — the 5 `bw-*` skills, installed via the symlink below.
+
 ## Prerequisites
 
 - Git
@@ -29,6 +36,9 @@ Enable Buildwright workflow skills in Codex via native skill discovery.
    ```bash
    make codex
    ```
+
+   To install Buildwright globally for every supported tool at once (Claude
+   Code, Codex, OpenCode, OpenClaw), run `make global` instead.
 
 3. Restart Codex to discover the skills.
 

@@ -112,7 +112,9 @@ gate fails, fix and retry up to `BUILDWRIGHT_AGENT_RETRIES` times, default 2.
 
 ## Phase 7: Security Review
 
-Adopt `.buildwright/agents/security-engineer.md`. Review the changed diff for:
+Adopt the Security Engineer persona from `.buildwright/agents/security-engineer.md`
+(or `~/.claude/agents/security-engineer.md` for a global install without a project
+`.buildwright/`). Review the changed diff for:
 - Secrets
 - Dependency vulnerabilities, if tooling exists
 - Input validation and authorization
@@ -123,7 +125,9 @@ Stop on critical vulnerabilities.
 
 ## Phase 8: Code Review
 
-Adopt `.buildwright/agents/staff-engineer.md`. Review the changed diff for:
+Adopt the Staff Engineer persona from `.buildwright/agents/staff-engineer.md`
+(or `~/.claude/agents/staff-engineer.md` for a global install without a project
+`.buildwright/`). Review the changed diff for:
 - Logic errors and missed edge cases
 - Error handling
 - Pattern fit and unnecessary complexity
