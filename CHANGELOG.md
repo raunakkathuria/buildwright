@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.0.16
 
 - Made `AGENTS.md` the single canonical instruction file (committed,
   hand-maintained). `CLAUDE.md` is now a pointer stub to it; neither is
