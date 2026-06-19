@@ -12,8 +12,10 @@
 #   .cursor/rules/steering/  ← .mdc files with alwaysApply: true
 #   .cursor/rules/commands/  ← .mdc files with alwaysApply: false
 #   .cursor/rules/agents/    ← .mdc files with alwaysApply: false
-#   AGENTS.md                ← CLAUDE.md with OpenCode header prepended
 #   dist/buildwright/        ← SKILL.md packaged for ClawHub
+#
+# Note: AGENTS.md (canonical, committed) and CLAUDE.md (pointer stub) are NOT
+# generated — they are hand-maintained root files.
 #
 # Usage: scripts/sync-agents.sh [--check]
 #   --check: Verify sync without modifying files (exit 1 if out of sync)
@@ -129,9 +131,23 @@ set_cursor_frontmatter() {
   esac
 }
 
+# strip_frontmatter FILE
+# Emits FILE's body with a leading YAML frontmatter block (--- ... ---) removed.
+# Files without frontmatter are emitted unchanged. Cursor .mdc files carry their
+# own frontmatter, so the source's name/description block must not leak into the
+# rule body.
+strip_frontmatter() {
+  awk '
+    NR==1 && $0=="---" { in_fm=1; next }
+    in_fm && $0=="---" { in_fm=0; next }
+    !in_fm             { print }
+  ' "$1"
+}
+
 # sync_cursor_dir SRC DST_SUBDIR PRESET
 # Converts .md files in SRC to .mdc files in .cursor/rules/DST_SUBDIR,
 # prepending YAML frontmatter and rewriting @.buildwright/ → @.cursor/rules/.
+# The source's own frontmatter (if any) is stripped first.
 # Skips README and TEMPLATE files.
 sync_cursor_dir() {
   local src="$1"
@@ -178,7 +194,7 @@ sync_cursor_dir() {
           printf '%s\n' "globs: []"
           printf 'alwaysApply: %s\n' "$CURSOR_ALWAYS_APPLY"
           printf '%s\n' "---"
-          sed 's|@\.buildwright/|@.cursor/rules/|g' "$src_file"
+          strip_frontmatter "$src_file" | sed 's|@\.buildwright/|@.cursor/rules/|g'
         } > "$tmpfile"
         if ! diff -q "$dst_file" "$tmpfile" > /dev/null 2>&1; then
           echo "OUT OF SYNC: $dst_file"
@@ -194,7 +210,7 @@ sync_cursor_dir() {
         printf '%s\n' "globs: []"
         printf 'alwaysApply: %s\n' "$CURSOR_ALWAYS_APPLY"
         printf '%s\n' "---"
-        sed 's|@\.buildwright/|@.cursor/rules/|g' "$src_file"
+        strip_frontmatter "$src_file" | sed 's|@\.buildwright/|@.cursor/rules/|g'
       } > "$dst_file"
     fi
   done < <(find "$src" -type f -name "*.md" | sort)
@@ -230,40 +246,7 @@ sync_dir ".buildwright/steering"  ".opencode/steering"
 sync_dir ".buildwright/codebase"  ".opencode/codebase"
 
 # ============================================================================
-# 3. CLAUDE.md → AGENTS.md
-# ============================================================================
-
-generate_agents_md() {
-  local target="$1"
-  printf '%s\n' "---" \
-    "# OpenCode agent instructions" \
-    "# Auto-generated from CLAUDE.md — do not edit directly" \
-    "# Run: scripts/sync-agents.sh to regenerate" \
-    "---" \
-    "" > "$target"
-  cat CLAUDE.md >> "$target"
-}
-
-if [ "$CHECK_ONLY" = true ]; then
-  if [ ! -f "AGENTS.md" ]; then
-    echo "MISSING: AGENTS.md (should be generated from CLAUDE.md)"
-    SYNC_NEEDED=true
-  else
-    TMPFILE=$(mktemp)
-    generate_agents_md "$TMPFILE"
-    if ! diff -q "AGENTS.md" "$TMPFILE" > /dev/null 2>&1; then
-      echo "OUT OF SYNC: AGENTS.md differs from CLAUDE.md"
-      SYNC_NEEDED=true
-    fi
-    rm -f "$TMPFILE"
-  fi
-else
-  generate_agents_md "AGENTS.md"
-  echo "  generated AGENTS.md from CLAUDE.md"
-fi
-
-# ============================================================================
-# 4. .buildwright/ → .cursor/rules/ (convert to .mdc with frontmatter)
+# 3. .buildwright/ → .cursor/rules/ (convert to .mdc with frontmatter)
 # ============================================================================
 
 sync_cursor_dir ".buildwright/steering"  "steering"  "steering"
@@ -272,7 +255,7 @@ sync_cursor_dir ".buildwright/commands"  "commands"  "command"
 sync_cursor_dir ".buildwright/agents"    "agents"    "agent"
 
 # ============================================================================
-# 5. .buildwright/commands/ → skills/ (Codex CLI skill discovery)
+# 4. .buildwright/commands/ → skills/ (Codex CLI skill discovery)
 # ============================================================================
 
 if [ "$CHECK_ONLY" = false ]; then
@@ -287,7 +270,7 @@ if [ "$CHECK_ONLY" = false ]; then
 fi
 
 # ============================================================================
-# 6. Package for ClawHub (dist/)
+# 5. Package for ClawHub (dist/)
 # ============================================================================
 
 if [ "$CHECK_ONLY" = false ] && [ -f "SKILL.md" ]; then
@@ -297,7 +280,7 @@ if [ "$CHECK_ONLY" = false ] && [ -f "SKILL.md" ]; then
 fi
 
 # ============================================================================
-# 7. README.md → cli/README.md (single source of truth for npm package page)
+# 6. README.md → cli/README.md (single source of truth for npm package page)
 # Only runs in the buildwright repo itself, which has a cli/ directory.
 # Generated services do not have cli/ and must not fail here.
 # ============================================================================
@@ -326,7 +309,6 @@ else
   echo "  .buildwright/ → .claude/         (paths rewritten)"
   echo "  .buildwright/ → .opencode/       (paths rewritten)"
   echo "  .buildwright/ → .cursor/rules/   (.mdc with frontmatter)"
-  echo "  CLAUDE.md     → AGENTS.md"
   echo "  SKILL.md      → dist/buildwright/SKILL.md"
   echo "  .buildwright/commands/ → skills/          (Codex CLI skill discovery)"
   if [ -d "cli" ]; then

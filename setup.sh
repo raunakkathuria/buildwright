@@ -16,6 +16,7 @@ mkdir -p .claude
 mkdir -p docs/specs
 mkdir -p scripts/hooks
 
+curl -sL "$BASE_URL/AGENTS.md" > AGENTS.md
 curl -sL "$BASE_URL/CLAUDE.md" > CLAUDE.md
 curl -sL "$BASE_URL/.claude/settings.json" > .claude/settings.json
 
