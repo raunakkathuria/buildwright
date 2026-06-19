@@ -85,7 +85,9 @@ If FAIL after retries:
 
 ## Step 2: Security Review — No retry (needs human judgment)
 
-Adopt Security Engineer persona from `.buildwright/agents/security-engineer.md`.
+Adopt the Security Engineer persona from `.buildwright/agents/security-engineer.md`.
+For a global install in a project without `.buildwright/`, read it from
+`~/.claude/agents/security-engineer.md` instead.
 
 ### 2.1 Determine Scope
 ```bash
@@ -142,7 +144,9 @@ If CRITICAL VULNERABILITIES:
 
 ## Step 3: Code Review — No retry (architectural decisions)
 
-Adopt Staff Engineer persona from `.buildwright/agents/staff-engineer.md`.
+Adopt the Staff Engineer persona from `.buildwright/agents/staff-engineer.md`.
+For a global install in a project without `.buildwright/`, read it from
+`~/.claude/agents/staff-engineer.md` instead.
 
 ### 3.1 Determine Scope
 ```bash

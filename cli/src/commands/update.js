@@ -234,12 +234,15 @@ async function update() {
     }
     console.log(`  Updated Buildwright support scripts`);
 
-    // Also add CLAUDE.md if it doesn't already exist locally
-    const srcClaude = path.join(extractedRoot, 'CLAUDE.md');
-    const destClaude = path.join(cwd, 'CLAUDE.md');
-    if (fs.existsSync(srcClaude) && !fs.existsSync(destClaude)) {
-      console.log(`  Adding CLAUDE.md`);
-      fs.copyFileSync(srcClaude, destClaude);
+    // Add the canonical AGENTS.md and the CLAUDE.md pointer stub if absent
+    // locally. Existing files are left untouched (treated as user-owned).
+    for (const file of ['AGENTS.md', 'CLAUDE.md']) {
+      const src = path.join(extractedRoot, file);
+      const dest = path.join(cwd, file);
+      if (fs.existsSync(src) && !fs.existsSync(dest)) {
+        console.log(`  Adding ${file}`);
+        fs.copyFileSync(src, dest);
+      }
     }
 
     console.log('');

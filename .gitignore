@@ -37,8 +37,5 @@ buildwright-multi-agent-evaluation.md
 # Cursor — generated from .buildwright/ by: make sync
 .cursor/rules/
 
-# AGENTS.md — generated from CLAUDE.md for OpenCode compatibility
-AGENTS.md
-
 # Codex CLI — generated from .buildwright/commands/ by: make sync
 /skills/
