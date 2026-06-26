@@ -19,6 +19,24 @@ configured by the caller.
 Verify your own work through tests and checks; commit only after verification
 passes.
 
+## Auto-continue
+
+Advancing through a queue of ready work is the **default**, not a special mode.
+
+- When a sequence of ready, question-free items exists (e.g. the next unchecked
+  items in a plan), work through them without waiting for a manual
+  re-invocation per item.
+- Track the queue with the host's native task/todo tracking where available (see
+  `.buildwright/steering/native-capabilities.md`), so progress is visible and
+  interruptible; otherwise keep an explicit checklist.
+- **Pause** the moment an item raises a genuine decision/approval/ambiguity, and
+  surface the question before continuing.
+- The developer can interrupt at any time to pause or stop the sequence; honour
+  a host-native interrupt and an explicit "stop"/"pause" instruction.
+- When the queue crosses into a different command's territory (e.g. plan → work),
+  invoke that command faithfully via native command invocation rather than
+  re-enacting it from memory.
+
 ## Failure handling (context-inferred)
 
 When a step fails after retries, infer the execution context from the

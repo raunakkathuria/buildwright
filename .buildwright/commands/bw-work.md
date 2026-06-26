@@ -23,6 +23,17 @@ Always recursively discover and read all `.md` files under
 the default baseline. Also recursively read `.buildwright/codebase/*.md` if
 that directory exists.
 
+Follow `.buildwright/steering/autonomy.md` for the single autonomy behaviour and
+auto-continue (work through ready, question-free items without per-item
+re-invocation; pause only on a genuine decision). Prefer the host's native
+capabilities per `.buildwright/steering/native-capabilities.md` — use native
+task/todo tracking for the loop and native file writes rather than reimplementing
+them in prose.
+
+When you defer a decision (acceptable for staging, must fix before production) or
+spot an issue better fixed upstream, record it per
+`.buildwright/steering/findings.md` as it arises — don't leave it scattered.
+
 ## Phase 1: Understand
 
 Parse `$ARGUMENTS.task` and identify:

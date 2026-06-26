@@ -11,6 +11,12 @@ arguments:
 
 This command runs the full quality pipeline before shipping.
 
+Failure handling follows the single autonomy behaviour in
+`.buildwright/steering/autonomy.md` (context-inferred — no mode flag). Any
+"acceptable for staging, fix before production" decision surfaced during review
+is recorded per `.buildwright/steering/findings.md` (before-production class) so
+it is not lost at release time.
+
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                      SHIP PIPELINE                          │

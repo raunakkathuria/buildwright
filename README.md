@@ -41,14 +41,19 @@ the agent must say why.
 
 ## Steering
 
-Buildwright installs one default steering file:
+Buildwright installs default steering files:
 
 ```text
-.buildwright/steering/philosophy.md
+.buildwright/steering/philosophy.md           # KISS, YAGNI, DRY, fail-fast, TDD, docs, financial-code rules
+.buildwright/steering/autonomy.md             # the single autonomy behaviour, auto-continue, context-inferred failure handling
+.buildwright/steering/native-capabilities.md  # prefer host-native capabilities (plan/file-write/tasks/subagents/hooks) with fallbacks
+.buildwright/steering/findings.md             # convention for report-upstream and before-production deferrals
 ```
 
-That file contains KISS, YAGNI, DRY, boring technology, fail-fast, TDD,
-documentation discipline, and financial-code rules.
+`philosophy.md` defines the engineering principles. `autonomy.md` is why there
+is no approval flag — one behaviour, inferred from context. `native-capabilities.md`
+keeps commands leaning on each host tool's built-ins instead of reimplementing
+them. `findings.md` standardises how deferred decisions are recorded.
 
 Project-specific steering is created only when there is real content:
 

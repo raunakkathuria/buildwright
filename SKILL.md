@@ -59,11 +59,18 @@ Analyse a brownfield codebase and write `.buildwright/codebase/STACK.md`,
 ## Steering
 
 Buildwright recursively reads every `.md` file under `.buildwright/steering/`.
-It installs one default steering file:
+It installs these default steering files:
 
 - `.buildwright/steering/philosophy.md` — KISS, YAGNI, DRY, boring technology,
   fail fast, Red -> Green -> Refactor, documentation discipline, and financial
   code rules.
+- `.buildwright/steering/autonomy.md` — the single autonomy behaviour (no mode
+  flag), auto-continue through ready work, and context-inferred failure handling.
+- `.buildwright/steering/native-capabilities.md` — prefer each host tool's native
+  capabilities (plan/file-write/task-tracking/sub-agents/hooks) with documented
+  fallbacks, instead of reimplementing them in prose.
+- `.buildwright/steering/findings.md` — convention for recording report-upstream
+  and before-production deferrals.
 
 Project-specific steering is lazy-created:
 
