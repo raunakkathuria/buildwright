@@ -60,8 +60,9 @@ Run quick verification checks:
 **If same error repeats → Not making progress — handle failure (see below).**
 **If still failing after retries → Handle failure:**
 
-- **Autonomous** (`BUILDWRIGHT_AUTO_APPROVE=true`, default): Commit completed work, push branch, create PR with failure summary (see BUILDWRIGHT.md template), exit(1).
-- **Interactive** (`BUILDWRIGHT_AUTO_APPROVE=false`): STOP and report blocker to human.
+Handle per `.buildwright/steering/autonomy.md` (context-inferred):
+- **Interactive**: STOP and report the blocker to the human.
+- **Unattended/CI**: commit completed work, push branch, create a `[FAILED]` PR with the failure summary (see BUILDWRIGHT.md template), exit(1).
 
 ```
 ╔═══════════════════════════════════════════════════════════════╗
@@ -121,8 +122,9 @@ Where DISCOVERED_AUDIT_COMMAND is the stack-appropriate audit tool, e.g.:
 
 **If CRITICAL vulnerabilities found → No retry. Handle failure:**
 
-- **Autonomous** (`BUILDWRIGHT_AUTO_APPROVE=true`, default): Commit completed work, push branch, create PR with failure summary (see BUILDWRIGHT.md template), exit(1).
-- **Interactive** (`BUILDWRIGHT_AUTO_APPROVE=false`): STOP immediately. Security issues require human judgment.
+Handle per `.buildwright/steering/autonomy.md` (context-inferred):
+- **Interactive**: STOP immediately. Security issues require human judgment.
+- **Unattended/CI**: commit completed work, push branch, create a `[FAILED]` PR with the failure summary (see BUILDWRIGHT.md template), exit(1).
 
 ```
 ╔═══════════════════════════════════════════════════════════════╗
@@ -168,8 +170,9 @@ Assess against categories from the Staff Engineer persona's "In Code" checklist.
 **⚠️ APPROVED WITH COMMENTS** → Proceed to release. Fix recommendations if straightforward, otherwise note for follow-up.
 **❌ CHANGES REQUESTED** → No retry. Handle failure:
 
-- **Autonomous** (`BUILDWRIGHT_AUTO_APPROVE=true`, default): Commit completed work, push branch, create PR with failure summary (see BUILDWRIGHT.md template), exit(1).
-- **Interactive** (`BUILDWRIGHT_AUTO_APPROVE=false`): STOP immediately. Code review issues often involve architectural decisions that need human input.
+Handle per `.buildwright/steering/autonomy.md` (context-inferred):
+- **Interactive**: STOP immediately. Code review issues often involve architectural decisions that need human input.
+- **Unattended/CI**: commit completed work, push branch, create a `[FAILED]` PR with the failure summary (see BUILDWRIGHT.md template), exit(1).
 
 ```
 ╔═══════════════════════════════════════════════════════════════╗
@@ -252,7 +255,12 @@ If `gh` is not available, provide the PR creation URL.
 
 ## Failure Handling
 
-### Interactive Mode (`BUILDWRIGHT_AUTO_APPROVE=false`)
+Infer the execution context (see `.buildwright/steering/autonomy.md`) — there is
+no mode flag. Detect interactivity from a standard shell check (`[ -t 0 ]` /
+`[ -t 1 ]`) and common CI variables (`CI`, `GITHUB_ACTIONS`); if context cannot
+be determined, default to the unattended path.
+
+### Interactive (a TTY is attached, no CI signal)
 
 STOP and show the blocker:
 
@@ -274,7 +282,7 @@ STOP and show the blocker:
 ╚═══════════════════════════════════════════════════════════════╝
 ```
 
-### Autonomous Mode (`BUILDWRIGHT_AUTO_APPROVE=true`, default)
+### Unattended (`CI` / `GITHUB_ACTIONS` set, or no TTY)
 
 Commit completed work, push, create PR with failure details, and exit(1):
 

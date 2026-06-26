@@ -30,15 +30,17 @@ claude
 | Variable | Default | Required | Purpose |
 |----------|---------|----------|---------|
 | `GITHUB_TOKEN` | — | Yes | Push branches and open PRs via `gh`. Needs `repo` scope. |
-| `BUILDWRIGHT_AUTO_APPROVE` | `true` | No | Autonomous mode — skip human approval, fail gracefully on errors |
 | `BUILDWRIGHT_AGENT_RETRIES` | `2` | No | Number of verify retries before giving up |
 
 ## Failure Behavior
 
-| Mode | Any Failure | Behavior |
-|------|-------------|----------|
-| Autonomous (`BUILDWRIGHT_AUTO_APPROVE=true`, default) | Commit + push + failed PR + exit(1) | CI/CD fails, PR shows failure details |
-| Interactive (`BUILDWRIGHT_AUTO_APPROVE=false`) | STOP, show error | Human fixes in-session |
+There is one autonomy behaviour, with no mode flag. On failure the agent infers
+the execution context (see `.buildwright/steering/autonomy.md`):
+
+| Context | Any Failure | Behavior |
+|---------|-------------|----------|
+| Unattended/CI (`CI`/`GITHUB_ACTIONS` set, or no TTY) | Commit + push + failed PR + exit(1) | CI/CD fails, PR shows failure details |
+| Interactive (TTY attached, no CI signal) | STOP, show error | Human fixes in-session |
 
 **Autonomous failure path** (verify retries exhausted / critical security / review blocked):
 1. Commit all completed work to feature branch

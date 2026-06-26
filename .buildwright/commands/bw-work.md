@@ -62,8 +62,10 @@ For larger or unclear work, write:
 - `docs/specs/[feature]/spec.md`
 
 The spec must include scope, approach, risks, test strategy, documentation
-impact, and implementation milestones. In interactive mode
-(`BUILDWRIGHT_AUTO_APPROVE=false`), stop for approval before implementation.
+impact, and implementation milestones. Follow the single autonomy behaviour
+(`.buildwright/steering/autonomy.md`): proceed autonomously, pausing for approval
+before implementation only when the approach involves a decision that is
+genuinely the human's to make.
 
 Cross-domain work still uses a normal spec and implementation plan. Do not use
 legacy multi-agent terminology or domain-specialist personas.

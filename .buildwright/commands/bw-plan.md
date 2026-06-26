@@ -67,12 +67,11 @@ If **inline text** is provided, infer:
 
 ## Phase 2 — Clarify
 
-In **interactive mode** (`BUILDWRIGHT_AUTO_APPROVE=false`): if a critical input
-is ambiguous (e.g. target repository path is unknown), ask one focused question
-before proceeding.
-
-In **autonomous mode** (`BUILDWRIGHT_AUTO_APPROVE=true`, default): apply
-sensible defaults and proceed. Note any assumptions in the deliverable.
+Follow the single autonomy behaviour (`.buildwright/steering/autonomy.md`): apply
+sensible defaults and proceed autonomously, noting any assumptions in the
+deliverable. Pause to ask one focused question only when a critical input is
+genuinely the human's decision (e.g. the target repository is ambiguous and no
+reasonable default exists).
 
 ---
 

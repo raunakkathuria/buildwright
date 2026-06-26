@@ -196,7 +196,6 @@ make validate
 
 | Variable | Default | Purpose |
 |----------|---------|---------|
-| `BUILDWRIGHT_AUTO_APPROVE` | `true` | Skip approval pauses and proceed autonomously |
 | `BUILDWRIGHT_AGENT_RETRIES` | `2` | Verification retry count |
 | `GITHUB_TOKEN` | unset | Used by `gh` when creating PRs |
 

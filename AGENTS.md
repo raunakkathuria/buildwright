@@ -75,10 +75,13 @@ Run once per session and cache the result.
 - Commit only after verification passes.
 - Stop only when genuinely blocked.
 
-`BUILDWRIGHT_AUTO_APPROVE=true` means autonomous mode. If a step fails after
-retries, commit completed work, push, create a PR with failure details, and
-exit non-zero. In interactive mode (`BUILDWRIGHT_AUTO_APPROVE=false`), stop and
-report the blocker.
+There is one autonomy behaviour, with no mode flag (see
+`.buildwright/steering/autonomy.md`). On failure after retries, infer the
+execution context: in an interactive session (a TTY is attached, no CI signal),
+stop and report the blocker; in an unattended/CI run (`CI`/`GITHUB_ACTIONS` set,
+or no TTY), commit completed work, push, create a `[FAILED]` PR with failure
+details, and exit non-zero. If context cannot be determined, default to the
+unattended behaviour.
 
 ## Verification Loop
 

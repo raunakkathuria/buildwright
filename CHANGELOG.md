@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased
+
+- Breaking change: removed the `BUILDWRIGHT_AUTO_APPROVE` environment variable.
+  It was unenforced (no script read it) and overloaded across `bw-plan`,
+  `bw-work`, `bw-ship`, and `bw-analyse`. Buildwright now has a single autonomy
+  behaviour (see `.buildwright/steering/autonomy.md`): execute autonomously,
+  pause only on a decision genuinely the human's to make, stop when blocked. On
+  failure the execution context is inferred (interactive → ask; unattended/CI →
+  preserve work, open a `[FAILED]` PR, exit non-zero) instead of read from a
+  flag.
+
 ## 0.0.16
 
 - Made `AGENTS.md` the single canonical instruction file (committed,
