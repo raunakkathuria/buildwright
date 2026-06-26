@@ -23,6 +23,15 @@ cd ..
 sed -i.bak "s/^  version: \".*\"/  version: \"$NEW_VERSION\"/" SKILL.md
 rm -f SKILL.md.bak
 
+# 3b. Stamp the version into canonical command frontmatter so generated
+#     commands (.claude/.opencode/skills) carry it after sync. Lets users tell
+#     when an installed command set is stale.
+for cmd in .buildwright/commands/bw-*.md; do
+  [ -f "$cmd" ] || continue
+  sed -i.bak "s/^version: .*/version: $NEW_VERSION/" "$cmd"
+  rm -f "$cmd.bak"
+done
+
 # 4. Sync dist/
 make sync
 

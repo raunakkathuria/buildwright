@@ -1,5 +1,6 @@
 ---
 name: bw-analyse
+version: 0.0.16
 description: Analyse the codebase and write structured docs to .buildwright/codebase/. Creates or updates tech.md with discovered stack and commands.
 allowed-tools:
   - Read

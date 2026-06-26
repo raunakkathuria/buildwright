@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Generated commands now carry a `version:` frontmatter stamp (sourced from
+  `cli/package.json`), so an installed `bw-*` command set reveals when it is
+  stale. `make bump` updates the stamp in canonical `.buildwright/commands/*.md`
+  and `make sync` propagates it to `.claude/`, `.opencode/`, and Codex `skills/`.
 - `/bw-plan` now writes its deliverable with a single decisive native file write
   (no "writing now…" narration, incremental for large plans, clear error + stop
   on write failure) — fixes the plan-write stall.
