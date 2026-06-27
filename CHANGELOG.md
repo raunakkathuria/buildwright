@@ -12,14 +12,17 @@
 - `/bw-plan` ends with an explicit handoff: it recommends running `/bw-work` and,
   when continuing, invokes the real command via native command invocation rather
   than re-enacting it from memory. No more free-text "Want me to proceed?".
-- Added steering: `autonomy.md` (single behaviour + auto-continue),
-  `native-capabilities.md` (prefer host-native capabilities with fallbacks), and
-  `findings.md` (report-upstream / before-production deferral convention).
-  Commands now lean on native task tracking, file writes, and command invocation.
+- Added `.buildwright/framework/` for Buildwright-owned behaviour docs, kept
+  separate from project-owned `.buildwright/steering/`: `autonomy.md` (single
+  behaviour + auto-continue), `capability.md` (prefer host-native capabilities
+  with fallbacks), and `findings.md` (report-upstream / before-production
+  deferral convention). Framework docs are refreshed on update; steering is
+  preserved. Commands now lean on native task tracking, file writes, and command
+  invocation.
 - Breaking change: removed the `BUILDWRIGHT_AUTO_APPROVE` environment variable.
   It was unenforced (no script read it) and overloaded across `bw-plan`,
   `bw-work`, `bw-ship`, and `bw-analyse`. Buildwright now has a single autonomy
-  behaviour (see `.buildwright/steering/autonomy.md`): execute autonomously,
+  behaviour (see `.buildwright/framework/autonomy.md`): execute autonomously,
   pause only on a decision genuinely the human's to make, stop when blocked. On
   failure the execution context is inferred (interactive → ask; unattended/CI →
   preserve work, open a `[FAILED]` PR, exit non-zero) instead of read from a

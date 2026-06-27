@@ -30,7 +30,7 @@ Skip when:
 </when_to_use>
 
 <process>
-1. Check `.buildwright/codebase/` (follow `.buildwright/steering/autonomy.md`):
+1. Check `.buildwright/codebase/` (follow `.buildwright/framework/autonomy.md`):
    - If empty or missing → proceed to Step 2.
    - If it already has files → overwriting existing docs is the human's call. In
      an interactive session, ask: "Codebase docs already exist. Refresh

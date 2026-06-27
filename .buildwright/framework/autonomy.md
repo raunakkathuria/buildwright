@@ -27,7 +27,7 @@ Advancing through a queue of ready work is the **default**, not a special mode.
   items in a plan), work through them without waiting for a manual
   re-invocation per item.
 - Track the queue with the host's native task/todo tracking where available (see
-  `.buildwright/steering/native-capabilities.md`), so progress is visible and
+  `.buildwright/framework/capability.md`), so progress is visible and
   interruptible; otherwise keep an explicit checklist.
 - **Pause** the moment an item raises a genuine decision/approval/ambiguity, and
   surface the question before continuing.
@@ -47,7 +47,10 @@ environment rather than a flag:
   wait for the human.
 - **Unattended** (`CI` / `GITHUB_ACTIONS` set, or no TTY): preserve completed
   work — commit to the feature branch, push, open a `[FAILED]`-prefixed PR with
-  the failure summary — and exit non-zero so CI registers the failure.
+  the failure summary — and exit non-zero so CI registers the failure. If no git
+  remote is configured, push and PR are impossible: commit locally, print the
+  failure summary to the run output, and still exit non-zero. Never fabricate a
+  push or PR that cannot happen.
 - **Indeterminate**: default to the unattended behaviour; never hang waiting for
   input that may never come.
 

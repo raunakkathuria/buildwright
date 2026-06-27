@@ -68,7 +68,7 @@ If **inline text** is provided, infer:
 
 ## Phase 2 — Clarify
 
-Follow the single autonomy behaviour (`.buildwright/steering/autonomy.md`): apply
+Follow the single autonomy behaviour (`.buildwright/framework/autonomy.md`): apply
 sensible defaults and proceed autonomously, noting any assumptions in the
 deliverable. Pause to ask one focused question only when a critical input is
 genuinely the human's decision (e.g. the target repository is ambiguous and no
@@ -139,7 +139,7 @@ inferred categories for inline questions).
 ## Phase 5 — Write Deliverable
 
 Write artifact files to `output_dir` using the host's native file-write
-capability (see `.buildwright/steering/native-capabilities.md`). Create
+capability (see `.buildwright/framework/capability.md`). Create
 `output_dir` first if it does not exist.
 
 **Write decisively. Do not announce the write as a separate step** (no "writing
@@ -181,13 +181,13 @@ the next step is `/bw-work`.
   the actual command.
 - **If you continue into implementation**, invoke the real `/bw-work` through the
   host's native command invocation (see
-  `.buildwright/steering/native-capabilities.md`), so its defined behaviour runs
+  `.buildwright/framework/capability.md`), so its defined behaviour runs
   verbatim. Where the host cannot invoke a command faithfully, direct the user to
   run `/bw-work` instead.
 - **Never** paraphrase or re-enact `/bw-work` from memory.
 
 This boundary follows the single autonomy behaviour in
-`.buildwright/steering/autonomy.md`.
+`.buildwright/framework/autonomy.md`.
 
 ---
 

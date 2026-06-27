@@ -1,4 +1,4 @@
-# Native Capabilities
+# Capabilities
 
 Buildwright runs on several host agent tools (Claude Code, Codex, OpenCode,
 Cursor). Where a host provides a capability natively, **prefer the native

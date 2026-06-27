@@ -9,6 +9,7 @@ BASE_URL="https://raw.githubusercontent.com/raunakkathuria/buildwright/main"
 echo "Setting up Buildwright..."
 
 mkdir -p .buildwright/commands
+mkdir -p .buildwright/framework
 mkdir -p .buildwright/steering
 mkdir -p .buildwright/agents
 mkdir -p .buildwright/codebase
@@ -29,6 +30,10 @@ curl -sL "$BASE_URL/.buildwright/commands/bw-plan.md" > .buildwright/commands/bw
 curl -sL "$BASE_URL/.buildwright/commands/bw-verify.md" > .buildwright/commands/bw-verify.md
 curl -sL "$BASE_URL/.buildwright/commands/bw-ship.md" > .buildwright/commands/bw-ship.md
 curl -sL "$BASE_URL/.buildwright/commands/bw-analyse.md" > .buildwright/commands/bw-analyse.md
+
+curl -sL "$BASE_URL/.buildwright/framework/autonomy.md" > .buildwright/framework/autonomy.md
+curl -sL "$BASE_URL/.buildwright/framework/capability.md" > .buildwright/framework/capability.md
+curl -sL "$BASE_URL/.buildwright/framework/findings.md" > .buildwright/framework/findings.md
 
 curl -sL "$BASE_URL/.buildwright/steering/philosophy.md" > .buildwright/steering/philosophy.md
 

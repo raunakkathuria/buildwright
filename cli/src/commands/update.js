@@ -17,7 +17,10 @@ const BOLD = '\x1b[1m';
 const RESET = '\x1b[0m';
 
 const GITHUB_REPO = 'raunakkathuria/buildwright';
-const UPDATE_DIRS = ['commands', 'agents', 'steering'];
+// `framework` (Buildwright-owned behaviour docs) and `commands`/`agents` are
+// fully overwritten on update via copyDir. `steering` is project-owned and uses
+// the hash-managed preserve logic below.
+const UPDATE_DIRS = ['commands', 'agents', 'framework', 'steering'];
 const SUPPORT_FILES = [
   'scripts/sync-agents.sh',
   'scripts/validate-docs.sh',

@@ -58,21 +58,28 @@ Analyse a brownfield codebase and write `.buildwright/codebase/STACK.md`,
 
 ## Steering
 
-Buildwright recursively reads every `.md` file under `.buildwright/steering/`.
-It installs these default steering files:
+Buildwright recursively reads every `.md` file under `.buildwright/framework/`
+and `.buildwright/steering/` at session start.
+
+**Framework behavior** (`.buildwright/framework/`) is Buildwright-owned and
+fixed — identical in every install, refreshed on update, not customized:
+
+- `.buildwright/framework/autonomy.md` — the single autonomy behaviour (no mode
+  flag), auto-continue through ready work, and context-inferred failure handling.
+- `.buildwright/framework/capability.md` — prefer each host tool's native
+  capabilities (plan/file-write/task-tracking/sub-agents/hooks) with documented
+  fallbacks, instead of reimplementing them in prose.
+- `.buildwright/framework/findings.md` — convention for recording report-upstream
+  and before-production deferrals.
+
+**Steering** (`.buildwright/steering/`) is project-owned and customizable,
+preserved across updates. The shipped default:
 
 - `.buildwright/steering/philosophy.md` — KISS, YAGNI, DRY, boring technology,
   fail fast, Red -> Green -> Refactor, documentation discipline, and financial
   code rules.
-- `.buildwright/steering/autonomy.md` — the single autonomy behaviour (no mode
-  flag), auto-continue through ready work, and context-inferred failure handling.
-- `.buildwright/steering/native-capabilities.md` — prefer each host tool's native
-  capabilities (plan/file-write/task-tracking/sub-agents/hooks) with documented
-  fallbacks, instead of reimplementing them in prose.
-- `.buildwright/steering/findings.md` — convention for recording report-upstream
-  and before-production deferrals.
 
-Project-specific steering is lazy-created:
+Further project-specific steering is lazy-created:
 
 - `tech.md` after command and stack discovery.
 - `product.md` only for greenfield work or explicit product context.

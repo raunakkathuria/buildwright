@@ -39,23 +39,36 @@ Documentation is part of done. Every user-facing change must update affected
 README, docs, command text, API docs, examples, or changelog. If no docs apply,
 the agent must say why.
 
-## Steering
+## Framework behavior vs. steering
 
-Buildwright installs default steering files:
+Buildwright separates **how the framework operates** from **your project's
+choices**.
+
+**Framework behavior** lives in `.buildwright/framework/`. It is Buildwright-owned
+and fixed — identical in every install, refreshed on update, not meant to be
+customized:
 
 ```text
-.buildwright/steering/philosophy.md           # KISS, YAGNI, DRY, fail-fast, TDD, docs, financial-code rules
-.buildwright/steering/autonomy.md             # the single autonomy behaviour, auto-continue, context-inferred failure handling
-.buildwright/steering/native-capabilities.md  # prefer host-native capabilities (plan/file-write/tasks/subagents/hooks) with fallbacks
-.buildwright/steering/findings.md             # convention for report-upstream and before-production deferrals
+.buildwright/framework/autonomy.md    # the single autonomy behaviour, auto-continue, context-inferred failure handling
+.buildwright/framework/capability.md  # prefer host-native capabilities (plan/file-write/tasks/subagents/hooks) with fallbacks
+.buildwright/framework/findings.md    # convention for report-upstream and before-production deferrals
 ```
 
-`philosophy.md` defines the engineering principles. `autonomy.md` is why there
-is no approval flag — one behaviour, inferred from context. `native-capabilities.md`
-keeps commands leaning on each host tool's built-ins instead of reimplementing
-them. `findings.md` standardises how deferred decisions are recorded.
+`autonomy.md` is why there is no approval flag — one behaviour, inferred from
+context. `capability.md` keeps commands leaning on each host tool's built-ins
+instead of reimplementing them. `findings.md` standardises how deferred decisions
+are recorded.
 
-Project-specific steering is created only when there is real content:
+**Steering** lives in `.buildwright/steering/`. It is project-owned and
+customizable, and is preserved across updates:
+
+```text
+.buildwright/steering/philosophy.md   # KISS, YAGNI, DRY, fail-fast, TDD, docs, financial-code rules (shipped default; customizable)
+```
+
+`philosophy.md` defines the engineering principles; ship a default and customize
+it per project. Further project-specific steering is created only when there is
+real content:
 
 ```text
 .buildwright/steering/tech.md       # created after stack/command discovery
@@ -95,16 +108,19 @@ cd your-project
 buildwright update
 ```
 
-`buildwright update` refreshes Buildwright commands, agents, default steering,
-and Buildwright-owned support scripts. It also removes paths from the old
-pre-`/bw-work` model so generated tool configs do not contain both old and new
-workflows.
+`buildwright update` refreshes Buildwright commands, agents, framework behavior,
+default steering, and Buildwright-owned support scripts. It also removes paths
+from superseded models (including the old `.buildwright/steering/` locations of
+the framework docs) so generated tool configs do not contain stale copies.
 
-Steering is only touched if Buildwright ships the file. The default
-`philosophy.md` is refreshed in place only when it is unmodified (a known shipped
-version); a customized `philosophy.md` is preserved. Any steering file Buildwright
-does not ship — your `tech.md`, `product.md`, or org-injected docs such as
-`quality-gates.md` — is never deleted or overwritten.
+Framework files (`.buildwright/framework/`) are Buildwright-owned and always
+refreshed to the shipped version — do not customize them.
+
+Steering is treated differently: it is only touched if Buildwright ships the
+file. The default `philosophy.md` is refreshed in place only when it is
+unmodified (a known shipped version); a customized `philosophy.md` is preserved.
+Any steering file Buildwright does not ship — your `tech.md`, `product.md`, or
+org-injected docs such as `quality-gates.md` — is never deleted or overwritten.
 
 ### From Source
 
@@ -170,7 +186,11 @@ rm -rf ~/.config/opencode/skills/buildwright ~/.openclaw/skills/buildwright
     bw-ship.md
     bw-verify.md
     bw-work.md
-  steering/
+  framework/              # Buildwright-owned, refreshed on update
+    autonomy.md
+    capability.md
+    findings.md
+  steering/               # project-owned, preserved on update
     philosophy.md
 
 AGENTS.md               # canonical agent instructions (committed)
