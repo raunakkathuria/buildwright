@@ -77,8 +77,9 @@ jobs:
           test -f ".opencode/steering/philosophy.md"
           test -f ".cursor/rules/steering/philosophy.mdc"
 
-          for doc in autonomy capability findings; do
-            test -f ".buildwright/framework/$doc.md"
+          # Every canonical framework doc must be synced to all targets.
+          # Derive from the directory so a new doc is covered automatically.
+          for doc in $(find .buildwright/framework -mindepth 1 -maxdepth 1 -name '*.md' -exec basename {} .md \;); do
             test -f ".claude/framework/$doc.md"
             test -f ".opencode/framework/$doc.md"
             test -f ".cursor/rules/framework/$doc.mdc"

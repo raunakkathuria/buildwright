@@ -203,7 +203,7 @@ async function update() {
 
     console.log('');
     console.log(`${GREEN}${BOLD}Update complete!${RESET}`);
-    console.log('commands, agents, and default steering updated.');
+    console.log('commands, agents, framework, and default steering updated.');
     console.log('Your custom files are unchanged.\n');
 
   } catch (err) {

@@ -96,9 +96,7 @@ Run quick verification checks:
 **If the same error repeats, or there is no diagnosable fix → Not making progress — handle failure (see below).**
 **Do not loop indefinitely. When a gate stalls → Handle failure:**
 
-Handle per `.buildwright/framework/autonomy.md` (context-inferred):
-- **Interactive**: STOP and report the blocker to the human.
-- **Unattended/CI**: commit completed work, push branch, create a `[FAILED]` PR with the failure summary (see the failure summary template under Failure Handling below), exit(1).
+Handle failure per the **Failure Handling** section below (context-inferred).
 
 ```
 ╔═══════════════════════════════════════════════════════════════╗
@@ -112,10 +110,6 @@ Handle per `.buildwright/framework/autonomy.md` (context-inferred):
 ║  Status: PASS / RETRY / FAIL                                  ║
 ╚═══════════════════════════════════════════════════════════════╝
 ```
-
-If FAIL (progress stalled):
-- **Autonomous**: Commit + push + create failed PR (see the failure summary template under Failure Handling below) + exit(1).
-- **Interactive**: Report specific errors and STOP.
 
 ---
 
@@ -155,11 +149,9 @@ Where DISCOVERED_AUDIT_COMMAND is the stack-appropriate audit tool, e.g.:
 
 **Phase C — Vulnerability Assessment:** Check changed code against OWASP Top 10 (A01-A10) using the full checklist from the Security Engineer persona.
 
-**If CRITICAL vulnerabilities found → No retry. Handle failure:**
-
-Handle per `.buildwright/framework/autonomy.md` (context-inferred):
-- **Interactive**: STOP immediately. Security issues require human judgment.
-- **Unattended/CI**: commit completed work, push branch, create a `[FAILED]` PR with the failure summary (see the failure summary template under Failure Handling below), exit(1).
+**If CRITICAL vulnerabilities found → No retry.** Security issues need human
+judgment. Handle failure per the **Failure Handling** section below
+(context-inferred).
 
 ```
 ╔═══════════════════════════════════════════════════════════════╗
@@ -172,10 +164,6 @@ Handle per `.buildwright/framework/autonomy.md` (context-inferred):
 ║  Status: SECURE / CRITICAL VULNERABILITIES                    ║
 ╚═══════════════════════════════════════════════════════════════╝
 ```
-
-If CRITICAL VULNERABILITIES:
-- **Autonomous**: Commit + push + create failed PR (see the failure summary template under Failure Handling below) + exit(1).
-- **Interactive**: Report specific issues and STOP.
 
 ---
 
@@ -203,11 +191,9 @@ git diff HEAD
 Assess against categories from the Staff Engineer persona's "In Code" checklist.
 
 **⚠️ APPROVED WITH COMMENTS** → Proceed to release. Fix recommendations if straightforward, otherwise note for follow-up.
-**❌ CHANGES REQUESTED** → No retry. Handle failure:
-
-Handle per `.buildwright/framework/autonomy.md` (context-inferred):
-- **Interactive**: STOP immediately. Code review issues often involve architectural decisions that need human input.
-- **Unattended/CI**: commit completed work, push branch, create a `[FAILED]` PR with the failure summary (see the failure summary template under Failure Handling below), exit(1).
+**❌ CHANGES REQUESTED** → No retry. Code review issues often involve
+architectural decisions that need human input. Handle failure per the **Failure
+Handling** section below (context-inferred).
 
 ```
 ╔═══════════════════════════════════════════════════════════════╗
@@ -221,10 +207,6 @@ Handle per `.buildwright/framework/autonomy.md` (context-inferred):
 ║  Status: APPROVED / CHANGES REQUESTED                         ║
 ╚═══════════════════════════════════════════════════════════════╝
 ```
-
-If CHANGES REQUESTED:
-- **Autonomous**: Commit + push + create failed PR (see the failure summary template under Failure Handling below) + exit(1).
-- **Interactive**: Report specific issues and STOP.
 
 ---
 
@@ -321,10 +303,10 @@ Exit zero — quality passed and the commit is safe on the branch.
 
 ## Failure Handling
 
-Infer the execution context (see `.buildwright/framework/autonomy.md`) — there is
-no mode flag. Detect interactivity from a standard shell check (`[ -t 0 ]` /
-`[ -t 1 ]`) and common CI variables (`CI`, `GITHUB_ACTIONS`); if context cannot
-be determined, default to the unattended path.
+Infer the execution context per `.buildwright/framework/autonomy.md` — there is
+no mode flag, and that doc is the single source for how interactivity is
+detected and how each context behaves. The boxes and the failure-summary
+template below are the `/bw-ship`-specific presentation of that behaviour.
 
 ### Interactive (a TTY is attached, no CI signal)
 
@@ -370,7 +352,7 @@ Use this for the `[FAILED]` PR body (or the printed summary when no remote exist
 
 **Feature:** [name]
 **Failed at:** [Verify / Security / Review]
-**Reason:** [Retries exhausted / Critical vulnerability / Changes requested]
+**Reason:** [Progress stalled / Critical vulnerability / Changes requested]
 
 ### Pipeline Status
 | Step | Status | Details |

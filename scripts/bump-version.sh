@@ -28,6 +28,10 @@ rm -f SKILL.md.bak
 #     when an installed command set is stale.
 for cmd in .buildwright/commands/bw-*.md; do
   [ -f "$cmd" ] || continue
+  if ! grep -q '^version:' "$cmd"; then
+    echo "✗ $cmd has no 'version:' line in its frontmatter — add one so it gets stamped." >&2
+    exit 1
+  fi
   sed -i.bak "s/^version: .*/version: $NEW_VERSION/" "$cmd"
   rm -f "$cmd.bak"
 done
