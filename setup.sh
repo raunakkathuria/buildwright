@@ -42,7 +42,6 @@ curl -sL "$BASE_URL/scripts/hooks/post-checkout" > scripts/hooks/post-checkout
 chmod +x scripts/*.sh scripts/hooks/*
 
 curl -sL "$BASE_URL/Makefile" > Makefile
-curl -sL "$BASE_URL/BUILDWRIGHT.md" > BUILDWRIGHT.md
 curl -sL "$BASE_URL/README.md" > README.md
 curl -sL "$BASE_URL/.env.example" > .env.example
 curl -sL "$BASE_URL/.gitignore" > .gitignore

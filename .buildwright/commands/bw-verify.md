@@ -105,5 +105,7 @@ If BLOCKED: List specific failures with file:line references.
 
 ## Next Steps
 
-- If PASS: Run `/bw-ship` for full quality pipeline (security + review + release)
+- If PASS: Run `/bw-ship` for full quality pipeline (security + review + release).
+  Report the commit you verified at — if you run `/bw-ship` next with the working
+  tree unchanged, its "Gate reuse" rule skips re-running these same checks.
 - If BLOCKED: Fix issues and re-run `/bw-verify`
