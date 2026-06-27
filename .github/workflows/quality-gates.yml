@@ -77,9 +77,16 @@ jobs:
           test -f ".opencode/steering/philosophy.md"
           test -f ".cursor/rules/steering/philosophy.mdc"
 
+          for doc in autonomy capability findings; do
+            test -f ".buildwright/framework/$doc.md"
+            test -f ".claude/framework/$doc.md"
+            test -f ".opencode/framework/$doc.md"
+            test -f ".cursor/rules/framework/$doc.mdc"
+          done
+
           top_level="$(find .buildwright -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | sort | tr '\n' ' ' | sed 's/ $//')"
           case "$top_level" in
-            "agents commands steering"|"agents codebase commands steering")
+            "agents commands framework steering"|"agents codebase commands framework steering")
               ;;
             *)
               echo "Unexpected .buildwright directories: $top_level"
