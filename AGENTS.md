@@ -114,7 +114,9 @@ Before every commit, run discovered gates:
 4. Build
 
 Skip only gates that are unavailable for the stack. If a required step fails,
-fix and retry up to `BUILDWRIGHT_AGENT_RETRIES` times, default 2.
+fix and re-run it. Keep going until the gate passes or you are no longer making
+progress — the same failure recurs, or there is no diagnosable fix. Do not loop
+indefinitely; on a stalled gate, hand off per the failure behaviour above.
 
 ## Documentation Discipline
 

@@ -19,6 +19,13 @@
   deferral convention). Framework docs are refreshed on update; steering is
   preserved. Commands now lean on native task tracking, file writes, and command
   invocation.
+- Removed the `BUILDWRIGHT_AGENT_RETRIES` environment variable. It was
+  unenforced (no script read it) and presented a configurable retry count that
+  did nothing. The verify loop now stops on a progress-based condition — fix and
+  re-run until the gate passes or progress stalls (the same failure recurs, or
+  there is no diagnosable fix) — instead of a fixed number of attempts. Failure
+  handoff (interactive → ask; unattended/CI → `[FAILED]` PR, exit non-zero) is
+  unchanged.
 - Breaking change: removed the `BUILDWRIGHT_AUTO_APPROVE` environment variable.
   It was unenforced (no script read it) and overloaded across `bw-plan`,
   `bw-work`, `bw-ship`, and `bw-analyse`. Buildwright now has a single autonomy

@@ -222,7 +222,6 @@ make validate
 
 | Variable | Default | Purpose |
 |----------|---------|---------|
-| `BUILDWRIGHT_AGENT_RETRIES` | `2` | Verification retry count |
 | `GITHUB_TOKEN` | unset | Used by `gh` when creating PRs |
 
 Use a fine-grained GitHub token with contents and pull request permissions when

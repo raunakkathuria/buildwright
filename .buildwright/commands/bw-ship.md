@@ -23,7 +23,7 @@ it is not lost at release time.
 │                      SHIP PIPELINE                          │
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
-│  1. VERIFY (quick checks) ← Retry up to 2x                  │
+│  1. VERIFY (quick checks) ← fix & re-run                    │
 │     └─ typecheck → lint → test → build                     │
 │              │                                              │
 │              ▼ PASS? Continue : Retry/STOP                  │
@@ -73,7 +73,7 @@ unverified code.
 
 ---
 
-## Step 1: Verify (Quick Checks) — Retry up to 2x
+## Step 1: Verify (Quick Checks) — fix and re-run until passing
 
 Apply **Gate reuse** above before running.
 
@@ -92,9 +92,9 @@ Run quick verification checks:
 # Build
 ```
 
-**If fails → Fix and retry (up to BUILDWRIGHT_AGENT_RETRIES attempts, default 2).**
-**If same error repeats → Not making progress — handle failure (see below).**
-**If still failing after retries → Handle failure:**
+**If fails → Fix and re-run. Keep going while you are making progress.**
+**If the same error repeats, or there is no diagnosable fix → Not making progress — handle failure (see below).**
+**Do not loop indefinitely. When a gate stalls → Handle failure:**
 
 Handle per `.buildwright/framework/autonomy.md` (context-inferred):
 - **Interactive**: STOP and report the blocker to the human.
@@ -109,12 +109,11 @@ Handle per `.buildwright/framework/autonomy.md` (context-inferred):
 ║  Tests:       ✅/❌                                            ║
 ║  Build:       ✅/❌                                            ║
 ╠═══════════════════════════════════════════════════════════════╣
-║  Attempt: [1/2/3]                                             ║
 ║  Status: PASS / RETRY / FAIL                                  ║
 ╚═══════════════════════════════════════════════════════════════╝
 ```
 
-If FAIL after retries:
+If FAIL (progress stalled):
 - **Autonomous**: Commit + push + create failed PR (see the failure summary template under Failure Handling below) + exit(1).
 - **Interactive**: Report specific errors and STOP.
 

@@ -122,7 +122,10 @@ Run the discovered gates:
 4. Build
 
 Skip only gates that are genuinely unavailable for the stack. If a required
-gate fails, fix and retry up to `BUILDWRIGHT_AGENT_RETRIES` times, default 2.
+gate fails, fix and re-run it. Keep going until the gate passes or you are no
+longer making progress — the same failure recurs, or there is no diagnosable
+fix. Do not loop indefinitely; on a stalled gate, hand off per the failure
+behaviour.
 
 ## Phase 7: Security Review
 
