@@ -30,41 +30,6 @@ const SUPPORT_FILES = [
   'scripts/hooks/post-merge',
   'scripts/hooks/post-checkout',
 ];
-const REMOVED_PATHS = [
-  '.buildwright/commands/bw-new-feature.md',
-  '.buildwright/commands/bw-quick.md',
-  '.buildwright/commands/bw-claw.md',
-  '.buildwright/commands/bw-help.md',
-  '.buildwright/agents/architect.md',
-  '.buildwright/claws',
-  '.buildwright/skills',
-  '.buildwright/tasks/TEMPLATE.md',
-  'docs/requirements/TEMPLATE.md',
-  '.claude/commands/bw-new-feature.md',
-  '.claude/commands/bw-quick.md',
-  '.claude/commands/bw-claw.md',
-  '.claude/commands/bw-help.md',
-  '.claude/agents/architect.md',
-  '.claude/claws',
-  '.claude/tasks',
-  '.opencode/commands/bw-new-feature.md',
-  '.opencode/commands/bw-quick.md',
-  '.opencode/commands/bw-claw.md',
-  '.opencode/commands/bw-help.md',
-  '.opencode/agents/architect.md',
-  '.opencode/claws',
-  '.opencode/skills',
-  '.cursor/rules/commands/bw-new-feature.mdc',
-  '.cursor/rules/commands/bw-quick.mdc',
-  '.cursor/rules/commands/bw-claw.mdc',
-  '.cursor/rules/commands/bw-help.mdc',
-  '.cursor/rules/agents/architect.mdc',
-  '.cursor/rules/claws',
-  'skills/bw-new-feature',
-  'skills/bw-quick',
-  'skills/bw-claw',
-  'skills/bw-help',
-];
 
 // Steering files Buildwright ships and may update in place. Keyed by filename,
 // each value is the set of SHA-256 hashes of every version Buildwright has ever
@@ -188,27 +153,6 @@ async function update() {
       throw new Error('Downloaded archive is missing .buildwright/ directory');
     }
 
-    const removed = [];
-    for (const relativePath of REMOVED_PATHS) {
-      const target = path.join(cwd, relativePath);
-      if (!fs.existsSync(target)) continue;
-      fs.rmSync(target, { recursive: true, force: true });
-      removed.push(relativePath);
-    }
-    for (const relativePath of ['.buildwright/tasks', 'docs/requirements']) {
-      const target = path.join(cwd, relativePath);
-      if (!fs.existsSync(target)) continue;
-      if (fs.statSync(target).isDirectory() && fs.readdirSync(target).length === 0) {
-        fs.rmdirSync(target);
-      }
-    }
-    if (removed.length > 0) {
-      console.log(`  Removed old Buildwright paths:`);
-      for (const relativePath of removed) {
-        console.log(`    - ${relativePath}`);
-      }
-    }
-
     for (const dir of UPDATE_DIRS) {
       const src = path.join(srcBuildwright, dir);
       const dest = path.join(cwd, '.buildwright', dir);
@@ -273,4 +217,4 @@ async function update() {
   }
 }
 
-module.exports = { update, updateSteering, REMOVED_PATHS, MANAGED_STEERING_HASHES };
+module.exports = { update, updateSteering, MANAGED_STEERING_HASHES };
