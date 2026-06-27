@@ -67,8 +67,9 @@ fixed — identical in every install, refreshed on update, not customized:
 - `.buildwright/framework/autonomy.md` — the single autonomy behaviour (no mode
   flag), auto-continue through ready work, and context-inferred failure handling.
 - `.buildwright/framework/capability.md` — prefer each host tool's native
-  capabilities (plan/file-write/task-tracking/sub-agents/hooks) with documented
-  fallbacks, instead of reimplementing them in prose.
+  capabilities (plan/file-write/task-tracking/sub-agents/parallelism/worktrees/
+  hooks) with documented fallbacks, for *execution mechanics* only — they never
+  replace Buildwright's steering or process.
 - `.buildwright/framework/findings.md` — convention for recording report-upstream
   and before-production deferrals.
 

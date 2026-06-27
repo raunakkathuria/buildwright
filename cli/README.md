@@ -56,8 +56,9 @@ customized:
 
 `autonomy.md` is why there is no approval flag — one behaviour, inferred from
 context. `capability.md` keeps commands leaning on each host tool's built-ins
-instead of reimplementing them. `findings.md` standardises how deferred decisions
-are recorded.
+(parallelism, task tracking, sub-agents, worktrees, file-write, hooks) for
+*execution mechanics* — they never replace Buildwright's steering or process.
+`findings.md` standardises how deferred decisions are recorded.
 
 **Steering** lives in `.buildwright/steering/`. It is project-owned and
 customizable, and is preserved across updates:
