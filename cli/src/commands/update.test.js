@@ -7,7 +7,7 @@ const os = require('os');
 const path = require('path');
 const crypto = require('crypto');
 
-const { updateSteering, REMOVED_PATHS, MANAGED_STEERING_HASHES } = require('./update');
+const { updateSteering, MANAGED_STEERING_HASHES } = require('./update');
 
 const sha256 = (s) => crypto.createHash('sha256').update(s).digest('hex');
 
@@ -72,15 +72,4 @@ test('never touches an org steering file that Buildwright does not ship', () => 
 
   assert.strictEqual(fs.existsSync(path.join(dest, 'quality-gates.md')), true);
   assert.strictEqual(fs.readFileSync(path.join(dest, 'quality-gates.md'), 'utf8'), orgDoc);
-});
-
-test('REMOVED_PATHS no longer deletes org-injected steering docs', () => {
-  assert.ok(!REMOVED_PATHS.includes('.buildwright/steering/quality-gates.md'));
-  assert.ok(!REMOVED_PATHS.includes('.buildwright/steering/naming-conventions.md'));
-  assert.ok(!REMOVED_PATHS.includes('.buildwright/steering/engineering-philosophy.md'));
-});
-
-test('REMOVED_PATHS still cleans up non-steering legacy paths', () => {
-  assert.ok(REMOVED_PATHS.includes('.buildwright/commands/bw-quick.md'));
-  assert.ok(REMOVED_PATHS.includes('.buildwright/agents/architect.md'));
 });

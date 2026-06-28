@@ -1,5 +1,6 @@
 ---
 name: bw-ship
+version: 0.0.16
 description: Run full quality pipeline (verify → security → review) then commit, push, and create PR. Fails fast if any step fails.
 arguments:
   - name: message
@@ -11,12 +12,18 @@ arguments:
 
 This command runs the full quality pipeline before shipping.
 
+Failure handling follows the single autonomy behaviour in
+`.buildwright/framework/autonomy.md` (context-inferred — no mode flag). Any
+"acceptable for staging, fix before production" decision surfaced during review
+is recorded per `.buildwright/framework/findings.md` (before-production class) so
+it is not lost at release time.
+
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                      SHIP PIPELINE                          │
 ├─────────────────────────────────────────────────────────────┤
 │                                                             │
-│  1. VERIFY (quick checks) ← Retry up to 2x                  │
+│  1. VERIFY (quick checks) ← fix & re-run                    │
 │     └─ typecheck → lint → test → build                     │
 │              │                                              │
 │              ▼ PASS? Continue : Retry/STOP                  │
@@ -39,7 +46,36 @@ This command runs the full quality pipeline before shipping.
 
 ---
 
-## Step 1: Verify (Quick Checks) — Retry up to 2x
+## Gate reuse (avoid redundant re-runs)
+
+Steps 1–3 (Verify, Security, Review) are the same gates `/bw-work` and
+`/bw-verify` already run. When `/bw-ship` is chained after them in the same run,
+re-running on unchanged code is pure waste. Before each gate, check the current
+state:
+
+```bash
+git rev-parse HEAD
+git status --porcelain
+```
+
+If this exact gate already passed **earlier in this run** at the same `HEAD` with
+an identical working tree — e.g. `/bw-work` Phases 6–8 or `/bw-verify` just ran
+it — **skip it and carry the prior result forward**, marking that step's box
+`↺ REUSED (passed at <sha>)`. Run the gate normally when:
+
+- the working tree changed since it last passed (`git status --porcelain` differs),
+- you cannot confirm a prior pass in this run (e.g. `/bw-ship` invoked standalone
+  after manual edits, or in a fresh session), or
+- the gate previously failed.
+
+When in doubt, run it — reuse is an optimization, never a reason to ship
+unverified code.
+
+---
+
+## Step 1: Verify (Quick Checks) — fix and re-run until passing
+
+Apply **Gate reuse** above before running.
 
 Before verifying, confirm documentation reflects the changes being shipped.
 Update affected README, docs, command text, API docs, examples, or CHANGELOG.
@@ -56,12 +92,11 @@ Run quick verification checks:
 # Build
 ```
 
-**If fails → Fix and retry (up to BUILDWRIGHT_AGENT_RETRIES attempts, default 2).**
-**If same error repeats → Not making progress — handle failure (see below).**
-**If still failing after retries → Handle failure:**
+**If fails → Fix and re-run. Keep going while you are making progress.**
+**If the same error repeats, or there is no diagnosable fix → Not making progress — handle failure (see below).**
+**Do not loop indefinitely. When a gate stalls → Handle failure:**
 
-- **Autonomous** (`BUILDWRIGHT_AUTO_APPROVE=true`, default): Commit completed work, push branch, create PR with failure summary (see BUILDWRIGHT.md template), exit(1).
-- **Interactive** (`BUILDWRIGHT_AUTO_APPROVE=false`): STOP and report blocker to human.
+Handle failure per the **Failure Handling** section below (context-inferred).
 
 ```
 ╔═══════════════════════════════════════════════════════════════╗
@@ -72,14 +107,9 @@ Run quick verification checks:
 ║  Tests:       ✅/❌                                            ║
 ║  Build:       ✅/❌                                            ║
 ╠═══════════════════════════════════════════════════════════════╣
-║  Attempt: [1/2/3]                                             ║
 ║  Status: PASS / RETRY / FAIL                                  ║
 ╚═══════════════════════════════════════════════════════════════╝
 ```
-
-If FAIL after retries:
-- **Autonomous**: Commit + push + create failed PR (using BUILDWRIGHT.md template) + exit(1).
-- **Interactive**: Report specific errors and STOP.
 
 ---
 
@@ -119,10 +149,9 @@ Where DISCOVERED_AUDIT_COMMAND is the stack-appropriate audit tool, e.g.:
 
 **Phase C — Vulnerability Assessment:** Check changed code against OWASP Top 10 (A01-A10) using the full checklist from the Security Engineer persona.
 
-**If CRITICAL vulnerabilities found → No retry. Handle failure:**
-
-- **Autonomous** (`BUILDWRIGHT_AUTO_APPROVE=true`, default): Commit completed work, push branch, create PR with failure summary (see BUILDWRIGHT.md template), exit(1).
-- **Interactive** (`BUILDWRIGHT_AUTO_APPROVE=false`): STOP immediately. Security issues require human judgment.
+**If CRITICAL vulnerabilities found → No retry.** Security issues need human
+judgment. Handle failure per the **Failure Handling** section below
+(context-inferred).
 
 ```
 ╔═══════════════════════════════════════════════════════════════╗
@@ -135,10 +164,6 @@ Where DISCOVERED_AUDIT_COMMAND is the stack-appropriate audit tool, e.g.:
 ║  Status: SECURE / CRITICAL VULNERABILITIES                    ║
 ╚═══════════════════════════════════════════════════════════════╝
 ```
-
-If CRITICAL VULNERABILITIES:
-- **Autonomous**: Commit + push + create failed PR (using BUILDWRIGHT.md template) + exit(1).
-- **Interactive**: Report specific issues and STOP.
 
 ---
 
@@ -166,10 +191,9 @@ git diff HEAD
 Assess against categories from the Staff Engineer persona's "In Code" checklist.
 
 **⚠️ APPROVED WITH COMMENTS** → Proceed to release. Fix recommendations if straightforward, otherwise note for follow-up.
-**❌ CHANGES REQUESTED** → No retry. Handle failure:
-
-- **Autonomous** (`BUILDWRIGHT_AUTO_APPROVE=true`, default): Commit completed work, push branch, create PR with failure summary (see BUILDWRIGHT.md template), exit(1).
-- **Interactive** (`BUILDWRIGHT_AUTO_APPROVE=false`): STOP immediately. Code review issues often involve architectural decisions that need human input.
+**❌ CHANGES REQUESTED** → No retry. Code review issues often involve
+architectural decisions that need human input. Handle failure per the **Failure
+Handling** section below (context-inferred).
 
 ```
 ╔═══════════════════════════════════════════════════════════════╗
@@ -183,10 +207,6 @@ Assess against categories from the Staff Engineer persona's "In Code" checklist.
 ║  Status: APPROVED / CHANGES REQUESTED                         ║
 ╚═══════════════════════════════════════════════════════════════╝
 ```
-
-If CHANGES REQUESTED:
-- **Autonomous**: Commit + push + create failed PR (using BUILDWRIGHT.md template) + exit(1).
-- **Interactive**: Report specific issues and STOP.
 
 ---
 
@@ -207,19 +227,50 @@ git commit -m "$ARGUMENTS.message"
 
 If no message provided and there are changes, generate a conventional commit message based on the changes.
 
-### 4.3 Push
+### 4.3 Check for a remote
+
+Push and PR both require a configured remote. Check first:
+
 ```bash
-# Push to remote
+git remote
+```
+
+**If no remote is configured** (empty output), you cannot push or open a PR.
+This is not a failure — the work is committed and verified locally. Stop here
+and report the **No-remote outcome** (see below): the work is preserved on the
+feature branch as a local commit, and the human can add a remote and push when
+ready. Do **not** treat this as a `[FAILED]` ship.
+
+### 4.4 Push
+```bash
+# Push to remote (only if a remote exists)
 git push origin HEAD
 ```
 
-### 4.4 Create PR
+### 4.5 Create PR
 ```bash
 # Create pull request
 gh pr create --fill
 ```
 
 If `gh` is not available, provide the PR creation URL.
+
+### No-remote outcome
+
+```
+╔═══════════════════════════════════════════════════════════════╗
+║                  SHIPPED LOCALLY (no remote)                  ║
+╠═══════════════════════════════════════════════════════════════╣
+║  ✅ Verify / Security / Review:  PASSED                       ║
+║  ✅ Commit:   [commit hash]                                   ║
+║  ⏭ Push/PR:  SKIPPED — no git remote configured              ║
+╠═══════════════════════════════════════════════════════════════╣
+║  Next: add a remote (`git remote add origin <url>`),          ║
+║  then `git push -u origin HEAD` and open a PR.                ║
+╚═══════════════════════════════════════════════════════════════╝
+```
+
+Exit zero — quality passed and the commit is safe on the branch.
 
 ---
 
@@ -252,7 +303,12 @@ If `gh` is not available, provide the PR creation URL.
 
 ## Failure Handling
 
-### Interactive Mode (`BUILDWRIGHT_AUTO_APPROVE=false`)
+Infer the execution context per `.buildwright/framework/autonomy.md` — there is
+no mode flag, and that doc is the single source for how interactivity is
+detected and how each context behaves. The boxes and the failure-summary
+template below are the `/bw-ship`-specific presentation of that behaviour.
+
+### Interactive (a TTY is attached, no CI signal)
 
 STOP and show the blocker:
 
@@ -274,16 +330,49 @@ STOP and show the blocker:
 ╚═══════════════════════════════════════════════════════════════╝
 ```
 
-### Autonomous Mode (`BUILDWRIGHT_AUTO_APPROVE=true`, default)
+### Unattended (`CI` / `GITHUB_ACTIONS` set, or no TTY)
 
-Commit completed work, push, create PR with failure details, and exit(1):
+Preserve completed work, surface the failure, and exit non-zero:
 
-1. Stage and commit all completed work to the feature branch
-2. Push branch to remote
-3. Create PR using the failure summary template from BUILDWRIGHT.md
-4. Exit with non-zero code so CI/CD registers the failure
+1. Stage and commit all completed work to the feature branch.
+2. Check for a remote (`git remote`):
+   - **Remote exists**: push the branch, then open a PR whose title is prefixed
+     `[FAILED]` and whose body uses the failure summary template below.
+   - **No remote**: skip push and PR — they are impossible. Print the failure
+     summary (filled from the template) to the run output so the failure is
+     still visible in logs. The completed work remains as a local commit.
+3. Exit with a non-zero code so CI/CD registers the failure.
 
-The PR title should be prefixed with `[FAILED]` and the body should follow the PR Failure Summary Template documented in BUILDWRIGHT.md.
+### Failure summary template
+
+Use this for the `[FAILED]` PR body (or the printed summary when no remote exists):
+
+```markdown
+## BUILDWRIGHT: Pipeline Failed
+
+**Feature:** [name]
+**Failed at:** [Verify / Security / Review]
+**Reason:** [Progress stalled / Critical vulnerability / Changes requested]
+
+### Pipeline Status
+| Step | Status | Details |
+|------|--------|---------|
+| Verify | [pass/fail] | [details] |
+| Security | [pass/fail/skipped] | [details] |
+| Review | [pass/fail/skipped] | [details] |
+
+### Completed Work
+- [completed milestones/steps]
+
+### Failure Details
+- [error summary, specific findings, or review feedback]
+
+### Skipped
+- [steps blocked by the failure]
+
+### To Resume
+Fix the issue on this branch, then re-run the relevant command.
+```
 
 ---
 

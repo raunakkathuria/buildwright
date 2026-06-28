@@ -5,10 +5,7 @@
   "skills": {
     "entries": {
       "buildwright": {
-        "enabled": true,
-        "env": {
-          "BUILDWRIGHT_AUTO_APPROVE": "true"
-        }
+        "enabled": true
       }
     }
   }

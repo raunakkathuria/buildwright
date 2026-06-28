@@ -108,14 +108,17 @@ set_cursor_frontmatter() {
   base_filename=$(basename "$filename")
 
   case "$preset" in
-    steering|codebase) CURSOR_ALWAYS_APPLY="true" ;;
-    *)                 CURSOR_ALWAYS_APPLY="false" ;;
+    steering|codebase|framework) CURSOR_ALWAYS_APPLY="true" ;;
+    *)                           CURSOR_ALWAYS_APPLY="false" ;;
   esac
 
   case "${preset}:${base_filename}" in
     steering:product)            CURSOR_DESCRIPTION="Buildwright product context: goals, features, user personas, business constraints" ;;
     steering:tech)               CURSOR_DESCRIPTION="Buildwright technical context: stack, commands, architecture patterns" ;;
     steering:philosophy)         CURSOR_DESCRIPTION="Buildwright engineering philosophy: KISS, YAGNI, TDD, docs discipline" ;;
+    framework:autonomy)          CURSOR_DESCRIPTION="Buildwright autonomy behaviour: proceed/pause/stop, auto-continue, context-inferred failure handling" ;;
+    framework:capability)        CURSOR_DESCRIPTION="Buildwright host capabilities: prefer native plan/file-write/tasks/subagents/hooks with fallbacks" ;;
+    framework:findings)          CURSOR_DESCRIPTION="Buildwright findings convention: report-upstream and before-production deferrals" ;;
     codebase:STACK)              CURSOR_DESCRIPTION="Codebase tech stack: languages, runtime, frameworks, dependencies, integrations" ;;
     codebase:ARCHITECTURE)       CURSOR_DESCRIPTION="Codebase architecture: layers, data flow, entry points, directory structure" ;;
     codebase:CONVENTIONS)        CURSOR_DESCRIPTION="Codebase conventions: naming, code style, imports, error handling, testing patterns" ;;
@@ -233,6 +236,7 @@ SYNC_NEEDED=false
 
 sync_dir ".buildwright/commands"  ".claude/commands"  ".buildwright/" ".claude/"
 sync_dir ".buildwright/agents"    ".claude/agents"    ".buildwright/" ".claude/"
+sync_dir ".buildwright/framework" ".claude/framework" ".buildwright/" ".claude/"
 sync_dir ".buildwright/steering"  ".claude/steering"
 sync_dir ".buildwright/codebase"  ".claude/codebase"
 
@@ -242,6 +246,7 @@ sync_dir ".buildwright/codebase"  ".claude/codebase"
 
 sync_dir ".buildwright/commands"  ".opencode/commands"  ".buildwright/" ".opencode/"
 sync_dir ".buildwright/agents"    ".opencode/agents"    ".buildwright/" ".opencode/"
+sync_dir ".buildwright/framework" ".opencode/framework" ".buildwright/" ".opencode/"
 sync_dir ".buildwright/steering"  ".opencode/steering"
 sync_dir ".buildwright/codebase"  ".opencode/codebase"
 
@@ -249,6 +254,7 @@ sync_dir ".buildwright/codebase"  ".opencode/codebase"
 # 3. .buildwright/ → .cursor/rules/ (convert to .mdc with frontmatter)
 # ============================================================================
 
+sync_cursor_dir ".buildwright/framework" "framework" "framework"
 sync_cursor_dir ".buildwright/steering"  "steering"  "steering"
 sync_cursor_dir ".buildwright/codebase"  "codebase"  "codebase"
 sync_cursor_dir ".buildwright/commands"  "commands"  "command"

@@ -1,5 +1,40 @@
 # Changelog
 
+## Unreleased
+
+- Generated commands now carry a `version:` frontmatter stamp (sourced from
+  `cli/package.json`), so an installed `bw-*` command set reveals when it is
+  stale. `make bump` updates the stamp in canonical `.buildwright/commands/*.md`
+  and `make sync` propagates it to `.claude/`, `.opencode/`, and Codex `skills/`.
+- `/bw-plan` now writes its deliverable with a single decisive native file write
+  (no "writing now…" narration, incremental for large plans, clear error + stop
+  on write failure) — fixes the plan-write stall.
+- `/bw-plan` ends with an explicit handoff: it recommends running `/bw-work` and,
+  when continuing, invokes the real command via native command invocation rather
+  than re-enacting it from memory. No more free-text "Want me to proceed?".
+- Added `.buildwright/framework/` for Buildwright-owned behaviour docs, kept
+  separate from project-owned `.buildwright/steering/`: `autonomy.md` (single
+  behaviour + auto-continue), `capability.md` (prefer host-native capabilities
+  with fallbacks), and `findings.md` (report-upstream / before-production
+  deferral convention). Framework docs are refreshed on update; steering is
+  preserved. Commands now lean on native task tracking, file writes, and command
+  invocation.
+- Removed the `BUILDWRIGHT_AGENT_RETRIES` environment variable. It was
+  unenforced (no script read it) and presented a configurable retry count that
+  did nothing. The verify loop now stops on a progress-based condition — fix and
+  re-run until the gate passes or progress stalls (the same failure recurs, or
+  there is no diagnosable fix) — instead of a fixed number of attempts. Failure
+  handoff (interactive → ask; unattended/CI → `[FAILED]` PR, exit non-zero) is
+  unchanged.
+- Breaking change: removed the `BUILDWRIGHT_AUTO_APPROVE` environment variable.
+  It was unenforced (no script read it) and overloaded across `bw-plan`,
+  `bw-work`, `bw-ship`, and `bw-analyse`. Buildwright now has a single autonomy
+  behaviour (see `.buildwright/framework/autonomy.md`): execute autonomously,
+  pause only on a decision genuinely the human's to make, stop when blocked. On
+  failure the execution context is inferred (interactive → ask; unattended/CI →
+  preserve work, open a `[FAILED]` PR, exit non-zero) instead of read from a
+  flag.
+
 ## 0.0.16
 
 - Made `AGENTS.md` the single canonical instruction file (committed,

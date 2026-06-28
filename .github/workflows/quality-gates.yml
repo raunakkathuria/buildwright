@@ -77,9 +77,17 @@ jobs:
           test -f ".opencode/steering/philosophy.md"
           test -f ".cursor/rules/steering/philosophy.mdc"
 
+          # Every canonical framework doc must be synced to all targets.
+          # Derive from the directory so a new doc is covered automatically.
+          for doc in $(find .buildwright/framework -mindepth 1 -maxdepth 1 -name '*.md' -exec basename {} .md \;); do
+            test -f ".claude/framework/$doc.md"
+            test -f ".opencode/framework/$doc.md"
+            test -f ".cursor/rules/framework/$doc.mdc"
+          done
+
           top_level="$(find .buildwright -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | sort | tr '\n' ' ' | sed 's/ $//')"
           case "$top_level" in
-            "agents commands steering"|"agents codebase commands steering")
+            "agents commands framework steering"|"agents codebase commands framework steering")
               ;;
             *)
               echo "Unexpected .buildwright directories: $top_level"
