@@ -1,5 +1,6 @@
 ---
 name: bw-work
+version: 0.0.16
 description: Implement bug fixes, refactors, and features with research, Red-Green-Refactor, docs, verification, security review, and code review
 arguments:
   - name: task
@@ -22,6 +23,17 @@ Always recursively discover and read all `.md` files under
 `.buildwright/steering/`. Read `philosophy.md` first when present because it is
 the default baseline. Also recursively read `.buildwright/codebase/*.md` if
 that directory exists.
+
+Follow `.buildwright/framework/autonomy.md` for the single autonomy behaviour and
+auto-continue (work through ready, question-free items without per-item
+re-invocation; pause only on a genuine decision). Prefer the host's native
+capabilities per `.buildwright/framework/capability.md` — use native
+task/todo tracking for the loop and native file writes rather than reimplementing
+them in prose.
+
+When you defer a decision (acceptable for staging, must fix before production) or
+spot an issue better fixed upstream, record it per
+`.buildwright/framework/findings.md` as it arises — don't leave it scattered.
 
 ## Phase 1: Understand
 
@@ -62,8 +74,10 @@ For larger or unclear work, write:
 - `docs/specs/[feature]/spec.md`
 
 The spec must include scope, approach, risks, test strategy, documentation
-impact, and implementation milestones. In interactive mode
-(`BUILDWRIGHT_AUTO_APPROVE=false`), stop for approval before implementation.
+impact, and implementation milestones. Follow the single autonomy behaviour
+(`.buildwright/framework/autonomy.md`): proceed autonomously, pausing for approval
+before implementation only when the approach involves a decision that is
+genuinely the human's to make.
 
 Cross-domain work still uses a normal spec and implementation plan. Do not use
 legacy multi-agent terminology or domain-specialist personas.
@@ -108,7 +122,10 @@ Run the discovered gates:
 4. Build
 
 Skip only gates that are genuinely unavailable for the stack. If a required
-gate fails, fix and retry up to `BUILDWRIGHT_AGENT_RETRIES` times, default 2.
+gate fails, fix and re-run it. Keep going until the gate passes or you are no
+longer making progress — the same failure recurs, or there is no diagnosable
+fix. Do not loop indefinitely; on a stalled gate, hand off per the failure
+behaviour.
 
 ## Phase 7: Security Review
 
@@ -141,7 +158,11 @@ Fix blocking issues before committing.
 Use atomic conventional commits and stage only files changed for this work.
 
 For small local work, commit and report the result. For PR-ready work, run
-`/bw-ship` after verification, security, and review have passed.
+`/bw-ship` after verification, security, and review have passed. Verify,
+security, and review just passed here — when `/bw-ship` runs next in the same run
+and the working tree is unchanged, it reuses these results (its "Gate reuse"
+rule) rather than re-running them. Report which gates passed and at what commit
+so the reuse is unambiguous.
 
 ## Final Report
 

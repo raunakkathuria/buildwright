@@ -7,7 +7,7 @@
     "node": ">=18.0.0"
   },
   "bin": {
-    "buildwright": "./bin/buildwright.js"
+    "buildwright": "bin/buildwright.js"
   },
   "files": [
     "bin/",

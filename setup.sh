@@ -9,6 +9,7 @@ BASE_URL="https://raw.githubusercontent.com/raunakkathuria/buildwright/main"
 echo "Setting up Buildwright..."
 
 mkdir -p .buildwright/commands
+mkdir -p .buildwright/framework
 mkdir -p .buildwright/steering
 mkdir -p .buildwright/agents
 mkdir -p .buildwright/codebase
@@ -30,6 +31,10 @@ curl -sL "$BASE_URL/.buildwright/commands/bw-verify.md" > .buildwright/commands/
 curl -sL "$BASE_URL/.buildwright/commands/bw-ship.md" > .buildwright/commands/bw-ship.md
 curl -sL "$BASE_URL/.buildwright/commands/bw-analyse.md" > .buildwright/commands/bw-analyse.md
 
+curl -sL "$BASE_URL/.buildwright/framework/autonomy.md" > .buildwright/framework/autonomy.md
+curl -sL "$BASE_URL/.buildwright/framework/capability.md" > .buildwright/framework/capability.md
+curl -sL "$BASE_URL/.buildwright/framework/findings.md" > .buildwright/framework/findings.md
+
 curl -sL "$BASE_URL/.buildwright/steering/philosophy.md" > .buildwright/steering/philosophy.md
 
 curl -sL "$BASE_URL/scripts/sync-agents.sh" > scripts/sync-agents.sh
@@ -42,7 +47,6 @@ curl -sL "$BASE_URL/scripts/hooks/post-checkout" > scripts/hooks/post-checkout
 chmod +x scripts/*.sh scripts/hooks/*
 
 curl -sL "$BASE_URL/Makefile" > Makefile
-curl -sL "$BASE_URL/BUILDWRIGHT.md" > BUILDWRIGHT.md
 curl -sL "$BASE_URL/README.md" > README.md
 curl -sL "$BASE_URL/.env.example" > .env.example
 curl -sL "$BASE_URL/.gitignore" > .gitignore

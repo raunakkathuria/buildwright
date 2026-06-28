@@ -1,5 +1,6 @@
 ---
 name: bw-plan
+version: 0.0.16
 description: Research a question or topic and produce a written deliverable — no implementation, no commits
 arguments:
   - name: question
@@ -67,12 +68,11 @@ If **inline text** is provided, infer:
 
 ## Phase 2 — Clarify
 
-In **interactive mode** (`BUILDWRIGHT_AUTO_APPROVE=false`): if a critical input
-is ambiguous (e.g. target repository path is unknown), ask one focused question
-before proceeding.
-
-In **autonomous mode** (`BUILDWRIGHT_AUTO_APPROVE=true`, default): apply
-sensible defaults and proceed. Note any assumptions in the deliverable.
+Follow the single autonomy behaviour (`.buildwright/framework/autonomy.md`): apply
+sensible defaults and proceed autonomously, noting any assumptions in the
+deliverable. Pause to ask one focused question only when a critical input is
+genuinely the human's decision (e.g. the target repository is ambiguous and no
+reasonable default exists).
 
 ---
 
@@ -138,7 +138,16 @@ inferred categories for inline questions).
 
 ## Phase 5 — Write Deliverable
 
-Write artifact files to `output_dir`. Must write at minimum:
+Write artifact files to `output_dir` using the host's native file-write
+capability (see `.buildwright/framework/capability.md`). Create
+`output_dir` first if it does not exist.
+
+**Write decisively. Do not announce the write as a separate step** (no "writing
+the deliverable now…" preamble) — issue the file write directly. For a large
+deliverable, write it incrementally (create the file, then append sections)
+rather than composing one oversized buffer.
+
+Must write at minimum:
 - `plan.md` — or the task-specified primary document
 
 May also write supporting files if the task specifies them:
@@ -146,7 +155,9 @@ May also write supporting files if the task specifies them:
 - `.json` — valid JSON, schema as specified in task
 - Additional `.md` files (e.g. `top10.md`, `backlog.md`)
 
-Create `output_dir` if it does not exist.
+If a write fails (e.g. permission denied, invalid path, disk full), **stop and
+report the specific cause and a recovery action** — do not retry silently or
+loop. State which file failed, why, and what the user should do.
 
 ---
 
@@ -156,6 +167,27 @@ Print to stdout:
 - Output directory path and files written
 - Top 3–5 findings or key recommendations
 - Any blockers that prevented complete research (tools unavailable, files inaccessible)
+
+---
+
+## Phase 7 — Handoff
+
+`/bw-plan` stops at the deliverable; it does not implement. To act on the plan,
+the next step is `/bw-work`.
+
+- **Recommend the real command.** End by telling the user to run `/bw-work` (with
+  the relevant task or slice). Do **not** ask a free-text "Want me to proceed?" —
+  a "yes" to that would run implementation from your *memory* of `/bw-work`, not
+  the actual command.
+- **If you continue into implementation**, invoke the real `/bw-work` through the
+  host's native command invocation (see
+  `.buildwright/framework/capability.md`), so its defined behaviour runs
+  verbatim. Where the host cannot invoke a command faithfully, direct the user to
+  run `/bw-work` instead.
+- **Never** paraphrase or re-enact `/bw-work` from memory.
+
+This boundary follows the single autonomy behaviour in
+`.buildwright/framework/autonomy.md`.
 
 ---
 

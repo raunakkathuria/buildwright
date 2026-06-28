@@ -1,5 +1,6 @@
 ---
 name: bw-analyse
+version: 0.0.16
 description: Analyse the codebase and write structured docs to .buildwright/codebase/. Creates or updates tech.md with discovered stack and commands.
 allowed-tools:
   - Read
@@ -29,10 +30,12 @@ Skip when:
 </when_to_use>
 
 <process>
-1. Check `.buildwright/codebase/`:
+1. Check `.buildwright/codebase/` (follow `.buildwright/framework/autonomy.md`):
    - If empty or missing → proceed to Step 2.
-   - If it already has files AND `BUILDWRIGHT_AUTO_APPROVE=true` → refresh automatically (overwrite all docs), proceed to Step 2.
-   - If it already has files AND `BUILDWRIGHT_AUTO_APPROVE=false` → ask the user: "Codebase docs already exist. Refresh (overwrite) or skip?"
+   - If it already has files → overwriting existing docs is the human's call. In
+     an interactive session, ask: "Codebase docs already exist. Refresh
+     (overwrite) or skip?" In an unattended/CI run, refresh automatically
+     (overwrite all docs) and proceed to Step 2.
 2. Create `.buildwright/codebase/` if it does not exist
 3. Explore and write STACK.md
    - Read package.json / Cargo.toml / go.mod / pyproject.toml (whichever exists)
