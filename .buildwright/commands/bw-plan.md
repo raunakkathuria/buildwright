@@ -192,7 +192,7 @@ the next step is `/bw-work`.
   run `/bw-work` instead.
 - **Never** paraphrase or re-enact `/bw-work` from memory.
 - **Issues are created at this handoff, not before.** If the plan includes an issue-ready
-  breakdown, the tracked GitHub issues (parent + child-per-unit) are created per
+  breakdown, the tracked issues (parent + child-per-unit) are created per
   `.buildwright/framework/tasks-to-issues.md` — idempotent (dedup by stable ID) and
   remote-guarded — as part of entering `/bw-work`, never by `/bw-plan` itself.
 

@@ -1,7 +1,7 @@
 # Tasks → Issues
 
-How an approved plan's tasks become tracked GitHub issues: a **parent** issue for the
-change, plus a **child** issue per independent unit of work. This is a convention; there
+How an approved plan's tasks become tracked issues on your forge (GitHub, GitLab, …): a
+**parent** issue for the change, plus a **child** issue per independent unit of work. This is a convention; there
 is no dedicated command. `/bw-plan` produces an *issue-ready* breakdown; the issues are
 **created at the `/bw-work` handoff** (or by a host's CI), never by `/bw-plan` itself
 (see its hard constraints).
@@ -33,15 +33,17 @@ Only create issues in the repository matching the current git remote
 (`git config --get remote.origin.url`). If the remote is missing or isn't the intended
 repository, **stop and report** — never create issues anywhere else.
 
-## Mechanism (`gh`)
+## Mechanism (forge CLI or API)
 
-Use the `gh` CLI, so this runs the same locally and in CI.
+Use your forge's CLI — `gh` (GitHub) or `glab` (GitLab) — or its API, so this runs the
+same locally and in CI. The example below uses `gh`; the `glab` equivalents
+(`glab issue create …`) are one-to-one.
 
 ```sh
 # guard: confirm the remote is the intended repo before any write
 git config --get remote.origin.url   # verify this is the repo you mean to write to
 
-# parent
+# parent  (gh shown; glab issue create is equivalent)
 gh issue create --title "<change name>" --body "Plan: <link>\n\nChildren:\n- [ ] <id> …"
 
 # child (one per unit), skipping IDs that already have an issue

@@ -36,8 +36,8 @@ update, not meant to be customized:
   fallbacks.
 - `findings.md` — the convention for recording report-upstream and
   before-production findings.
-- `tasks-to-issues.md` — the convention for turning a plan's tasks into tracked GitHub
-  issues (parent + child-per-unit, stable IDs, idempotent, remote-guarded);
+- `tasks-to-issues.md` — the convention for turning a plan's tasks into tracked issues on
+  the forge (parent + child-per-unit, stable IDs, idempotent, remote-guarded);
   prepared by `/bw-plan`, created at the `/bw-work` handoff.
 
 Unlike steering, do not edit these to fit a project; changing them changes the
