@@ -1,6 +1,6 @@
 ---
 name: bw-plan
-version: 0.0.19
+version: 0.0.17
 description: Research a question or topic and produce a written deliverable — no implementation, no commits
 arguments:
   - name: question
