@@ -1,6 +1,6 @@
 ---
 name: bw-work
-version: 0.0.16
+version: 0.0.17
 description: Implement bug fixes, refactors, and features with research, Red-Green-Refactor, docs, verification, security review, and code review
 arguments:
   - name: task
