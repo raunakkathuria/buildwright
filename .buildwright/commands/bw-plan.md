@@ -1,6 +1,6 @@
 ---
 name: bw-plan
-version: 0.0.18
+version: 0.0.19
 description: Research a question or topic and produce a written deliverable — no implementation, no commits
 arguments:
   - name: question
@@ -134,9 +134,9 @@ inferred categories for inline questions).
 - Risks and mitigations
 - Next steps
 
-**If the plan will feed implementation**, also produce an **issue-ready decomposition**
+**If the plan will feed implementation**, also produce an **issue-ready breakdown**
 per `.buildwright/framework/tasks-to-issues.md`: a parent (the change) plus one child
-per workstream (default: web · mobile · API · database · journey tests), each with a
+per unit of work (project-defined — e.g. a task or a thin end-to-end slice), each with a
 **stable ID**. This lets the handoff create tracked issues without re-deriving the
 breakdown. `/bw-plan` only *prepares* this — it does not create issues.
 
@@ -192,7 +192,7 @@ the next step is `/bw-work`.
   run `/bw-work` instead.
 - **Never** paraphrase or re-enact `/bw-work` from memory.
 - **Issues are created at this handoff, not before.** If the plan includes an issue-ready
-  decomposition, the tracked GitHub issues (parent + child-per-workstream) are created per
+  breakdown, the tracked GitHub issues (parent + child-per-unit) are created per
   `.buildwright/framework/tasks-to-issues.md` — idempotent (dedup by stable ID) and
   remote-guarded — as part of entering `/bw-work`, never by `/bw-plan` itself.
 
