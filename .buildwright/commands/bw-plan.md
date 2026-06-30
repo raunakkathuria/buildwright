@@ -1,6 +1,6 @@
 ---
 name: bw-plan
-version: 0.0.17
+version: 0.0.18
 description: Research a question or topic and produce a written deliverable — no implementation, no commits
 arguments:
   - name: question
@@ -134,6 +134,12 @@ inferred categories for inline questions).
 - Risks and mitigations
 - Next steps
 
+**If the plan will feed implementation**, also produce an **issue-ready decomposition**
+per `.buildwright/framework/tasks-to-issues.md`: a parent (the change) plus one child
+per workstream (default: web · mobile · API · database · journey tests), each with a
+**stable ID**. This lets the handoff create tracked issues without re-deriving the
+breakdown. `/bw-plan` only *prepares* this — it does not create issues.
+
 ---
 
 ## Phase 5 — Write Deliverable
@@ -185,6 +191,10 @@ the next step is `/bw-work`.
   verbatim. Where the host cannot invoke a command faithfully, direct the user to
   run `/bw-work` instead.
 - **Never** paraphrase or re-enact `/bw-work` from memory.
+- **Issues are created at this handoff, not before.** If the plan includes an issue-ready
+  decomposition, the tracked GitHub issues (parent + child-per-workstream) are created per
+  `.buildwright/framework/tasks-to-issues.md` — idempotent (dedup by stable ID) and
+  remote-guarded — as part of entering `/bw-work`, never by `/bw-plan` itself.
 
 This boundary follows the single autonomy behaviour in
 `.buildwright/framework/autonomy.md`.
@@ -194,7 +204,7 @@ This boundary follows the single autonomy behaviour in
 ## Hard Constraints (always enforced)
 
 - **NEVER** modify source files in any target repository
-- **NEVER** commit, push, or create PRs
+- **NEVER** commit, push, create PRs, or create issues (issue creation is the `/bw-work` handoff's job)
 - **NEVER** claim something is "measured" or "confirmed" without direct evidence
 - Every finding must cite evidence (file + line, or tool output excerpt)
 - The task's `Rules` block can add constraints; it cannot remove these hard constraints
