@@ -1,6 +1,6 @@
-# Tasks → Issues
+# Tasks -> Issues
 
-How an approved plan's tasks become tracked issues on your forge (GitHub, GitLab, …): a
+How an approved plan's tasks become tracked issues on your forge (GitHub, GitLab, ...): a
 **parent** issue for the change, plus a **child** issue per independent unit of work. This is a convention; there
 is no dedicated command. `/bw-plan` produces an *issue-ready* breakdown; the issues are
 **created at the `/bw-work` handoff** (or by a host's CI), never by `/bw-plan` itself
@@ -8,43 +8,43 @@ is no dedicated command. `/bw-plan` produces an *issue-ready* breakdown; the iss
 
 ## The shape
 
-- **Parent issue** — the change as a whole. Title is the change name; body links the
+- **Parent issue** - the change as a whole. Title is the change name; body links the
   plan and lists the children as a task list.
-- **Child issue per unit of work** — one per independently testable, deliverable unit, so
-  each can drive its own `/bw-work` loop. **What counts as a "unit" is project-defined** —
+- **Child issue per unit of work** - one per independently testable, deliverable unit, so
+  each can drive its own `/bw-work` loop. **What counts as a "unit" is project-defined** -
   a task, a vertical slice, or a module; pick the grain that matches how your loop consumes
   work. (Thin end-to-end slices usually beat horizontal layers.)
 
 ## Stable IDs (so re-runs are idempotent)
 
 Each child carries a **stable ID** taken from the plan, written once at the front of the
-title (`<id>: <desc>`). The ID — not the prose, and not an ordinal number — is the
+title (`<id>: <desc>`). The ID - not the prose, and not an ordinal number - is the
 identity, so regenerating or renumbering the plan and re-running keeps the same issue.
 
 ## Idempotent creation
 
 Before creating anything, **list the existing issues and skip any ID that already has
-one** — re-running adds only what's new and reports the skips. Match an existing issue to
+one** - re-running adds only what's new and reports the skips. Match an existing issue to
 an ID by its leading `<id>:`.
 
 ## Remote guard
 
 Only create issues in the repository matching the current git remote
 (`git config --get remote.origin.url`). If the remote is missing or isn't the intended
-repository, **stop and report** — never create issues anywhere else.
+repository, **stop and report** - never create issues anywhere else.
 
 ## Mechanism (forge CLI or API)
 
-Use your forge's CLI — `gh` (GitHub) or `glab` (GitLab) — or its API, so this runs the
+Use your forge's CLI - `gh` (GitHub) or `glab` (GitLab) - or its API, so this runs the
 same locally and in CI. The example below uses `gh`; the `glab` equivalents
-(`glab issue create …`) are one-to-one.
+(`glab issue create ...`) are one-to-one.
 
 ```sh
 # guard: confirm the remote is the intended repo before any write
 git config --get remote.origin.url   # verify this is the repo you mean to write to
 
 # parent  (gh shown; glab issue create is equivalent)
-gh issue create --title "<change name>" --body "Plan: <link>\n\nChildren:\n- [ ] <id> …"
+gh issue create --title "<change name>" --body "Plan: <link>\n\nChildren:\n- [ ] <id> ..."
 
 # child (one per unit), skipping IDs that already have an issue
 gh issue create --title "<id>: <desc>" --body "Parent: #<parent>\n<acceptance from the plan>"
