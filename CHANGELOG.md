@@ -1,6 +1,25 @@
 # Changelog
 
-## Unreleased
+## 0.0.18
+
+- Added `.buildwright/framework/tasks-to-issues.md`: the convention for turning
+  an approved plan's tasks into tracked forge issues — a parent issue plus one
+  child per unit of work, with stable IDs, idempotent re-runs (dedup by ID), and
+  a remote guard. Optionally fans out across repos, linking children under one
+  feature via a GitHub Project or GitLab Epic. `/bw-plan` prepares the
+  issue-ready breakdown; the issues are created at the `/bw-work` handoff, never
+  by `/bw-plan` itself.
+- `/bw-work` now performs that handoff: when a task hands off a plan with an
+  issue-ready breakdown, it creates the tracked issues (guarded, deduped) before
+  implementation. `setup.sh` ships the new framework doc.
+- Kept Buildwright forge-agnostic: `/bw-ship` documents `gh` and `glab`
+  equivalently and speaks in change-request (PR/MR) terms.
+- Repo hygiene for public consumption: removed the Spec Kit test install
+  (`.specify/`, `specs/`) and a leftover design-tool artifact
+  (`docs/superpowers/`); replaced an internal service name in the spec with a
+  generic reference.
+
+## 0.0.17
 
 - Generated commands now carry a `version:` frontmatter stamp (sourced from
   `cli/package.json`), so an installed `bw-*` command set reveals when it is
