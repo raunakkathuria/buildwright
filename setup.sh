@@ -45,10 +45,9 @@ if ! grep -qsF "$GITIGNORE_MARKER" .gitignore; then
 # --- buildwright generated ---
 # Generated from .buildwright/ by the Buildwright sync — do not commit.
 .claude/agents/
-.claude/commands/
 .claude/framework/
 .claude/steering/
-.claude/skills/
+.claude/skills/bw-*/
 .claude/settings.local.json
 .opencode/
 .cursor/rules/

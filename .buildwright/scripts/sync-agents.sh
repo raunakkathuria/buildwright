@@ -3,7 +3,7 @@
 #
 # Source of truth: .buildwright/ (tool-agnostic canonical config)
 # Generates:
-#   .claude/commands/        ← from .buildwright/commands/ (paths rewritten to .claude/)
+#   .claude/skills/bw-*/     ← from .buildwright/commands/ (SKILL.md per command)
 #   .claude/agents/          ← from .buildwright/agents/
 #   .claude/steering/        ← from .buildwright/steering/
 #   .opencode/commands/      ← from .buildwright/commands/ (paths rewritten to .opencode/)
@@ -227,7 +227,23 @@ fi
 
 SYNC_NEEDED=false
 
-sync_dir ".buildwright/commands"  ".claude/commands"  ".buildwright/" ".claude/"
+# Claude Code skills (the unified commands+skills format): one
+# .claude/skills/<name>/SKILL.md per command, slash-invocable as /<name>.
+# Only the bw-* subdirs are Buildwright's — a project's own skills are never
+# touched. Legacy .claude/commands/bw-*.md copies are removed.
+if [ "$CHECK_ONLY" = false ]; then
+  for file in .buildwright/commands/bw-*.md; do
+    [ -f "$file" ] || continue
+    name=$(basename "$file" .md)
+    rm -rf ".claude/skills/$name"
+    mkdir -p ".claude/skills/$name"
+    cp "$file" ".claude/skills/$name/SKILL.md"
+    sed_inplace "s|@@.buildwright/|.claude/|g" ".claude/skills/$name/SKILL.md"
+    echo "  synced $file → .claude/skills/$name/SKILL.md"
+    rm -f ".claude/commands/$name.md"
+  done
+  rmdir .claude/commands 2>/dev/null || true
+fi
 sync_dir ".buildwright/agents"    ".claude/agents"    ".buildwright/" ".claude/"
 sync_dir ".buildwright/framework" ".claude/framework" ".buildwright/" ".claude/"
 sync_dir ".buildwright/steering"  ".claude/steering"

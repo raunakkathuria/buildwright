@@ -36,6 +36,10 @@
   (which only ever served the removed `make codex` global symlink). Only the
   `bw-*` subdirs are Buildwright-owned; a project's own `.agents/skills/` are
   never touched and never gitignored.
+- Claude Code commands modernized to the unified skills format:
+  `.claude/skills/bw-*/SKILL.md` (still invoked as `/bw-*`, now also
+  auto-invocable) replaces the legacy `.claude/commands/bw-*.md`, which sync
+  removes. As with Codex, only the `bw-*` skill dirs are Buildwright-owned.
 - Added `.buildwright/framework/tasks-to-issues.md`: the convention for turning
   an approved plan's tasks into tracked forge issues — a parent issue plus one
   child per unit of work, with stable IDs, idempotent re-runs (dedup by ID), and
