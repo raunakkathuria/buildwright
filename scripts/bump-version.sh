@@ -19,7 +19,11 @@ while printf '%s\n' "${BLOCKED_VERSIONS[@]}" | grep -qx "$NEW_VERSION"; do
 done
 cd ..
 
-# 3. Stamp the version into canonical command frontmatter so generated
+# 3. Update the ClawHub skill frontmatter (clawhub/ is the upload folder)
+sed -i.bak "s/^  version: \".*\"/  version: \"$NEW_VERSION\"/" clawhub/SKILL.md
+rm -f clawhub/SKILL.md.bak
+
+# 3b. Stamp the version into canonical command frontmatter so generated
 #     commands (.claude/.opencode/skills) carry it after sync. Lets users tell
 #     when an installed command set is stale.
 for cmd in .buildwright/commands/bw-*.md; do
@@ -38,5 +42,5 @@ make sync
 echo ""
 echo "✓ Bumped to v$NEW_VERSION"
 echo ""
-echo "Files updated: cli/package.json  .buildwright/commands/bw-*.md"
+echo "Files updated: cli/package.json  clawhub/SKILL.md  .buildwright/commands/bw-*.md"
 echo "Run 'make release' to commit, tag, push, create GitHub release, and npm publish."

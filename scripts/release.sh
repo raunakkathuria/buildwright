@@ -16,7 +16,7 @@ make bump BUMP="$BUMP"
 NEW_VERSION=$(node -p "require('./cli/package.json').version")
 
 # Step 2: commit version files
-git add cli/package.json cli/package-lock.json .buildwright/commands/bw-*.md
+git add cli/package.json cli/package-lock.json clawhub/SKILL.md .buildwright/commands/bw-*.md
 git commit -m "chore: bump version to v$NEW_VERSION"
 
 # Step 3: push commit first
@@ -36,3 +36,5 @@ echo ""
 echo "✓ Released v$NEW_VERSION"
 echo "  GitHub: https://github.com/$(gh repo view --json nameWithOwner -q .nameWithOwner)/releases/tag/v$NEW_VERSION"
 echo "  npm:    https://www.npmjs.com/package/buildwright/v/$NEW_VERSION"
+echo ""
+echo "Manual step — ClawHub: upload the clawhub/ folder at https://clawhub.ai/upload"

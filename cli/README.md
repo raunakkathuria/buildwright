@@ -189,6 +189,10 @@ make sync-check
 `make sync` regenerates tool-specific config, Codex skills, and the CLI README.
 `AGENTS.md` and `CLAUDE.md` are hand-maintained root files, not generated.
 
+Releases run through `make release` (bump, commit, tag, GitHub release, npm
+publish). The [ClawHub](https://clawhub.ai) listing is a manual upload of the
+committed `clawhub/` folder; `make bump` stamps its version.
+
 ## Configuration
 
 | Variable | Default | Purpose |

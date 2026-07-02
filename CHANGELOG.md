@@ -15,11 +15,13 @@
   pre-0.0.18 root `scripts/` files and Buildwright-shipped `Makefile` (anything
   customized is preserved) and reinstalls the hooks.
 - Leaner distribution: the npm CLI (`buildwright init`/`update`/`sync`) is the
-  single supported install. Removed the ClawHub `dist` flow, the root
-  `SKILL.md`, and the `make global`/`claude`/`codex`/`opencode`/`openclaw`
-  global-install targets. `setup.sh` now downloads the repo tarball once and
-  copies `.buildwright/` wholesale (no more hand-maintained file list), no
-  longer ships `.claude/settings.json`, and exits early on an existing install.
+  single supported project install. Removed the `make
+  global`/`claude`/`codex`/`opencode`/`openclaw` global-install targets and the
+  generated `dist/` flow; the ClawHub skill now lives in a committed `clawhub/`
+  folder that is uploaded as-is (version stamped by `make bump`). `setup.sh`
+  downloads the repo tarball once and copies `.buildwright/` wholesale (no more
+  hand-maintained file list), no longer ships `.claude/settings.json`, and
+  exits early on an existing install.
 - Steering is strictly project-owned on update: `buildwright update` only adds
   shipped steering files that are absent and never modifies existing ones
   (the SHA-256 managed-hash machinery is gone).
