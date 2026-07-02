@@ -3,7 +3,7 @@
 #
 # Source of truth: .buildwright/ (tool-agnostic canonical config)
 # Generates:
-#   .claude/commands/        ← from .buildwright/commands/ (paths rewritten to .claude/)
+#   .claude/skills/bw-*/     ← from .buildwright/commands/ (SKILL.md per command)
 #   .claude/agents/          ← from .buildwright/agents/
 #   .claude/steering/        ← from .buildwright/steering/
 #   .opencode/commands/      ← from .buildwright/commands/ (paths rewritten to .opencode/)
@@ -12,7 +12,7 @@
 #   .cursor/rules/steering/  ← .mdc files with alwaysApply: true
 #   .cursor/rules/commands/  ← .mdc files with alwaysApply: false
 #   .cursor/rules/agents/    ← .mdc files with alwaysApply: false
-#   skills/                  ← per-command SKILL.md for Codex CLI discovery
+#   .agents/skills/          ← per-command SKILL.md for Codex CLI discovery
 #
 # Note: AGENTS.md (canonical, committed) and CLAUDE.md (pointer stub) are NOT
 # generated — they are hand-maintained root files.
@@ -227,7 +227,23 @@ fi
 
 SYNC_NEEDED=false
 
-sync_dir ".buildwright/commands"  ".claude/commands"  ".buildwright/" ".claude/"
+# Claude Code skills (the unified commands+skills format): one
+# .claude/skills/<name>/SKILL.md per command, slash-invocable as /<name>.
+# Only the bw-* subdirs are Buildwright's — a project's own skills are never
+# touched. Legacy .claude/commands/bw-*.md copies are removed.
+if [ "$CHECK_ONLY" = false ]; then
+  for file in .buildwright/commands/bw-*.md; do
+    [ -f "$file" ] || continue
+    name=$(basename "$file" .md)
+    rm -rf ".claude/skills/$name"
+    mkdir -p ".claude/skills/$name"
+    cp "$file" ".claude/skills/$name/SKILL.md"
+    sed_inplace "s|@@.buildwright/|.claude/|g" ".claude/skills/$name/SKILL.md"
+    echo "  synced $file → .claude/skills/$name/SKILL.md"
+    rm -f ".claude/commands/$name.md"
+  done
+  rmdir .claude/commands 2>/dev/null || true
+fi
 sync_dir ".buildwright/agents"    ".claude/agents"    ".buildwright/" ".claude/"
 sync_dir ".buildwright/framework" ".claude/framework" ".buildwright/" ".claude/"
 sync_dir ".buildwright/steering"  ".claude/steering"
@@ -254,17 +270,19 @@ sync_cursor_dir ".buildwright/commands"  "commands"  "command"
 sync_cursor_dir ".buildwright/agents"    "agents"    "agent"
 
 # ============================================================================
-# 4. .buildwright/commands/ → skills/ (Codex CLI skill discovery)
+# 4. .buildwright/commands/ → .agents/skills/ (Codex CLI project skill
+# discovery). Only the bw-* subdirs are Buildwright's — a project's own
+# skills in .agents/skills/ are never touched.
 # ============================================================================
 
 if [ "$CHECK_ONLY" = false ]; then
-  rm -rf skills
   for file in .buildwright/commands/bw-*.md; do
     [ -f "$file" ] || continue
     name=$(basename "$file" .md)
-    mkdir -p "skills/$name"
-    cp "$file" "skills/$name/SKILL.md"
-    echo "  synced $file → skills/$name/SKILL.md"
+    rm -rf ".agents/skills/$name"
+    mkdir -p ".agents/skills/$name"
+    cp "$file" ".agents/skills/$name/SKILL.md"
+    echo "  synced $file → .agents/skills/$name/SKILL.md"
   done
 fi
 
@@ -298,7 +316,7 @@ else
   echo "  .buildwright/ → .claude/         (paths rewritten)"
   echo "  .buildwright/ → .opencode/       (paths rewritten)"
   echo "  .buildwright/ → .cursor/rules/   (.mdc with frontmatter)"
-  echo "  .buildwright/commands/ → skills/          (Codex CLI skill discovery)"
+  echo "  .buildwright/commands/ → .agents/skills/  (Codex CLI skill discovery)"
   if [ -d "cli" ]; then
     echo "  README.md     → cli/README.md             (npm package page)"
   fi
