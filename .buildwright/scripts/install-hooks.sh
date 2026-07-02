@@ -1,13 +1,13 @@
 #!/bin/bash
 # Buildwright hook installer
-# Copies scripts/hooks/* to .git/hooks/ and makes them executable.
+# Copies .buildwright/scripts/hooks/* to .git/hooks/ and makes them executable.
 # Idempotent — safe to run multiple times.
 
 set -e
 
 if ! git rev-parse --show-toplevel >/dev/null 2>&1; then
   echo "Not inside a git repository — skipping hook installation."
-  echo "Run 'git init && make install-hooks' to enable auto-sync hooks."
+  echo "Run 'git init && bash .buildwright/scripts/install-hooks.sh' to enable auto-sync hooks."
   exit 0
 fi
 

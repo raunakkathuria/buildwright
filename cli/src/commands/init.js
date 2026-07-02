@@ -5,6 +5,7 @@ const path = require('path');
 const { isGitRepo, isBuildwrightInstalled } = require('../utils/detect');
 const { copyDir, chmodScripts } = require('../utils/copy-files');
 const { runSync, runInstallHooks } = require('../utils/run-script');
+const { appendGitignoreBlock } = require('../utils/gitignore');
 
 // ANSI colours
 const GREEN = '\x1b[32m';
@@ -20,7 +21,7 @@ function init() {
   const hasGit = isGitRepo(cwd);
   if (!hasGit) {
     console.log(`${YELLOW}Note: No git repository detected. Git hooks will be skipped.${RESET}`);
-    console.log(`Run ${BOLD}git init && make install-hooks${RESET} later to enable auto-sync hooks.\n`);
+    console.log(`Run ${BOLD}git init && bash .buildwright/scripts/install-hooks.sh${RESET} later to enable auto-sync hooks.\n`);
   }
 
   // 2. Check for existing installation
@@ -58,29 +59,34 @@ function init() {
     }
   }
 
-  // 4. chmod +x scripts
-  chmodScripts(path.join(cwd, 'scripts'));
+  // 4. chmod +x support scripts
+  chmodScripts(path.join(cwd, '.buildwright', 'scripts'));
   console.log('');
 
-  // 5. Run make sync
-  console.log(`${CYAN}Running make sync...${RESET}`);
+  // 5. Keep generated dirs out of the host's git history
+  if (appendGitignoreBlock(cwd)) {
+    console.log('  Added Buildwright generated-dirs block to .gitignore');
+  }
+
+  // 6. Run the Buildwright sync
+  console.log(`${CYAN}Running Buildwright sync...${RESET}`);
   const syncOk = runSync(cwd);
   if (!syncOk) {
-    console.log(`${YELLOW}Warning: make sync failed. Run ${BOLD}make sync${RESET}${YELLOW} manually after setup.${RESET}`);
+    console.log(`${YELLOW}Warning: sync failed. Run ${BOLD}bash .buildwright/scripts/sync-agents.sh${RESET}${YELLOW} manually after setup.${RESET}`);
   }
   console.log('');
 
-  // 6. Run make install-hooks (only if inside a git repo)
+  // 7. Install git hooks (only if inside a git repo)
   if (hasGit) {
     console.log(`${CYAN}Installing git hooks...${RESET}`);
     const hooksOk = runInstallHooks(cwd);
     if (!hooksOk) {
-      console.log(`${YELLOW}Warning: hook installation failed. Run ${BOLD}make install-hooks${RESET}${YELLOW} manually.${RESET}`);
+      console.log(`${YELLOW}Warning: hook installation failed. Run ${BOLD}bash .buildwright/scripts/install-hooks.sh${RESET}${YELLOW} manually.${RESET}`);
     }
     console.log('');
   }
 
-  // 7. Success message
+  // 8. Success message
   console.log(`${GREEN}${BOLD}Buildwright is ready!${RESET}\n`);
   console.log('Next steps:');
   console.log(`  1. Run ${BOLD}/bw-analyse${RESET} first on unfamiliar brownfield projects`);

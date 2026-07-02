@@ -2,6 +2,35 @@
 
 ## 0.0.18
 
+- Breaking change: Buildwright-owned support scripts moved from the consuming
+  project's root `scripts/` into `.buildwright/scripts/` (sync-agents.sh,
+  validate-docs.sh, install-hooks.sh, and the git hooks). Buildwright no longer
+  ships a `Makefile`, `README.md`, `.gitignore`, or `.env.example` into
+  projects, and `setup.sh` no longer overwrites any existing file. Run
+  `buildwright sync` (or `bash .buildwright/scripts/sync-agents.sh`) where you
+  previously ran `make sync`. The git hooks call the sync script directly, so
+  `make` is no longer required. Installers append a marker-guarded block of
+  generated-dir entries to the project's `.gitignore` instead of replacing it.
+  `buildwright update` migrates old installs automatically: it removes the
+  pre-0.0.18 root `scripts/` files and Buildwright-shipped `Makefile` (anything
+  customized is preserved) and reinstalls the hooks.
+- Leaner distribution: the npm CLI (`buildwright init`/`update`/`sync`) is the
+  single supported project install. Removed the `make
+  global`/`claude`/`codex`/`opencode`/`openclaw` global-install targets and the
+  generated `dist/` flow; the ClawHub skill now lives in a committed `clawhub/`
+  folder that is uploaded as-is (version stamped by `make bump`). `setup.sh`
+  downloads the repo tarball once and copies `.buildwright/` wholesale (no more
+  hand-maintained file list), no longer ships `.claude/settings.json`, and
+  exits early on an existing install.
+- Steering is strictly project-owned on update: `buildwright update` only adds
+  shipped steering files that are absent and never modifies existing ones
+  (the SHA-256 managed-hash machinery is gone).
+- Cursor rule descriptions are derived from each file's frontmatter
+  `description:` or first heading instead of a hand-maintained registry in
+  `sync-agents.sh`.
+- The repo's release tooling (`bump-version.sh`, `release.sh`) moved to
+  `cli/scripts/` alongside the npm pack scripts, so the only scripts directory
+  is the shipped `.buildwright/scripts/` — the root `scripts/` folder is gone.
 - Added `.buildwright/framework/tasks-to-issues.md`: the convention for turning
   an approved plan's tasks into tracked forge issues — a parent issue plus one
   child per unit of work, with stable IDs, idempotent re-runs (dedup by ID), and

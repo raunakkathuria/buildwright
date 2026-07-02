@@ -1,6 +1,6 @@
 'use strict';
 
-const { execSync, spawnSync } = require('child_process');
+const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
@@ -18,37 +18,28 @@ function run(command, cwd) {
 }
 
 /**
- * Run make sync or fall back to running sync-agents.sh directly.
- * Returns true on success.
+ * Run a Buildwright support script from .buildwright/scripts/.
+ * Returns true on success, false if the script is missing or fails.
  */
-function runSync(cwd) {
-  const makefile = path.join(cwd, 'Makefile');
-  if (fs.existsSync(makefile)) {
-    if (run('make sync', cwd)) return true;
-  }
-  const syncScript = path.join(cwd, 'scripts', 'sync-agents.sh');
-  if (fs.existsSync(syncScript)) {
-    chmodX(syncScript);
-    return run(`bash "${syncScript}"`, cwd);
-  }
-  return false;
+function runBuildwrightScript(name, cwd) {
+  const script = path.join(cwd, '.buildwright', 'scripts', name);
+  if (!fs.existsSync(script)) return false;
+  chmodX(script);
+  return run(`bash "${script}"`, cwd);
 }
 
 /**
- * Run make install-hooks or fall back to install-hooks.sh directly.
- * Returns true on success.
+ * Run the Buildwright sync. Returns true on success.
+ */
+function runSync(cwd) {
+  return runBuildwrightScript('sync-agents.sh', cwd);
+}
+
+/**
+ * Install the Buildwright git hooks. Returns true on success.
  */
 function runInstallHooks(cwd) {
-  const makefile = path.join(cwd, 'Makefile');
-  if (fs.existsSync(makefile)) {
-    if (run('make install-hooks', cwd)) return true;
-  }
-  const hooksScript = path.join(cwd, 'scripts', 'install-hooks.sh');
-  if (fs.existsSync(hooksScript)) {
-    chmodX(hooksScript);
-    return run(`bash "${hooksScript}"`, cwd);
-  }
-  return false;
+  return runBuildwrightScript('install-hooks.sh', cwd);
 }
 
 /**
