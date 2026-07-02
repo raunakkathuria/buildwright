@@ -52,7 +52,7 @@ if ! grep -qsF "$GITIGNORE_MARKER" .gitignore; then
 .claude/settings.local.json
 .opencode/
 .cursor/rules/
-/skills/
+.agents/skills/bw-*/
 EOF
 fi
 

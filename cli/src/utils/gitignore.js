@@ -14,7 +14,7 @@ const BLOCK = `${MARKER}
 .claude/settings.local.json
 .opencode/
 .cursor/rules/
-/skills/
+.agents/skills/bw-*/
 `;
 
 /**

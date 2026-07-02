@@ -62,8 +62,8 @@ jobs:
           fi
 
           for command in $expected_commands; do
-            test -d "skills/$command"
-            test -f "skills/$command/SKILL.md"
+            test -d ".agents/skills/$command"
+            test -f ".agents/skills/$command/SKILL.md"
             test -f ".claude/commands/$command.md"
             test -f ".opencode/commands/$command.md"
             test -f ".cursor/rules/commands/$command.mdc"
