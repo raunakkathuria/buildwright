@@ -63,7 +63,7 @@ Skip when:
    - System layout: 3-5 line summary.
    - Code Patterns: top 3 patterns from CONVENTIONS.md.
    - Dependencies: key packages and their purpose.
-8. Run `scripts/sync-agents.sh` to propagate codebase docs to all tool directories
+8. Run `.buildwright/scripts/sync-agents.sh` to propagate codebase docs to all tool directories
 9. Commit: `chore: add codebase analysis to .buildwright/codebase/`
 10. Report: list 4 docs with line counts, summarise key findings, suggest next step
 </process>

@@ -6,8 +6,9 @@ const crypto = require('crypto');
 const https = require('https');
 const { execSync } = require('child_process');
 const { isBuildwrightInstalled } = require('../utils/detect');
-const { copyDir } = require('../utils/copy-files');
-const { runSync } = require('../utils/run-script');
+const { copyDir, chmodScripts } = require('../utils/copy-files');
+const { runSync, runInstallHooks } = require('../utils/run-script');
+const { appendGitignoreBlock } = require('../utils/gitignore');
 
 // ANSI colours
 const GREEN = '\x1b[32m';
@@ -17,19 +18,51 @@ const BOLD = '\x1b[1m';
 const RESET = '\x1b[0m';
 
 const GITHUB_REPO = 'raunakkathuria/buildwright';
-// `framework` (Buildwright-owned behaviour docs) and `commands`/`agents` are
-// fully overwritten on update via copyDir. `steering` is project-owned and uses
-// the hash-managed preserve logic below.
-const UPDATE_DIRS = ['commands', 'agents', 'framework', 'steering'];
-const SUPPORT_FILES = [
-  'scripts/sync-agents.sh',
-  'scripts/validate-docs.sh',
-  'scripts/validate-skill.sh',
-  'scripts/install-hooks.sh',
-  'scripts/hooks/pre-commit',
-  'scripts/hooks/post-merge',
-  'scripts/hooks/post-checkout',
-];
+// `framework` (Buildwright-owned behaviour docs), `commands`, `agents`, and
+// `scripts` (support scripts + git hooks) are fully overwritten on update via
+// copyDir. `steering` is project-owned and uses the hash-managed preserve
+// logic below.
+const UPDATE_DIRS = ['commands', 'agents', 'framework', 'scripts', 'steering'];
+
+// Files Buildwright used to ship at the project root (pre-0.0.18 layout).
+// Each is removed on update iff its content contains the marker (i.e. it is
+// the Buildwright-shipped copy, not something the project customized).
+const LEGACY_FILES = {
+  'scripts/sync-agents.sh': '.buildwright',
+  'scripts/validate-docs.sh': '.buildwright',
+  'scripts/validate-skill.sh': 'Agent Skills specification',
+  'scripts/install-hooks.sh': 'Buildwright',
+  'scripts/bump-version.sh': '.buildwright',
+  'scripts/release.sh': '.buildwright',
+  'scripts/hooks/pre-commit': 'Buildwright',
+  'scripts/hooks/post-merge': 'Buildwright',
+  'scripts/hooks/post-checkout': 'Buildwright',
+  'Makefile': '.cursor/rules/ from .buildwright/',
+};
+
+/**
+ * Remove pre-0.0.18 Buildwright files from the project root. Only exact known
+ * paths whose content carries the Buildwright marker are deleted; anything
+ * customized is left in place. No-op inside the framework repo itself.
+ * Returns the removed paths.
+ */
+function removeLegacyFiles(cwd) {
+  if (fs.existsSync(path.join(cwd, 'cli', 'templates'))) return [];
+  const removed = [];
+  for (const [rel, marker] of Object.entries(LEGACY_FILES)) {
+    const file = path.join(cwd, rel);
+    if (!fs.existsSync(file)) continue;
+    if (fs.readFileSync(file, 'utf8').includes(marker)) {
+      fs.rmSync(file);
+      removed.push(rel);
+    }
+  }
+  for (const dir of ['scripts/hooks', 'scripts']) {
+    const p = path.join(cwd, dir);
+    if (fs.existsSync(p) && fs.readdirSync(p).length === 0) fs.rmdirSync(p);
+  }
+  return removed;
+}
 
 // Steering files Buildwright ships and may update in place. Keyed by filename,
 // each value is the set of SHA-256 hashes of every version Buildwright has ever
@@ -171,15 +204,14 @@ async function update() {
         copyDir(src, dest);
       }
     }
+    chmodScripts(path.join(cwd, '.buildwright', 'scripts'));
 
-    for (const file of SUPPORT_FILES) {
-      const src = path.join(extractedRoot, file);
-      const dest = path.join(cwd, file);
-      if (!fs.existsSync(src)) continue;
-      fs.mkdirSync(path.dirname(dest), { recursive: true });
-      fs.copyFileSync(src, dest);
+    // Migrate pre-0.0.18 installs: drop Buildwright-shipped root files
+    const removed = removeLegacyFiles(cwd);
+    if (removed.length > 0) {
+      console.log(`  Removed legacy root files (now under .buildwright/scripts/): ${removed.join(', ')}`);
     }
-    console.log(`  Updated Buildwright support scripts`);
+    appendGitignoreBlock(cwd);
 
     // Add the canonical AGENTS.md and the CLAUDE.md pointer stub if absent
     // locally. Existing files are left untouched (treated as user-owned).
@@ -194,11 +226,16 @@ async function update() {
 
     console.log('');
 
+    // Reinstall hooks (older installs' .git/hooks copies call `make sync`)
+    if (fs.existsSync(path.join(cwd, '.git'))) {
+      runInstallHooks(cwd);
+    }
+
     // Re-run sync
-    console.log(`${CYAN}Running make sync...${RESET}`);
+    console.log(`${CYAN}Running Buildwright sync...${RESET}`);
     const syncOk = runSync(cwd);
     if (!syncOk) {
-      console.log(`${YELLOW}Warning: make sync failed. Run ${BOLD}make sync${RESET}${YELLOW} manually.${RESET}`);
+      console.log(`${YELLOW}Warning: sync failed. Run ${BOLD}bash .buildwright/scripts/sync-agents.sh${RESET}${YELLOW} manually.${RESET}`);
     }
 
     console.log('');
@@ -217,4 +254,4 @@ async function update() {
   }
 }
 
-module.exports = { update, updateSteering, MANAGED_STEERING_HASHES };
+module.exports = { update, updateSteering, removeLegacyFiles, MANAGED_STEERING_HASHES };

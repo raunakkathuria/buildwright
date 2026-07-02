@@ -2,6 +2,18 @@
 
 ## 0.0.18
 
+- Breaking change: Buildwright-owned support scripts moved from the consuming
+  project's root `scripts/` into `.buildwright/scripts/` (sync-agents.sh,
+  validate-docs.sh, install-hooks.sh, and the git hooks). Buildwright no longer
+  ships a `Makefile`, `README.md`, `.gitignore`, or `.env.example` into
+  projects, and `setup.sh` no longer overwrites any existing file. Run
+  `buildwright sync` (or `bash .buildwright/scripts/sync-agents.sh`) where you
+  previously ran `make sync`. The git hooks call the sync script directly, so
+  `make` is no longer required. Installers append a marker-guarded block of
+  generated-dir entries to the project's `.gitignore` instead of replacing it.
+  `buildwright update` migrates old installs automatically: it removes the
+  pre-0.0.18 root `scripts/` files and Buildwright-shipped `Makefile` (anything
+  customized is preserved) and reinstalls the hooks.
 - Added `.buildwright/framework/tasks-to-issues.md`: the convention for turning
   an approved plan's tasks into tracked forge issues — a parent issue plus one
   child per unit of work, with stable IDs, idempotent re-runs (dedup by ID), and

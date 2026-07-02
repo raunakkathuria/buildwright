@@ -17,7 +17,7 @@
 # Note: AGENTS.md (canonical, committed) and CLAUDE.md (pointer stub) are NOT
 # generated — they are hand-maintained root files.
 #
-# Usage: scripts/sync-agents.sh [--check]
+# Usage: .buildwright/scripts/sync-agents.sh [--check]
 #   --check: Verify sync without modifying files (exit 1 if out of sync)
 
 set -e
@@ -28,7 +28,7 @@ if [ "$1" = "--check" ]; then
 fi
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+ROOT_DIR="$(git rev-parse --show-toplevel 2>/dev/null || { cd "$SCRIPT_DIR/../.." && pwd; })"
 cd "$ROOT_DIR"
 
 # ============================================================================
@@ -304,7 +304,7 @@ fi
 if [ "$CHECK_ONLY" = true ]; then
   if [ "$SYNC_NEEDED" = true ]; then
     echo ""
-    echo "Run 'scripts/sync-agents.sh' to fix."
+    echo "Run '.buildwright/scripts/sync-agents.sh' to fix."
     exit 1
   else
     echo "All synced."
@@ -316,15 +316,17 @@ else
   echo "  .buildwright/ → .claude/         (paths rewritten)"
   echo "  .buildwright/ → .opencode/       (paths rewritten)"
   echo "  .buildwright/ → .cursor/rules/   (.mdc with frontmatter)"
-  echo "  SKILL.md      → dist/buildwright/SKILL.md"
+  if [ -f "SKILL.md" ]; then
+    echo "  SKILL.md      → dist/buildwright/SKILL.md"
+  fi
   echo "  .buildwright/commands/ → skills/          (Codex CLI skill discovery)"
   if [ -d "cli" ]; then
     echo "  README.md     → cli/README.md             (npm package page)"
   fi
 
   # Validate all commands are documented in SKILL.md and README.md
-  if [ -f "scripts/validate-docs.sh" ]; then
+  if [ -f ".buildwright/scripts/validate-docs.sh" ]; then
     echo ""
-    bash scripts/validate-docs.sh || true
+    bash .buildwright/scripts/validate-docs.sh || true
   fi
 fi

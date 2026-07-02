@@ -6,12 +6,12 @@
 # ============================================================================
 
 sync:
-	@chmod +x scripts/sync-agents.sh
-	@scripts/sync-agents.sh
+	@chmod +x .buildwright/scripts/sync-agents.sh
+	@.buildwright/scripts/sync-agents.sh
 
 sync-check:
-	@chmod +x scripts/sync-agents.sh
-	@scripts/sync-agents.sh --check
+	@chmod +x .buildwright/scripts/sync-agents.sh
+	@.buildwright/scripts/sync-agents.sh --check
 
 # ============================================================================
 # Package for distribution
@@ -78,8 +78,8 @@ validate:
 # ============================================================================
 
 install-hooks:
-	@chmod +x scripts/install-hooks.sh
-	@scripts/install-hooks.sh
+	@chmod +x .buildwright/scripts/install-hooks.sh
+	@.buildwright/scripts/install-hooks.sh
 
 uninstall-hooks:
 	@rm -f .git/hooks/pre-commit .git/hooks/post-merge .git/hooks/post-checkout

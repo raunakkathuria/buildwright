@@ -20,6 +20,12 @@ if [ ! -d "$COMMANDS_DIR" ]; then
   exit 0
 fi
 
+# Only the Buildwright framework repo documents commands in SKILL.md/README.md.
+# In a consuming project those files belong to the host — skip the check.
+if [ ! -f "$SKILL_MD" ]; then
+  exit 0
+fi
+
 missing=0
 
 for file in "$COMMANDS_DIR"/bw-*.md; do
@@ -59,6 +65,6 @@ done
 if [ "$missing" -gt 0 ]; then
   echo ""
   echo -e "  ${RED}${BOLD}validate-docs: $missing documentation gap(s) found.${RESET}"
-  echo -e "  Update README.md and SKILL.md, then re-run 'make sync'."
+  echo -e "  Update README.md and SKILL.md, then re-run the sync."
   exit 1
 fi

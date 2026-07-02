@@ -33,7 +33,7 @@ jobs:
         run: make validate
 
       - name: Validate command docs
-        run: scripts/validate-docs.sh
+        run: .buildwright/scripts/validate-docs.sh
 
       - name: Check CLI JavaScript syntax
         run: |
@@ -87,7 +87,7 @@ jobs:
 
           top_level="$(find .buildwright -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | sort | tr '\n' ' ' | sed 's/ $//')"
           case "$top_level" in
-            "agents commands framework steering"|"agents codebase commands framework steering")
+            "agents commands framework scripts steering"|"agents codebase commands framework scripts steering")
               ;;
             *)
               echo "Unexpected .buildwright directories: $top_level"
@@ -97,3 +97,5 @@ jobs:
 
           test ! -e "cli/templates/.github"
           test ! -e "cli/templates/docs"
+          test ! -e "cli/templates/scripts"
+          test ! -e "cli/templates/Makefile"
