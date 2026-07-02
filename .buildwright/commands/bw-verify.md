@@ -1,6 +1,6 @@
 ---
 name: bw-verify
-version: 0.0.17
+version: 0.0.18
 description: Run quick quality checks (typecheck, lint, test, build). For full checks including security and AI review, use /bw-ship.
 ---
 
