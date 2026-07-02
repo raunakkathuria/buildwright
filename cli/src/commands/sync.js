@@ -25,7 +25,7 @@ function sync() {
     console.log(`${GREEN}${BOLD}Sync complete!${RESET}`);
     console.log('.claude/, .opencode/, .cursor/rules/, and AGENTS.md are up to date.');
   } else {
-    console.log(`${YELLOW}Sync failed. Make sure make is installed or run scripts/sync-agents.sh directly.${RESET}`);
+    console.log(`${YELLOW}Sync failed. Run ${BOLD}bash .buildwright/scripts/sync-agents.sh${RESET}${YELLOW} directly to see the error.${RESET}`);
     process.exit(1);
   }
 }

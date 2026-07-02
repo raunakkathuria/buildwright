@@ -1,58 +1,63 @@
 #!/bin/bash
 # Buildwright Setup Script
 # Run this in any project to add the lightweight engineering workflow.
+#
+# Downloads the repo tarball once and copies .buildwright/ wholesale, so new
+# shipped files are always included. Everything Buildwright owns lands under
+# .buildwright/ (plus AGENTS.md / CLAUDE.md, added only if absent). Existing
+# project files are never overwritten.
 
 set -e
 
-BASE_URL="https://raw.githubusercontent.com/raunakkathuria/buildwright/main"
+TARBALL_URL="${BUILDWRIGHT_TARBALL_URL:-https://api.github.com/repos/raunakkathuria/buildwright/tarball/main}"
+
+if [ -d .buildwright ]; then
+  echo "Buildwright is already installed here."
+  echo "To update, run: npm install -g buildwright@latest && buildwright update"
+  exit 0
+fi
 
 echo "Setting up Buildwright..."
 
-mkdir -p .buildwright/commands
-mkdir -p .buildwright/framework
-mkdir -p .buildwright/steering
-mkdir -p .buildwright/agents
-mkdir -p .buildwright/codebase
-mkdir -p .claude
+TMP_DIR="$(mktemp -d)"
+trap 'rm -rf "$TMP_DIR"' EXIT
+
+curl -sL "$TARBALL_URL" | tar xz -C "$TMP_DIR" --strip-components=1
+
+if [ ! -d "$TMP_DIR/.buildwright" ]; then
+  echo "Error: downloaded archive is missing .buildwright/ — aborting." >&2
+  exit 1
+fi
+
+cp -R "$TMP_DIR/.buildwright" .buildwright
+chmod +x .buildwright/scripts/*.sh .buildwright/scripts/hooks/*
 mkdir -p docs/specs
-mkdir -p scripts/hooks
 
-curl -sL "$BASE_URL/AGENTS.md" > AGENTS.md
-curl -sL "$BASE_URL/CLAUDE.md" > CLAUDE.md
-curl -sL "$BASE_URL/.claude/settings.json" > .claude/settings.json
+# Root instruction files — added only if absent, never overwritten.
+[ -f AGENTS.md ] || cp "$TMP_DIR/AGENTS.md" AGENTS.md
+[ -f CLAUDE.md ] || cp "$TMP_DIR/CLAUDE.md" CLAUDE.md
 
-curl -sL "$BASE_URL/.buildwright/agents/staff-engineer.md" > .buildwright/agents/staff-engineer.md
-curl -sL "$BASE_URL/.buildwright/agents/security-engineer.md" > .buildwright/agents/security-engineer.md
-curl -sL "$BASE_URL/.buildwright/agents/README.md" > .buildwright/agents/README.md
+# Keep generated dirs out of the project's git history (append-only, idempotent).
+GITIGNORE_MARKER="# --- buildwright generated ---"
+if ! grep -qsF "$GITIGNORE_MARKER" .gitignore; then
+  [ -f .gitignore ] && [ -n "$(tail -c1 .gitignore)" ] && echo "" >> .gitignore
+  cat >> .gitignore <<'EOF'
+# --- buildwright generated ---
+# Generated from .buildwright/ by the Buildwright sync — do not commit.
+.claude/agents/
+.claude/commands/
+.claude/framework/
+.claude/steering/
+.claude/skills/
+.claude/settings.local.json
+.opencode/
+.cursor/rules/
+/skills/
+EOF
+fi
 
-curl -sL "$BASE_URL/.buildwright/commands/bw-work.md" > .buildwright/commands/bw-work.md
-curl -sL "$BASE_URL/.buildwright/commands/bw-plan.md" > .buildwright/commands/bw-plan.md
-curl -sL "$BASE_URL/.buildwright/commands/bw-verify.md" > .buildwright/commands/bw-verify.md
-curl -sL "$BASE_URL/.buildwright/commands/bw-ship.md" > .buildwright/commands/bw-ship.md
-curl -sL "$BASE_URL/.buildwright/commands/bw-analyse.md" > .buildwright/commands/bw-analyse.md
-
-curl -sL "$BASE_URL/.buildwright/framework/autonomy.md" > .buildwright/framework/autonomy.md
-curl -sL "$BASE_URL/.buildwright/framework/capability.md" > .buildwright/framework/capability.md
-curl -sL "$BASE_URL/.buildwright/framework/findings.md" > .buildwright/framework/findings.md
-curl -sL "$BASE_URL/.buildwright/framework/tasks-to-issues.md" > .buildwright/framework/tasks-to-issues.md
-
-curl -sL "$BASE_URL/.buildwright/steering/philosophy.md" > .buildwright/steering/philosophy.md
-
-curl -sL "$BASE_URL/scripts/sync-agents.sh" > scripts/sync-agents.sh
-curl -sL "$BASE_URL/scripts/validate-skill.sh" > scripts/validate-skill.sh
-curl -sL "$BASE_URL/scripts/validate-docs.sh" > scripts/validate-docs.sh
-curl -sL "$BASE_URL/scripts/install-hooks.sh" > scripts/install-hooks.sh
-curl -sL "$BASE_URL/scripts/hooks/pre-commit" > scripts/hooks/pre-commit
-curl -sL "$BASE_URL/scripts/hooks/post-merge" > scripts/hooks/post-merge
-curl -sL "$BASE_URL/scripts/hooks/post-checkout" > scripts/hooks/post-checkout
-chmod +x scripts/*.sh scripts/hooks/*
-
-curl -sL "$BASE_URL/Makefile" > Makefile
-curl -sL "$BASE_URL/README.md" > README.md
-curl -sL "$BASE_URL/.env.example" > .env.example
-curl -sL "$BASE_URL/.gitignore" > .gitignore
-
-make sync
+bash .buildwright/scripts/sync-agents.sh
+bash .buildwright/scripts/install-hooks.sh
 
 echo ""
 echo "Buildwright is ready."
