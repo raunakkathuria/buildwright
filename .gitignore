@@ -21,4 +21,4 @@ cli/.symlink-map.json
 .claude/
 .opencode/
 .cursor/
-/skills/
+.agents/skills/bw-*/
