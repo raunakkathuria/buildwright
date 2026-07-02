@@ -9,14 +9,14 @@ if ! git diff --quiet || ! git diff --cached --quiet; then
   exit 1
 fi
 
-# Step 1: bump version files (cli/package.json + SKILL.md + make sync)
+# Step 1: bump version files (cli/package.json + command stamps + make sync)
 make bump BUMP="$BUMP"
 
 # Read new version from the bumped package.json
 NEW_VERSION=$(node -p "require('./cli/package.json').version")
 
 # Step 2: commit version files
-git add cli/package.json cli/package-lock.json SKILL.md .buildwright/commands/bw-*.md
+git add cli/package.json cli/package-lock.json .buildwright/commands/bw-*.md
 git commit -m "chore: bump version to v$NEW_VERSION"
 
 # Step 3: push commit first

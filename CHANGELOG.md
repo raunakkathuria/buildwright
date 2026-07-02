@@ -14,6 +14,18 @@
   `buildwright update` migrates old installs automatically: it removes the
   pre-0.0.18 root `scripts/` files and Buildwright-shipped `Makefile` (anything
   customized is preserved) and reinstalls the hooks.
+- Leaner distribution: the npm CLI (`buildwright init`/`update`/`sync`) is the
+  single supported install. Removed the ClawHub `dist` flow, the root
+  `SKILL.md`, and the `make global`/`claude`/`codex`/`opencode`/`openclaw`
+  global-install targets. `setup.sh` now downloads the repo tarball once and
+  copies `.buildwright/` wholesale (no more hand-maintained file list), no
+  longer ships `.claude/settings.json`, and exits early on an existing install.
+- Steering is strictly project-owned on update: `buildwright update` only adds
+  shipped steering files that are absent and never modifies existing ones
+  (the SHA-256 managed-hash machinery is gone).
+- Cursor rule descriptions are derived from each file's frontmatter
+  `description:` or first heading instead of a hand-maintained registry in
+  `sync-agents.sh`.
 - Added `.buildwright/framework/tasks-to-issues.md`: the convention for turning
   an approved plan's tasks into tracked forge issues — a parent issue plus one
   child per unit of work, with stable IDs, idempotent re-runs (dedup by ID), and

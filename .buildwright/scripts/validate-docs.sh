@@ -1,12 +1,11 @@
 #!/usr/bin/env bash
-# validate-docs.sh — checks that every bw-* command is documented in SKILL.md and README.md
+# validate-docs.sh — checks that every bw-* command is documented in README.md
 # Run automatically by sync-agents.sh after each sync.
 # Exit code 1 if any commands are missing from documentation.
 
 set -euo pipefail
 
 COMMANDS_DIR=".buildwright/commands"
-SKILL_MD="SKILL.md"
 README_MD="README.md"
 
 RED='\033[0;31m'
@@ -20,9 +19,9 @@ if [ ! -d "$COMMANDS_DIR" ]; then
   exit 0
 fi
 
-# Only the Buildwright framework repo documents commands in SKILL.md/README.md.
-# In a consuming project those files belong to the host — skip the check.
-if [ ! -f "$SKILL_MD" ]; then
+# Only the Buildwright framework repo (which has cli/) documents commands in
+# its README. In a consuming project the README belongs to the host — skip.
+if [ ! -d "cli" ]; then
   exit 0
 fi
 
@@ -41,23 +40,11 @@ for file in "$COMMANDS_DIR"/bw-*.md; do
   fi
 
   cmd="/$name"
-  file_missing=0
 
-  # Check SKILL.md
-  if [ -f "$SKILL_MD" ] && ! grep -qi "### $cmd" "$SKILL_MD" 2>/dev/null; then
-    echo -e "  ${RED}${BOLD}validate-docs: $cmd missing from SKILL.md${RESET}"
-    file_missing=1
-    missing=$((missing + 1))
-  fi
-
-  # Check README.md
   if [ -f "$README_MD" ] && ! grep -q "$cmd" "$README_MD" 2>/dev/null; then
     echo -e "  ${RED}${BOLD}validate-docs: $cmd missing from README.md${RESET}"
-    file_missing=1
     missing=$((missing + 1))
-  fi
-
-  if [ "$file_missing" -eq 0 ]; then
+  else
     echo -e "  ${GREEN}validate-docs: $cmd ✓${RESET}"
   fi
 done
@@ -65,6 +52,6 @@ done
 if [ "$missing" -gt 0 ]; then
   echo ""
   echo -e "  ${RED}${BOLD}validate-docs: $missing documentation gap(s) found.${RESET}"
-  echo -e "  Update README.md and SKILL.md, then re-run the sync."
+  echo -e "  Update README.md, then re-run the sync."
   exit 1
 fi

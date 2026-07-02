@@ -135,48 +135,10 @@ cd buildwright
 make sync
 ```
 
-### Global install
-
-Per-project `buildwright init` is the recommended setup — it commits the
-workflow config to your repo so it is versioned and shared with your team. If
-you would rather have the workflow available in **every** project without
-running `init` each time, install it globally from a Buildwright checkout.
-
-```bash
-make global      # install for all supported tools at once
-```
-
-Or install for a single tool:
-
-| Command | Tool | Installs to |
-|---------|------|-------------|
-| `make claude` | Claude Code | `~/.claude/commands/`, `~/.claude/agents/` |
-| `make codex` | Codex CLI | `~/.agents/skills/buildwright/` (symlink) |
-| `make opencode` | OpenCode | `~/.config/opencode/skills/buildwright/` |
-| `make openclaw` | OpenClaw | `~/.openclaw/skills/buildwright/` |
-
-Global install makes the **workflow** (the `/bw-*` commands and agents)
-discoverable everywhere. Project-specific context — steering docs, tech/product
-details, and `/bw-analyse` codebase docs — still comes from each project's
-`.buildwright/` directory. In a project without `.buildwright/`, commands fall
-back to stack auto-detection, and the `/bw-work` and `/bw-ship` review steps read
-the engineer personas from `~/.claude/agents/` (installed by `make claude`). Run
-`buildwright init` there when you want full project context (custom steering,
-codebase docs).
-
-Note: `make claude` is what installs the `security-engineer` / `staff-engineer`
-persona files into `~/.claude/agents/`, so Claude Code's review steps find them
-everywhere. The other tools install commands/skills only — under
-Codex/OpenCode/OpenClaw the review personas come from a project's
-`.buildwright/agents/`, so run `buildwright init` for full reviews there.
-
-Re-run the same command after `git pull` to update. To uninstall:
-
-```bash
-rm ~/.claude/commands/bw-*.md ~/.claude/agents/{staff,security}-engineer.md
-rm ~/.agents/skills/buildwright                     # codex symlink
-rm -rf ~/.config/opencode/skills/buildwright ~/.openclaw/skills/buildwright
-```
+Per-project `buildwright init` is the single supported install — it commits the
+workflow config to your repo so it is versioned and shared with your team, and
+the generated tool configs (Claude Code, OpenCode, Cursor, Codex) come from the
+same `.buildwright/` source of truth.
 
 ## Project Layout
 
@@ -222,7 +184,6 @@ After editing `.buildwright/`, run:
 ```bash
 make sync
 make sync-check
-make validate
 ```
 
 `make sync` regenerates tool-specific config, Codex skills, and the CLI README.

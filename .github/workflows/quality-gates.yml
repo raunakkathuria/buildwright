@@ -29,9 +29,6 @@ jobs:
       - name: Check tracked generated docs
         run: git diff --exit-code -- cli/README.md
 
-      - name: Validate skill metadata
-        run: make validate
-
       - name: Validate command docs
         run: .buildwright/scripts/validate-docs.sh
 

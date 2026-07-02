@@ -19,11 +19,7 @@ while printf '%s\n' "${BLOCKED_VERSIONS[@]}" | grep -qx "$NEW_VERSION"; do
 done
 cd ..
 
-# 3. Update SKILL.md frontmatter
-sed -i.bak "s/^  version: \".*\"/  version: \"$NEW_VERSION\"/" SKILL.md
-rm -f SKILL.md.bak
-
-# 3b. Stamp the version into canonical command frontmatter so generated
+# 3. Stamp the version into canonical command frontmatter so generated
 #     commands (.claude/.opencode/skills) carry it after sync. Lets users tell
 #     when an installed command set is stale.
 for cmd in .buildwright/commands/bw-*.md; do
@@ -36,11 +32,11 @@ for cmd in .buildwright/commands/bw-*.md; do
   rm -f "$cmd.bak"
 done
 
-# 4. Sync dist/
+# 4. Sync generated files
 make sync
 
 echo ""
 echo "✓ Bumped to v$NEW_VERSION"
 echo ""
-echo "Files updated: cli/package.json  SKILL.md"
+echo "Files updated: cli/package.json  .buildwright/commands/bw-*.md"
 echo "Run 'make release' to commit, tag, push, create GitHub release, and npm publish."

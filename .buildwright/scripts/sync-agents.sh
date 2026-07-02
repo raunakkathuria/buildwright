@@ -1,5 +1,5 @@
 #!/bin/bash
-# Sync agent configurations across Claude Code, OpenCode, Cursor, and OpenClaw
+# Sync agent configurations across Claude Code, OpenCode, Cursor, and Codex
 #
 # Source of truth: .buildwright/ (tool-agnostic canonical config)
 # Generates:
@@ -12,7 +12,7 @@
 #   .cursor/rules/steering/  ← .mdc files with alwaysApply: true
 #   .cursor/rules/commands/  ← .mdc files with alwaysApply: false
 #   .cursor/rules/agents/    ← .mdc files with alwaysApply: false
-#   dist/buildwright/        ← SKILL.md packaged for ClawHub
+#   skills/                  ← per-command SKILL.md for Codex CLI discovery
 #
 # Note: AGENTS.md (canonical, committed) and CLAUDE.md (pointer stub) are NOT
 # generated — they are hand-maintained root files.
@@ -99,40 +99,32 @@ sync_dir() {
 CURSOR_ALWAYS_APPLY=""
 CURSOR_DESCRIPTION=""
 
-# set_cursor_frontmatter PRESET FILENAME
-# Sets CURSOR_ALWAYS_APPLY and CURSOR_DESCRIPTION globals for the given file.
+# set_cursor_frontmatter PRESET FILENAME SRC_FILE
+# Sets CURSOR_ALWAYS_APPLY (by preset) and CURSOR_DESCRIPTION globals. The
+# description is derived from the source file: its frontmatter `description:`
+# when present, else its first markdown heading, else a preset fallback.
 set_cursor_frontmatter() {
   local preset="$1"
   local filename="$2"
-  local base_filename
-  base_filename=$(basename "$filename")
+  local src_file="$3"
 
   case "$preset" in
     steering|codebase|framework) CURSOR_ALWAYS_APPLY="true" ;;
     *)                           CURSOR_ALWAYS_APPLY="false" ;;
   esac
 
-  case "${preset}:${base_filename}" in
-    steering:product)            CURSOR_DESCRIPTION="Buildwright product context: goals, features, user personas, business constraints" ;;
-    steering:tech)               CURSOR_DESCRIPTION="Buildwright technical context: stack, commands, architecture patterns" ;;
-    steering:philosophy)         CURSOR_DESCRIPTION="Buildwright engineering philosophy: KISS, YAGNI, TDD, docs discipline" ;;
-    framework:autonomy)          CURSOR_DESCRIPTION="Buildwright autonomy behaviour: proceed/pause/stop, auto-continue, context-inferred failure handling" ;;
-    framework:capability)        CURSOR_DESCRIPTION="Buildwright host capabilities: prefer native plan/file-write/tasks/subagents/hooks with fallbacks" ;;
-    framework:findings)          CURSOR_DESCRIPTION="Buildwright findings convention: report-upstream and before-production deferrals" ;;
-    framework:tasks-to-issues)   CURSOR_DESCRIPTION="Buildwright tasks-to-issues convention: plan breakdown to tracked forge issues (parent + child-per-unit, stable IDs, idempotent, remote-guarded)" ;;
-    codebase:STACK)              CURSOR_DESCRIPTION="Codebase tech stack: languages, runtime, frameworks, dependencies, integrations" ;;
-    codebase:ARCHITECTURE)       CURSOR_DESCRIPTION="Codebase architecture: layers, data flow, entry points, directory structure" ;;
-    codebase:CONVENTIONS)        CURSOR_DESCRIPTION="Codebase conventions: naming, code style, imports, error handling, testing patterns" ;;
-    codebase:CONCERNS)           CURSOR_DESCRIPTION="Codebase concerns: tech debt, bugs, security risks, performance bottlenecks" ;;
-    command:bw-work)             CURSOR_DESCRIPTION="Buildwright bw-work: implement bug fixes, refactors, and features" ;;
-    command:bw-ship)             CURSOR_DESCRIPTION="Buildwright bw-ship: quality pipeline then commit, push, and PR" ;;
-    command:bw-verify)           CURSOR_DESCRIPTION="Buildwright bw-verify: quick quality checks (typecheck, lint, test, build)" ;;
-    command:bw-analyse)          CURSOR_DESCRIPTION="Buildwright bw-analyse: analyse codebase, write structured docs to .buildwright/codebase/, update tech.md" ;;
-    command:bw-plan)             CURSOR_DESCRIPTION="Buildwright bw-plan: research a question, produce a written deliverable — no implementation" ;;
-    agent:staff-engineer)        CURSOR_DESCRIPTION="Buildwright Staff Engineer agent persona" ;;
-    agent:security-engineer)     CURSOR_DESCRIPTION="Buildwright Security Engineer agent persona" ;;
-    *)                           CURSOR_DESCRIPTION="Buildwright ${preset}: ${filename}" ;;
-  esac
+  CURSOR_DESCRIPTION="$(awk '
+    NR==1 && $0 !~ /^---/ { exit }
+    /^---/ { f++; next }
+    f==1 && sub(/^description:[ \t]*/, "") { print; exit }
+    f>=2 { exit }
+  ' "$src_file")"
+  if [ -z "$CURSOR_DESCRIPTION" ]; then
+    CURSOR_DESCRIPTION="$(sed -n 's/^# *//p' "$src_file" | head -1)"
+  fi
+  if [ -z "$CURSOR_DESCRIPTION" ]; then
+    CURSOR_DESCRIPTION="Buildwright ${preset}: ${filename}"
+  fi
 }
 
 # strip_frontmatter FILE
@@ -183,7 +175,7 @@ sync_cursor_dir() {
     local dst_file="$dst/$filename.mdc"
     local dst_parent
     dst_parent=$(dirname "$dst_file")
-    set_cursor_frontmatter "$preset" "$filename"
+    set_cursor_frontmatter "$preset" "$filename" "$src_file"
 
     if [ "$CHECK_ONLY" = true ]; then
       if [ ! -f "$dst_file" ]; then
@@ -277,17 +269,7 @@ if [ "$CHECK_ONLY" = false ]; then
 fi
 
 # ============================================================================
-# 5. Package for ClawHub (dist/)
-# ============================================================================
-
-if [ "$CHECK_ONLY" = false ] && [ -f "SKILL.md" ]; then
-  mkdir -p dist/buildwright
-  cp SKILL.md dist/buildwright/
-  echo "  packaged dist/buildwright/SKILL.md for ClawHub"
-fi
-
-# ============================================================================
-# 6. README.md → cli/README.md (single source of truth for npm package page)
+# 5. README.md → cli/README.md (single source of truth for npm package page)
 # Only runs in the buildwright repo itself, which has a cli/ directory.
 # Generated services do not have cli/ and must not fail here.
 # ============================================================================
@@ -316,9 +298,6 @@ else
   echo "  .buildwright/ → .claude/         (paths rewritten)"
   echo "  .buildwright/ → .opencode/       (paths rewritten)"
   echo "  .buildwright/ → .cursor/rules/   (.mdc with frontmatter)"
-  if [ -f "SKILL.md" ]; then
-    echo "  SKILL.md      → dist/buildwright/SKILL.md"
-  fi
   echo "  .buildwright/commands/ → skills/          (Codex CLI skill discovery)"
   if [ -d "cli" ]; then
     echo "  README.md     → cli/README.md             (npm package page)"
