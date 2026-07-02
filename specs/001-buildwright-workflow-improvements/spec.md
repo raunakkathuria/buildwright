@@ -6,7 +6,7 @@
 
 **Status**: Draft
 
-**Input**: Developer feedback from teams using Buildwright on `service-derivpay`
+**Input**: Developer feedback from teams using Buildwright on an internal service
 (six reports covering `/bw-plan` and `/bw-work` behaviour, command handoff,
 auto-continuation, and capturing deferred findings).
 
