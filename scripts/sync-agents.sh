@@ -119,6 +119,7 @@ set_cursor_frontmatter() {
     framework:autonomy)          CURSOR_DESCRIPTION="Buildwright autonomy behaviour: proceed/pause/stop, auto-continue, context-inferred failure handling" ;;
     framework:capability)        CURSOR_DESCRIPTION="Buildwright host capabilities: prefer native plan/file-write/tasks/subagents/hooks with fallbacks" ;;
     framework:findings)          CURSOR_DESCRIPTION="Buildwright findings convention: report-upstream and before-production deferrals" ;;
+    framework:tasks-to-issues)   CURSOR_DESCRIPTION="Buildwright tasks-to-issues convention: plan breakdown to tracked forge issues (parent + child-per-unit, stable IDs, idempotent, remote-guarded)" ;;
     codebase:STACK)              CURSOR_DESCRIPTION="Codebase tech stack: languages, runtime, frameworks, dependencies, integrations" ;;
     codebase:ARCHITECTURE)       CURSOR_DESCRIPTION="Codebase architecture: layers, data flow, entry points, directory structure" ;;
     codebase:CONVENTIONS)        CURSOR_DESCRIPTION="Codebase conventions: naming, code style, imports, error handling, testing patterns" ;;

@@ -47,6 +47,13 @@ If no project files exist, ask for product vision and constraints. Create
 `.buildwright/steering/product.md` from the answer and create `tech.md` after
 the stack and commands are chosen.
 
+**If the task hands off a plan with an issue-ready breakdown** (per
+`.buildwright/framework/tasks-to-issues.md`), create the tracked issues now,
+before implementation: run the remote guard first, then create the parent and
+one child per unit in its target repo, skipping any stable ID that already has
+an issue. This handoff is the creation point the convention names - `/bw-plan`
+prepares the breakdown but never creates issues.
+
 ## Phase 2: Command Discovery
 
 If `.buildwright/steering/tech.md` exists and has real commands, use them.
