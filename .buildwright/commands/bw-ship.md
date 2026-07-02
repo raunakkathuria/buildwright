@@ -249,11 +249,12 @@ git push origin HEAD
 
 ### 4.5 Create PR
 ```bash
-# Create pull request
-gh pr create --fill
+# Create the change request via your forge CLI
+gh pr create --fill        # GitHub
+# glab mr create --fill    # GitLab
 ```
 
-If `gh` is not available, provide the PR creation URL.
+If no forge CLI is available, provide the change-request (PR/MR) creation URL.
 
 ### No-remote outcome
 

@@ -34,6 +34,7 @@ curl -sL "$BASE_URL/.buildwright/commands/bw-analyse.md" > .buildwright/commands
 curl -sL "$BASE_URL/.buildwright/framework/autonomy.md" > .buildwright/framework/autonomy.md
 curl -sL "$BASE_URL/.buildwright/framework/capability.md" > .buildwright/framework/capability.md
 curl -sL "$BASE_URL/.buildwright/framework/findings.md" > .buildwright/framework/findings.md
+curl -sL "$BASE_URL/.buildwright/framework/tasks-to-issues.md" > .buildwright/framework/tasks-to-issues.md
 
 curl -sL "$BASE_URL/.buildwright/steering/philosophy.md" > .buildwright/steering/philosophy.md
 
