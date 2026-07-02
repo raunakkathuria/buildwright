@@ -30,12 +30,12 @@ uninstall-hooks:
 # ============================================================================
 
 bump: ## Bump version files only (no git ops): make bump [BUMP=patch|minor|major]
-	@chmod +x scripts/bump-version.sh
-	@scripts/bump-version.sh $(or $(BUMP),patch)
+	@chmod +x cli/scripts/bump-version.sh
+	@cli/scripts/bump-version.sh $(or $(BUMP),patch)
 
 release: ## Full release: bump, commit, tag, push, GitHub release, npm publish: make release [BUMP=patch|minor|major]
-	@chmod +x scripts/release.sh
-	@scripts/release.sh $(or $(BUMP),patch)
+	@chmod +x cli/scripts/release.sh
+	@cli/scripts/release.sh $(or $(BUMP),patch)
 
 test-cli: ## Pack and install CLI globally for local testing
 	@echo "Packing cli/..."

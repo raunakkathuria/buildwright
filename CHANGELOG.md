@@ -28,6 +28,9 @@
 - Cursor rule descriptions are derived from each file's frontmatter
   `description:` or first heading instead of a hand-maintained registry in
   `sync-agents.sh`.
+- The repo's release tooling (`bump-version.sh`, `release.sh`) moved to
+  `cli/scripts/` alongside the npm pack scripts, so the only scripts directory
+  is the shipped `.buildwright/scripts/` — the root `scripts/` folder is gone.
 - Added `.buildwright/framework/tasks-to-issues.md`: the convention for turning
   an approved plan's tasks into tracked forge issues — a parent issue plus one
   child per unit of work, with stable IDs, idempotent re-runs (dedup by ID), and
