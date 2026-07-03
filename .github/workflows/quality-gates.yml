@@ -26,9 +26,6 @@ jobs:
       - name: Sync check
         run: make sync-check
 
-      - name: Check tracked generated docs
-        run: git diff --exit-code -- cli/README.md
-
       - name: Validate command docs
         run: .buildwright/scripts/validate-docs.sh
 

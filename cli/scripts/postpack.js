@@ -16,6 +16,9 @@ const path = require('path');
 const cliDir = path.join(__dirname, '..');
 const symlinkMapFile = path.join(cliDir, '.symlink-map.json');
 
+// README.md is materialized by prepack.js for the npm tarball only.
+fs.rmSync(path.join(cliDir, 'README.md'), { force: true });
+
 if (!fs.existsSync(symlinkMapFile)) {
   console.log('postpack: .symlink-map.json not found — nothing to restore.');
   process.exit(0);

@@ -186,8 +186,9 @@ make sync
 make sync-check
 ```
 
-`make sync` regenerates tool-specific config, Codex skills, and the CLI README.
+`make sync` regenerates the tool-specific config and Codex skills.
 `AGENTS.md` and `CLAUDE.md` are hand-maintained root files, not generated.
+The npm package README is materialized from the root `README.md` at pack time.
 
 Releases run through `make release` (bump, commit, tag, GitHub release, npm
 publish). The [ClawHub](https://clawhub.ai) listing is a manual upload of the
