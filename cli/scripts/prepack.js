@@ -66,5 +66,12 @@ for (const entry of entries) {
   copyRecursive(realTarget, entryPath);
 }
 
+// The npm package page renders README.md from the package root; the canonical
+// copy lives at the repo root. Materialize it for packing (postpack removes it).
+const repoReadme = path.join(__dirname, '..', '..', 'README.md');
+const cliReadme = path.join(__dirname, '..', 'README.md');
+fs.copyFileSync(repoReadme, cliReadme);
+console.log('  Resolving: README.md <- ../README.md');
+
 fs.writeFileSync(symlinkMapFile, JSON.stringify(symlinkMap, null, 2));
 console.log(`prepack: templates/ resolved. Map saved to .symlink-map.json`);

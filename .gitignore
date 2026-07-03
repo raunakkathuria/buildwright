@@ -8,8 +8,9 @@
 
 # npm CLI package — local dev dependencies
 cli/node_modules/
-# Temporary file written by prepack.js, removed by postpack.js
+# Temporary files written by prepack.js, removed by postpack.js
 cli/.symlink-map.json
+cli/README.md
 
 # ============================================================================
 # Generated tool directories — DO NOT COMMIT

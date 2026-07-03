@@ -40,6 +40,9 @@
   `.claude/skills/bw-*/SKILL.md` (still invoked as `/bw-*`, now also
   auto-invocable) replaces the legacy `.claude/commands/bw-*.md`, which sync
   removes. As with Codex, only the `bw-*` skill dirs are Buildwright-owned.
+- `cli/README.md` is no longer committed: the npm package README is
+  materialized from the root `README.md` by `prepack.js` at pack time and
+  removed by `postpack.js`, so the repo carries exactly one README.
 - Added `.buildwright/framework/tasks-to-issues.md`: the convention for turning
   an approved plan's tasks into tracked forge issues — a parent issue plus one
   child per unit of work, with stable IDs, idempotent re-runs (dedup by ID), and

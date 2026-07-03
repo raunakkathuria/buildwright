@@ -287,17 +287,6 @@ if [ "$CHECK_ONLY" = false ]; then
 fi
 
 # ============================================================================
-# 5. README.md → cli/README.md (single source of truth for npm package page)
-# Only runs in the buildwright repo itself, which has a cli/ directory.
-# Generated services do not have cli/ and must not fail here.
-# ============================================================================
-
-if [ "$CHECK_ONLY" = false ] && [ -f "README.md" ] && [ -d "cli" ]; then
-  cp README.md cli/README.md
-  echo "  README.md → cli/README.md"
-fi
-
-# ============================================================================
 # Result
 # ============================================================================
 
@@ -317,11 +306,8 @@ else
   echo "  .buildwright/ → .opencode/       (paths rewritten)"
   echo "  .buildwright/ → .cursor/rules/   (.mdc with frontmatter)"
   echo "  .buildwright/commands/ → .agents/skills/  (Codex CLI skill discovery)"
-  if [ -d "cli" ]; then
-    echo "  README.md     → cli/README.md             (npm package page)"
-  fi
 
-  # Validate all commands are documented in SKILL.md and README.md
+  # Validate all commands are documented in README.md
   if [ -f ".buildwright/scripts/validate-docs.sh" ]; then
     echo ""
     bash .buildwright/scripts/validate-docs.sh || true
