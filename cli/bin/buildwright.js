@@ -13,7 +13,7 @@ const program = new Command();
 
 program
   .name('buildwright')
-  .description('Agent-first autonomous development workflow')
+  .description('Lightweight engineering workflow for agent-led development')
   .version(pkg.version);
 
 program
@@ -32,7 +32,7 @@ program
 
 program
   .command('sync')
-  .description('Re-sync .buildwright/ to .claude/, .opencode/, and .cursor/rules/')
+  .description('Re-sync .buildwright/ to the generated tool configs (.claude/, .opencode/, .cursor/rules/, .agents/skills/)')
   .action(() => {
     sync();
   });

@@ -8,13 +8,22 @@ const BOLD = '\x1b[1m';
 const RESET = '\x1b[0m';
 const DIM = '\x1b[2m';
 
-const HARDCODED = [
-  { name: 'bw-analyse',     description: 'Analyse codebase: writes stack, architecture, conventions, concerns to .buildwright/codebase/' },
-  { name: 'bw-plan',        description: 'Research a question, produce a written deliverable — no implementation, no commits' },
-  { name: 'bw-ship',        description: 'Quality gates + release: verify → security → review → push → PR' },
-  { name: 'bw-verify',      description: 'Quick checks: typecheck, lint, test, build' },
-  { name: 'bw-work',        description: 'Implement bug fixes, refactors, and features' },
-];
+// Outside a project, the shipped templates carry the canonical command
+// frontmatter. In the published package templates/.buildwright is a real
+// directory (resolved by prepack.js); in a repo checkout it is a symlink to
+// ../../.buildwright — or, with core.symlinks=false, a text file holding
+// that target path.
+function templateCommandsDir() {
+  const templates = path.join(__dirname, '..', '..', 'templates');
+  let base = path.join(templates, '.buildwright');
+  const stat = fs.lstatSync(base);
+  if (stat.isSymbolicLink()) {
+    base = fs.realpathSync(base);
+  } else if (stat.isFile()) {
+    base = path.resolve(templates, fs.readFileSync(base, 'utf8').trim());
+  }
+  return path.join(base, 'commands');
+}
 
 function parseFrontmatter(content) {
   const parts = content.split('---');
@@ -55,7 +64,7 @@ function commands() {
     entries = loadFromDir(commandsDir);
     source = 'project';
   } else {
-    entries = HARDCODED;
+    entries = loadFromDir(templateCommandsDir());
     source = 'default';
   }
 
