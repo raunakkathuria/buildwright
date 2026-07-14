@@ -58,6 +58,8 @@ if ! grep -qsF "$GITIGNORE_MARKER" .gitignore; then
 .opencode/
 .cursor/rules/
 .agents/skills/bw-*/
+.kiro/steering/bw-*.md
+.kiro/hooks/bw-*.kiro.hook
 EOF
 fi
 

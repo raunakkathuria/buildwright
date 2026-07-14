@@ -17,6 +17,8 @@ ${CODEBASE_ENTRY}
 .opencode/
 .cursor/rules/
 .agents/skills/bw-*/
+.kiro/steering/bw-*.md
+.kiro/hooks/bw-*.kiro.hook
 `;
 
 function validateGitignore(cwd) {
