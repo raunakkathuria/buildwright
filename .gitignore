@@ -23,3 +23,7 @@ cli/README.md
 .opencode/
 .cursor/
 .agents/skills/bw-*/
+
+# Kiro (generated from .buildwright/ by the Buildwright sync — do not commit)
+.kiro/steering/bw-*.md
+.kiro/hooks/bw-*.kiro.hook

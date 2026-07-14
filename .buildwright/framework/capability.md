@@ -14,16 +14,24 @@ the host's native file-write tool", "track the queue with native task
 tracking"). This table is the single place that maps a capability to each host,
 so the command text stays tool-agnostic.
 
-| Capability | Claude Code | Codex | Cursor | OpenCode | Fallback when absent |
-|------------|-------------|-------|--------|----------|----------------------|
-| **Plan / build modes** | Plan mode (`EnterPlanMode`/`ExitPlanMode`) | `/plan` | Plan mode (`/plan`, `--mode=plan`) | built-in Plan / Build agents | proceed without a mode switch |
-| **File write** | native file-write tool | native file-write | native file-write | native file-write | write the file directly, report errors |
-| **Command invocation** (faithful) | `Skill` / slash-command invocation re-injects the real command | skill invocation | command/skill invocation | custom-command invocation | direct the user to run the command |
-| **Task / todo tracking** | `TaskCreate`/`TaskList`/`TaskUpdate` | `/agent`, `/goal` | Task tool | Task tool | an in-prose checklist in the deliverable |
-| **Sub-agents** | `Agent` tool (isolated context) | `/agent`, `/fork`, `/side` | subagents | General/Explore/Scout subagents | run the phase inline in the main flow |
-| **Parallel / concurrent execution** | multiple tool calls in one turn; parallel `Agent`s | `/fork`, `/side` concurrent agents | parallel subagents | parallel subagents | run the independent steps sequentially |
-| **Worktree isolation** | `Agent` `isolation: "worktree"`; `git worktree` | `git worktree` | `git worktree` | `git worktree` | work in the main tree, one change at a time |
-| **Hooks** | lifecycle hooks (PreToolUse, Stop, …) | config-driven | session/tool hooks | agent/permission config | an explicit step in the command |
+| Capability | Claude Code | Codex | Cursor | OpenCode | Kiro | Fallback when absent |
+|------------|-------------|-------|--------|----------|------|----------------------|
+| **Plan / build modes** | Plan mode (`EnterPlanMode`/`ExitPlanMode`) | `/plan` | Plan mode (`/plan`, `--mode=plan`) | built-in Plan / Build agents | spec workflow (requirements/design/tasks) as the plan gate | proceed without a mode switch |
+| **File write** | native file-write tool | native file-write | native file-write | native file-write | native file-write (fsWrite/strReplace) | write the file directly, report errors |
+| **Command invocation** (faithful) | `Skill` / slash-command invocation re-injects the real command | skill invocation | command/skill invocation | custom-command invocation | manual steering doc referenced via `#bw-command-<name>` | direct the user to run the command |
+| **Task / todo tracking** | `TaskCreate`/`TaskList`/`TaskUpdate` | `/agent`, `/goal` | Task tool | Task tool | native task/todo tracking | an in-prose checklist in the deliverable |
+| **Sub-agents** | `Agent` tool (isolated context) | `/agent`, `/fork`, `/side` | subagents | General/Explore/Scout subagents | native sub-agent invocation | run the phase inline in the main flow |
+| **Parallel / concurrent execution** | multiple tool calls in one turn; parallel `Agent`s | `/fork`, `/side` concurrent agents | parallel subagents | parallel subagents | parallel tool calls / sub-agents in one turn | run the independent steps sequentially |
+| **Worktree isolation** | `Agent` `isolation: "worktree"`; `git worktree` | `git worktree` | `git worktree` | `git worktree` | `git worktree` | work in the main tree, one change at a time |
+| **Hooks** | lifecycle hooks (PreToolUse, Stop, …) | config-driven | session/tool hooks | agent/permission config | agent hooks (`.kiro/hooks/*.kiro.hook`: UserPromptSubmit, PostFileSave, PreToolUse) | an explicit step in the command |
+
+> **Kiro command invocation.** Kiro has no slash-command primitive, so "faithful
+> command invocation" degrades to loading the real command text as a
+> manually-included steering doc (referenced via `#bw-command-<name>`, e.g.
+> `#bw-command-bw-work`) rather than a host command primitive. This fallback
+> loads and preserves the real Buildwright command prose rather than substituting
+> Kiro's own interpretation — the command prose is still the real Buildwright
+> command, satisfying the "faithful, not reinterpreted" rule.
 
 ## Mechanism, not policy
 

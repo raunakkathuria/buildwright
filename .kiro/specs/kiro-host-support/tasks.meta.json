@@ -1,0 +1,375 @@
+{
+  "pbtResults": {},
+  "executionHistory": {
+    "2.1 Implement `kiro_frontmatter` and `purge_bw_namespace` helpers": [
+      {
+        "executionId": "dd6bc119-0838-43d6-b745-9c0b9c115a53",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783917573499
+      },
+      {
+        "executionId": "dd6bc119-0838-43d6-b745-9c0b9c115a53",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783986420503
+      },
+      {
+        "executionId": "612921e6-685a-4af1-9aa7-2975a8b5aeb6",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783986857536
+      },
+      {
+        "executionId": "612921e6-685a-4af1-9aa7-2975a8b5aeb6",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783986871710
+      },
+      {
+        "executionId": "612921e6-685a-4af1-9aa7-2975a8b5aeb6",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783986879787
+      }
+    ],
+    "2.3 Implement `kiro_ref_rewrite`": [
+      {
+        "executionId": "dd6bc119-0838-43d6-b745-9c0b9c115a53",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783917573562
+      },
+      {
+        "executionId": "612921e6-685a-4af1-9aa7-2975a8b5aeb6",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783986857603
+      },
+      {
+        "executionId": "612921e6-685a-4af1-9aa7-2975a8b5aeb6",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783986889707
+      },
+      {
+        "executionId": "612921e6-685a-4af1-9aa7-2975a8b5aeb6",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783987365532
+      }
+    ],
+    "3.1 Implement `sync_kiro_steering`": [
+      {
+        "executionId": "dd6bc119-0838-43d6-b745-9c0b9c115a53",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783917573603
+      },
+      {
+        "executionId": "612921e6-685a-4af1-9aa7-2975a8b5aeb6",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783986857652
+      },
+      {
+        "executionId": "612921e6-685a-4af1-9aa7-2975a8b5aeb6",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783987395553
+      },
+      {
+        "executionId": "612921e6-685a-4af1-9aa7-2975a8b5aeb6",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783990150934
+      }
+    ],
+    "3.3 Implement `sync_kiro_command_dir`": [
+      {
+        "executionId": "dd6bc119-0838-43d6-b745-9c0b9c115a53",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783917573633
+      },
+      {
+        "executionId": "612921e6-685a-4af1-9aa7-2975a8b5aeb6",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783986857676
+      },
+      {
+        "executionId": "612921e6-685a-4af1-9aa7-2975a8b5aeb6",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783990151944
+      },
+      {
+        "executionId": "612921e6-685a-4af1-9aa7-2975a8b5aeb6",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783990253638
+      }
+    ],
+    "3.4 Implement `sync_kiro_hooks`": [
+      {
+        "executionId": "dd6bc119-0838-43d6-b745-9c0b9c115a53",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783917573665
+      },
+      {
+        "executionId": "612921e6-685a-4af1-9aa7-2975a8b5aeb6",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783986857707
+      },
+      {
+        "executionId": "612921e6-685a-4af1-9aa7-2975a8b5aeb6",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783990254662
+      },
+      {
+        "executionId": "612921e6-685a-4af1-9aa7-2975a8b5aeb6",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783990425522
+      }
+    ],
+    "4.1 Add the top-level Kiro block, header comment, and result output": [
+      {
+        "executionId": "dd6bc119-0838-43d6-b745-9c0b9c115a53",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783917573697
+      },
+      {
+        "executionId": "612921e6-685a-4af1-9aa7-2975a8b5aeb6",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783986857740
+      },
+      {
+        "executionId": "612921e6-685a-4af1-9aa7-2975a8b5aeb6",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783990426537
+      },
+      {
+        "executionId": "612921e6-685a-4af1-9aa7-2975a8b5aeb6",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783990871153
+      }
+    ],
+    "5. Checkpoint - core script wired": [
+      {
+        "executionId": "dd6bc119-0838-43d6-b745-9c0b9c115a53",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783917573730
+      },
+      {
+        "executionId": "612921e6-685a-4af1-9aa7-2975a8b5aeb6",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783986857767
+      },
+      {
+        "executionId": "612921e6-685a-4af1-9aa7-2975a8b5aeb6",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783990903725
+      },
+      {
+        "executionId": "612921e6-685a-4af1-9aa7-2975a8b5aeb6",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783991300304
+      }
+    ],
+    "6.1 Edit `.buildwright/framework/capability.md`": [
+      {
+        "executionId": "dd6bc119-0838-43d6-b745-9c0b9c115a53",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783917573764
+      },
+      {
+        "executionId": "dd6bc119-0838-43d6-b745-9c0b9c115a53",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783986421504
+      },
+      {
+        "executionId": "612921e6-685a-4af1-9aa7-2975a8b5aeb6",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783986857792
+      },
+      {
+        "executionId": "612921e6-685a-4af1-9aa7-2975a8b5aeb6",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783986872712
+      },
+      {
+        "executionId": "612921e6-685a-4af1-9aa7-2975a8b5aeb6",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783986881705
+      }
+    ],
+    "7.1 Add scoped `.gitignore` entries": [
+      {
+        "executionId": "dd6bc119-0838-43d6-b745-9c0b9c115a53",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783917573789
+      },
+      {
+        "executionId": "dd6bc119-0838-43d6-b745-9c0b9c115a53",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783986423192
+      },
+      {
+        "executionId": "612921e6-685a-4af1-9aa7-2975a8b5aeb6",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783986857811
+      },
+      {
+        "executionId": "612921e6-685a-4af1-9aa7-2975a8b5aeb6",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783986873754
+      },
+      {
+        "executionId": "612921e6-685a-4af1-9aa7-2975a8b5aeb6",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783986881724
+      }
+    ],
+    "7.2 Update `AGENTS.md` Project Structure": [
+      {
+        "executionId": "dd6bc119-0838-43d6-b745-9c0b9c115a53",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783917573819
+      },
+      {
+        "executionId": "dd6bc119-0838-43d6-b745-9c0b9c115a53",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783986423289
+      },
+      {
+        "executionId": "612921e6-685a-4af1-9aa7-2975a8b5aeb6",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783986857840
+      },
+      {
+        "executionId": "612921e6-685a-4af1-9aa7-2975a8b5aeb6",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783986874140
+      },
+      {
+        "executionId": "612921e6-685a-4af1-9aa7-2975a8b5aeb6",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783986882473
+      }
+    ],
+    "9. Final checkpoint - Ensure all tests pass": [
+      {
+        "executionId": "dd6bc119-0838-43d6-b745-9c0b9c115a53",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783917573845
+      },
+      {
+        "executionId": "612921e6-685a-4af1-9aa7-2975a8b5aeb6",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783986857870
+      },
+      {
+        "executionId": "612921e6-685a-4af1-9aa7-2975a8b5aeb6",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783990904652
+      },
+      {
+        "executionId": "612921e6-685a-4af1-9aa7-2975a8b5aeb6",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783991301119
+      }
+    ],
+    "1.1 Create the test harness and canonical fixtures": [
+      {
+        "executionId": "dd6bc119-0838-43d6-b745-9c0b9c115a53",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783917609041
+      },
+      {
+        "executionId": "dd6bc119-0838-43d6-b745-9c0b9c115a53",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783917646379
+      },
+      {
+        "executionId": "dd6bc119-0838-43d6-b745-9c0b9c115a53",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783986413087
+      }
+    ],
+    "2.2 Write unit tests for `kiro_frontmatter` and `purge_bw_namespace`": [
+      {
+        "executionId": "dd6bc119-0838-43d6-b745-9c0b9c115a53",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783917610054
+      }
+    ],
+    "2.4 Write property test for `kiro_ref_rewrite`": [
+      {
+        "executionId": "dd6bc119-0838-43d6-b745-9c0b9c115a53",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783917611041
+      }
+    ],
+    "3.2 Write unit tests for `sync_kiro_steering` generation rules": [
+      {
+        "executionId": "dd6bc119-0838-43d6-b745-9c0b9c115a53",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783917613037
+      }
+    ],
+    "8.1 Golden-file test of full Kiro generation": [
+      {
+        "executionId": "dd6bc119-0838-43d6-b745-9c0b9c115a53",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783917614021
+      }
+    ],
+    "8.2 Non-clobber and namespace-containment test": [
+      {
+        "executionId": "dd6bc119-0838-43d6-b745-9c0b9c115a53",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783917614992
+      }
+    ],
+    "8.3 Idempotency and `--check` test": [
+      {
+        "executionId": "dd6bc119-0838-43d6-b745-9c0b9c115a53",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783917616037
+      }
+    ],
+    "8.4 Regression snapshot of existing targets": [
+      {
+        "executionId": "dd6bc119-0838-43d6-b745-9c0b9c115a53",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783917616288
+      }
+    ],
+    "1. Set up Kiro-sync test scaffolding and fixtures": [
+      {
+        "executionId": "dd6bc119-0838-43d6-b745-9c0b9c115a53",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783986413120
+      }
+    ],
+    "6. Add the Kiro column to the capability table": [
+      {
+        "executionId": "612921e6-685a-4af1-9aa7-2975a8b5aeb6",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783986881742
+      }
+    ],
+    "7. Gitignore generated output and update project documentation": [
+      {
+        "executionId": "612921e6-685a-4af1-9aa7-2975a8b5aeb6",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783986882495
+      }
+    ],
+    "2. Implement Kiro helper functions in sync-agents.sh": [
+      {
+        "executionId": "612921e6-685a-4af1-9aa7-2975a8b5aeb6",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783987365580
+      }
+    ],
+    "3. Implement Kiro sync generation functions": [
+      {
+        "executionId": "612921e6-685a-4af1-9aa7-2975a8b5aeb6",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783990425563
+      }
+    ],
+    "4. Wire the Kiro target into the script and update its self-documentation": [
+      {
+        "executionId": "612921e6-685a-4af1-9aa7-2975a8b5aeb6",
+        "chatSessionId": "sess_f3d6aecb-3e34-4322-8f22-c290f6326fa3",
+        "timestamp": 1783990871233
+      }
+    ]
+  }
+}
