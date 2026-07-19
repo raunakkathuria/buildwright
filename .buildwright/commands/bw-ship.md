@@ -1,7 +1,7 @@
 ---
 name: bw-ship
 version: 0.0.18
-description: Run full quality pipeline (verify → security → review) then commit, push, and create PR. Fails fast if any step fails.
+description: Run full quality pipeline (verify → review) then commit, push, and create PR. Fails fast if any step fails.
 arguments:
   - name: message
     description: Commit message (conventional format). Required if there are uncommitted changes.
@@ -28,17 +28,12 @@ it is not lost at release time.
 │              │                                              │
 │              ▼ PASS? Continue : Retry/STOP                  │
 │                                                             │
-│  2. SECURITY (OWASP + SAST) ← No retry                      │
-│     └─ dependencies → secrets → OWASP scan                 │
+│  2. REVIEW (/bw-review: security + code) ← No retry         │
+│     └─ deps → secrets → OWASP → logic → patterns → quality │
 │              │                                              │
 │              ▼ PASS? Continue : STOP                        │
 │                                                             │
-│  3. REVIEW (Staff Engineer) ← No retry                      │
-│     └─ logic → errors → patterns → quality                 │
-│              │                                              │
-│              ▼ PASS? Continue : STOP                        │
-│                                                             │
-│  4. RELEASE                                                 │
+│  3. RELEASE                                                 │
 │     └─ commit → push → create PR                           │
 │                                                             │
 └─────────────────────────────────────────────────────────────┘
@@ -48,7 +43,7 @@ it is not lost at release time.
 
 ## Gate reuse (avoid redundant re-runs)
 
-Steps 1–3 (Verify, Security, Review) are the same gates `/bw-work` and
+Steps 1–2 (Verify, Review) are the same gates `/bw-work` and
 `/bw-verify` already run. When `/bw-ship` is chained after them in the same run,
 re-running on unchanged code is pure waste. Before each gate, check the current
 state:
@@ -59,7 +54,7 @@ git status --porcelain
 ```
 
 If this exact gate already passed **earlier in this run** at the same `HEAD` with
-an identical working tree — e.g. `/bw-work` Phases 6–8 or `/bw-verify` just ran
+an identical working tree — e.g. `/bw-work` Phases 6–7 or `/bw-verify` just ran
 it — **skip it and carry the prior result forward**, marking that step's box
 `↺ REUSED (passed at <sha>)`. Run the gate normally when:
 
@@ -85,7 +80,6 @@ of done.
 Run quick verification checks:
 
 ```bash
-# Discover and run project commands
 # Type check
 # Lint
 # Test
@@ -113,113 +107,56 @@ Handle failure per the **Failure Handling** section below (context-inferred).
 
 ---
 
-## Step 2: Security Review — No retry (needs human judgment)
+## Step 2: Review (security + code) — No retry (needs human judgment)
 
-Adopt the Security Engineer persona from `.buildwright/agents/security-engineer.md`.
-For a global install in a project without `.buildwright/`, read it from
-`~/.claude/agents/security-engineer.md` instead.
+Run **`/bw-review`** over the diff being shipped — invoke the real command
+(host-native command invocation, per `.buildwright/framework/capability.md`); do
+not re-enact it from memory. It is the single home for the review logic (DRY),
+adopting the security-engineer and staff-engineer personas and reporting both
+security and code findings:
 
-### 2.1 Determine Scope
-```bash
-git diff --name-only main...HEAD
-# Or if no main branch:
-git diff --name-only HEAD
-```
+- **Security:** dependency vulnerabilities, secrets, OWASP Top 10, financial-code
+  risks (each scan skipped gracefully when its tool is absent).
+- **Code:** logic errors, edge cases, error handling, pattern fit, complexity,
+  missing tests/docs, and un-cited red per `framework/tdd-evidence.md`
+  (confidence ≥ 80).
 
-### 2.2 Automated Scans
-Run tools from the Security Engineer persona's "Tools to Use" section:
-- Dependency vulnerabilities (`npm audit` / `cargo audit` / etc.) — skip gracefully if unavailable
-- Secrets detection (pattern scan for API keys, passwords, tokens, private keys)
-- SAST (`semgrep --config p/owasp-top-ten .` if available)
+Scope is the diff being shipped:
 
 ```bash
-# Skip gracefully if tools are unavailable
-[DISCOVERED_AUDIT_COMMAND] 2>/dev/null || echo "Dependency audit not available for this stack"
-semgrep --config p/owasp-top-ten . 2>/dev/null || echo "semgrep not available"
+git diff main...HEAD   # or: git diff HEAD  (no main branch)
 ```
 
-Where DISCOVERED_AUDIT_COMMAND is the stack-appropriate audit tool, e.g.:
-`npm audit` | `cargo audit` | `pip-audit` | `bundle audit` | `go list -m -json all | nancy sleuth`
-
-### 2.3 Manual Review (Phased)
-
-**Phase A — Repository Context:** Understand existing security posture — frameworks, middleware, auth patterns, trust boundaries.
-
-**Phase B — Comparative Analysis:** Does new code follow established security patterns? Does it bypass or weaken existing controls?
-
-**Phase C — Vulnerability Assessment:** Check changed code against OWASP Top 10 (A01-A10) using the full checklist from the Security Engineer persona.
-
-**If CRITICAL vulnerabilities found → No retry.** Security issues need human
-judgment. Handle failure per the **Failure Handling** section below
-(context-inferred).
+**No retry.** Security and code findings need human judgment. If `/bw-review`
+reports blocking findings, **STOP** and handle it per the **Failure Handling**
+section below (context-inferred); clear a genuine false positive with a logged
+override (`.buildwright/framework/findings.md`). Where a host cannot invoke
+`/bw-review` faithfully, fall back to adopting
+`.buildwright/agents/{security-engineer,staff-engineer}.md` inline over the diff.
 
 ```
 ╔═══════════════════════════════════════════════════════════════╗
-║  STEP 2: SECURITY                                             ║
+║  STEP 2: REVIEW (/bw-review)                                  ║
 ╠═══════════════════════════════════════════════════════════════╣
-║  Dependencies:  ✅/❌  ([N] vulnerabilities)                   ║
-║  Secrets:       ✅/❌  ([N] found)                             ║
-║  OWASP Scan:    ✅/❌  ([N] issues)                            ║
+║  Security (deps · secrets · OWASP):  ✅/❌                     ║
+║  Code (logic · errors · patterns):   ✅/❌                     ║
 ╠═══════════════════════════════════════════════════════════════╣
-║  Status: SECURE / CRITICAL VULNERABILITIES                    ║
+║  Status: PASS / BLOCKED                                       ║
 ╚═══════════════════════════════════════════════════════════════╝
 ```
 
 ---
 
-## Step 3: Code Review — No retry (architectural decisions)
-
-Adopt the Staff Engineer persona from `.buildwright/agents/staff-engineer.md`.
-For a global install in a project without `.buildwright/`, read it from
-`~/.claude/agents/staff-engineer.md` instead.
-
-### 3.1 Determine Scope
-```bash
-git diff main...HEAD
-# Or if no main branch:
-git diff HEAD
-```
-
-### 3.2 Phased Review
-
-**Phase A — Repository Context:** Understand existing patterns, conventions, error handling, and testing approaches.
-
-**Phase B — Comparative Analysis:** Does new code follow established patterns? Does it reuse existing utilities and types instead of reimplementing? Does it bypass or weaken existing controls?
-
-**Phase C — Issue Assessment:** Review changes for real issues. For each: verify it's real, confirm it was INTRODUCED by these changes, assign confidence (only report ≥ 80).
-
-Assess against categories from the Staff Engineer persona's "In Code" checklist.
-
-**⚠️ APPROVED WITH COMMENTS** → Proceed to release. Fix recommendations if straightforward, otherwise note for follow-up.
-**❌ CHANGES REQUESTED** → No retry. Code review issues often involve
-architectural decisions that need human input. Handle failure per the **Failure
-Handling** section below (context-inferred).
-
-```
-╔═══════════════════════════════════════════════════════════════╗
-║  STEP 3: CODE REVIEW                                          ║
-╠═══════════════════════════════════════════════════════════════╣
-║  Logic:         ✅/❌                                          ║
-║  Error Handling:✅/❌                                          ║
-║  Performance:   ✅/❌                                          ║
-║  Maintainability:✅/❌                                         ║
-╠═══════════════════════════════════════════════════════════════╣
-║  Status: APPROVED / CHANGES REQUESTED                         ║
-╚═══════════════════════════════════════════════════════════════╝
-```
-
----
-
-## Step 4: Release
+## Step 3: Release
 
 All checks passed. Now ship:
 
-### 4.1 Stage Changes
+### 3.1 Stage Changes
 ```bash
 git add [specific files you changed]  # NEVER git add -A
 ```
 
-### 4.2 Commit
+### 3.2 Commit
 ```bash
 # Use provided message or generate from changes
 git commit -m "$ARGUMENTS.message"
@@ -227,7 +164,7 @@ git commit -m "$ARGUMENTS.message"
 
 If no message provided and there are changes, generate a conventional commit message based on the changes.
 
-### 4.3 Check for a remote
+### 3.3 Check for a remote
 
 Push and PR both require a configured remote. Check first:
 
@@ -241,13 +178,13 @@ and report the **No-remote outcome** (see below): the work is preserved on the
 feature branch as a local commit, and the human can add a remote and push when
 ready. Do **not** treat this as a `[FAILED]` ship.
 
-### 4.4 Push
+### 3.4 Push
 ```bash
 # Push to remote (only if a remote exists)
 git push origin HEAD
 ```
 
-### 4.5 Create PR
+### 3.5 Create PR
 ```bash
 # Create the change request via your forge CLI
 gh pr create --fill        # GitHub
@@ -262,7 +199,7 @@ If no forge CLI is available, provide the change-request (PR/MR) creation URL.
 ╔═══════════════════════════════════════════════════════════════╗
 ║                  SHIPPED LOCALLY (no remote)                  ║
 ╠═══════════════════════════════════════════════════════════════╣
-║  ✅ Verify / Security / Review:  PASSED                       ║
+║  ✅ Verify / Review:  PASSED                                  ║
 ║  ✅ Commit:   [commit hash]                                   ║
 ║  ⏭ Push/PR:  SKIPPED — no git remote configured              ║
 ╠═══════════════════════════════════════════════════════════════╣
@@ -283,8 +220,7 @@ Exit zero — quality passed and the commit is safe on the branch.
 ╠═══════════════════════════════════════════════════════════════╣
 ║                                                               ║
 ║  ✅ Verify:    PASSED                                         ║
-║  ✅ Security:  PASSED                                         ║
-║  ✅ Review:    APPROVED                                       ║
+║  ✅ Review:    PASSED                                         ║
 ║  ✅ Docs:      UPDATED / NOT APPLICABLE                       ║
 ║  ✅ Release:   SHIPPED                                        ║
 ║                                                               ║
@@ -352,14 +288,13 @@ Use this for the `[FAILED]` PR body (or the printed summary when no remote exist
 ## BUILDWRIGHT: Pipeline Failed
 
 **Feature:** [name]
-**Failed at:** [Verify / Security / Review]
+**Failed at:** [Verify / Review]
 **Reason:** [Progress stalled / Critical vulnerability / Changes requested]
 
 ### Pipeline Status
 | Step | Status | Details |
 |------|--------|---------|
 | Verify | [pass/fail] | [details] |
-| Security | [pass/fail/skipped] | [details] |
 | Review | [pass/fail/skipped] | [details] |
 
 ### Completed Work

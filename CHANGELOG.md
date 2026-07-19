@@ -2,6 +2,12 @@
 
 ## 0.0.19
 
+- New `/bw-review` command — independent code + security review of a GitHub PR (`gh pr diff`) or the
+  current local changes, on demand. Adopts the staff-engineer + security-engineer personas with fresh
+  context (reviewer ≠ implementer); report-only (judgment-class, logged override), never edits or
+  merges. `/bw-work` (Phases 7–8) and `/bw-ship` (Steps 2–3) now **delegate** their review to
+  `/bw-review` instead of restating it, so the review logic lives in one place (DRY). (#39)
+
 - TDD proof-of-red: the harness stated "red → green → refactor. A test that never failed proves
   nothing" but enforced nothing. New framework convention `framework/tdd-evidence.md` — a behaviour
   change / bug fix must **capture the failing run and cite the red** (test name + assertion) in the

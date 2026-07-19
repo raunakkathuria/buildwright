@@ -51,7 +51,7 @@ jobs:
           set -e
 
           actual_commands="$(find .buildwright/commands -maxdepth 1 -name 'bw-*.md' -exec basename {} .md \; | sort | tr '\n' ' ' | sed 's/ $//')"
-          expected_commands="bw-analyse bw-plan bw-ship bw-verify bw-work"
+          expected_commands="bw-analyse bw-plan bw-review bw-ship bw-verify bw-work"
           if [ "$actual_commands" != "$expected_commands" ]; then
             echo "Unexpected command set: $actual_commands"
             echo "Expected command set: $expected_commands"
