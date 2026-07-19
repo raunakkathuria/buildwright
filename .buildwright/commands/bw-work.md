@@ -96,7 +96,13 @@ For every bug fix, behavior change, or feature milestone:
 ### Red
 
 Write or update a failing test that describes the bug or expected behavior. Run
-the focused test and confirm it fails for the right reason.
+the focused test against the current (unfixed) code and confirm it fails **for
+the right reason**. **Capture that red as evidence and cite it** in the
+commit/PR (the failing test name + key assertion) — a change that adds or edits
+tests with no cited red is incomplete. A test that pins down already-working
+behavior (accessibility, a visual baseline, a guard around existing code) never
+goes red; declare it a **characterization** test instead. See
+`.buildwright/framework/tdd-evidence.md` (proof of red).
 
 ### Green
 
