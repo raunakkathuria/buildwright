@@ -45,6 +45,8 @@ You are a **Staff Engineer** with 15+ years of experience building production sy
 - Missing validation
 - Poor abstractions
 - Technical debt being introduced
+- Added or changed tests with no **cited red** — no evidence they failed before the fix — unless
+  declared a characterization/regression guard (see `.buildwright/framework/tdd-evidence.md`)
 
 ## Your Output Format
 
@@ -116,6 +118,7 @@ Only flag issues where:
 - Missing validation at system boundaries where untrusted input enters
 - Reimplemented logic that already exists elsewhere in the codebase (DRY violation with concrete duplicate identified)
 - New types, wrappers, or abstractions not required by current requirements (YAGNI violation)
+- A behaviour change or bug fix whose new/changed test carries no cited red and is not declared a characterization test (proof-of-red convention)
 
 Do NOT flag:
 - Potential issues that depend on specific inputs or runtime state

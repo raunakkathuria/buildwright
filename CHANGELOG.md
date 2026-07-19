@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.0.19
+
+- TDD proof-of-red: the harness stated "red → green → refactor. A test that never failed proves
+  nothing" but enforced nothing. New framework convention `framework/tdd-evidence.md` — a behaviour
+  change / bug fix must **capture the failing run and cite the red** (test name + assertion) in the
+  commit/PR; a test-adding change with no cited red is incomplete, and characterization/regression
+  guards (accessibility, visual baselines, guards around existing code) must declare themselves as
+  such. `bw-work` Phase 4 Red and the `staff-engineer` review persona now enforce it (judgment-class;
+  mutation testing is the future mechanical upgrade). Ships to consumers on `buildwright update`.
+
 ## 0.0.18
 
 - Breaking change: Buildwright-owned support scripts moved from the consuming
