@@ -16,7 +16,7 @@ features. The command chooses the lightest workflow that still protects quality.
 ## Core Loop
 
 ```
-Understand -> Research -> Plan if needed -> Red -> Green -> Refactor -> Docs -> Verify -> Security -> Review -> Commit/Ship
+Understand -> Research -> Plan if needed -> Red -> Green -> Refactor -> Docs -> Verify -> Review -> Commit/Ship
 ```
 
 Always recursively discover and read all `.md` files under
@@ -140,42 +140,27 @@ longer making progress — the same failure recurs, or there is no diagnosable
 fix. Do not loop indefinitely; on a stalled gate, hand off per the failure
 behaviour.
 
-## Phase 7: Security Review
+## Phase 7: Review (security + code)
 
-Adopt the Security Engineer persona from `.buildwright/agents/security-engineer.md`
-(or `~/.claude/agents/security-engineer.md` for a global install without a project
-`.buildwright/`). Review the changed diff for:
-- Secrets
-- Dependency vulnerabilities, if tooling exists
-- Input validation and authorization
-- OWASP Top 10 risks
-- Financial-code risks, especially floating point for currency
+Run **`/bw-review`** over the changed diff — invoke the real command (host-native command
+invocation, per `.buildwright/framework/capability.md`), do not re-enact it from memory. It adopts
+the security-engineer and staff-engineer personas and reports both security and code findings
+(secrets, dependency/OWASP risks, financial-code risks; logic errors, edge cases, error handling,
+pattern fit, complexity, missing tests/docs, and un-cited red per `framework/tdd-evidence.md`).
 
-Stop on critical vulnerabilities.
+Fix blocking issues before committing. Where a host cannot invoke `/bw-review` faithfully, fall back
+to adopting `.buildwright/agents/{security-engineer,staff-engineer}.md` inline over the diff.
 
-## Phase 8: Code Review
-
-Adopt the Staff Engineer persona from `.buildwright/agents/staff-engineer.md`
-(or `~/.claude/agents/staff-engineer.md` for a global install without a project
-`.buildwright/`). Review the changed diff for:
-- Logic errors and missed edge cases
-- Error handling
-- Pattern fit and unnecessary complexity
-- Missing tests
-- Missing documentation updates
-
-Fix blocking issues before committing.
-
-## Phase 9: Commit or Ship
+## Phase 8: Commit or Ship
 
 Use atomic conventional commits and stage only files changed for this work.
 
 For small local work, commit and report the result. For PR-ready work, run
-`/bw-ship` after verification, security, and review have passed. Verify,
-security, and review just passed here — when `/bw-ship` runs next in the same run
-and the working tree is unchanged, it reuses these results (its "Gate reuse"
-rule) rather than re-running them. Report which gates passed and at what commit
-so the reuse is unambiguous.
+`/bw-ship` after verify and review have passed. Verify and review just passed
+here — when `/bw-ship` runs next in the same run and the working tree is
+unchanged, it reuses these results (its "Gate reuse" rule) rather than
+re-running them. Report which gates passed and at what commit so the reuse is
+unambiguous.
 
 ## Final Report
 
