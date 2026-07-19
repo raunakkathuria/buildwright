@@ -13,7 +13,8 @@ only useful project context.
 | `/bw-plan` | Think/research only; no code changes |
 | `/bw-work` | Implement bug fixes, refactors, and features |
 | `/bw-verify` | Run typecheck, lint, test, and build gates |
-| `/bw-ship` | Security review, code review, push, and PR |
+| `/bw-review` | Independent code + security review of a PR or the current changes |
+| `/bw-ship` | Verify, review, push, and PR |
 | `/bw-analyse` | Analyse a brownfield codebase and write context docs |
 
 ## Workflow
@@ -150,6 +151,7 @@ same `.buildwright/` source of truth.
   commands/
     bw-analyse.md
     bw-plan.md
+    bw-review.md
     bw-ship.md
     bw-verify.md
     bw-work.md
