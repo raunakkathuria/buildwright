@@ -1,6 +1,6 @@
 ---
 name: bw-ship
-version: 0.0.18
+version: 0.0.19
 description: Run full quality pipeline (verify → review) then commit, push, and create PR. Fails fast if any step fails.
 arguments:
   - name: message
