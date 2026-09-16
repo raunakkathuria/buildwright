@@ -1,6 +1,27 @@
 # Changelog
 
-## Unreleased
+## 0.0.20
+
+- New `/bw-cleaner` command — a whole-repo hygiene sweep for rot that no diff introduced: stale docs,
+  dangling references, dead files, rules stated twice, and gates that have quietly stopped biting.
+  `/bw-review` is scoped to a diff by design and says so ("never the whole repo"), so nothing covered
+  the repository at rest. Its oracle is internal consistency rather than intent — the repo against
+  its own declarations. Runs the project's existing gates before auditing anything by hand, and
+  removes only what passes a two-part standard (nothing references it, by a stated search scope, and
+  the reason it existed no longer holds); everything else is a reported finding, left standing.
+  A weed pulled twice is treated as a missing gate.
+
+- The first sweep's own findings, which `/bw-cleaner` was written to look for and promptly found here
+  (#42):
+  - **A gate that had stopped biting.** `validate-docs.sh` checked each command was documented with
+    `if [ -f "$README_MD" ] && ! grep -q ...; then missing; else ✓; fi` — so when the target file was
+    **absent** the first condition was false, the `else` ran, and it printed a green ✓ for a file it
+    never opened. An absent target is now skipped and reported as such, never passed.
+  - It also now validates that every **framework doc** is listed in `AGENTS.md`, `README.md` and
+    `clawhub/SKILL.md`, not only that every command is — and skips itself entirely in a consuming
+    project, where those files belong to the host rather than to Buildwright.
+  - **A dangling reference.** `/bw-verify` said "Follow the Tech Discovery Protocol (see Command
+    Discovery in CLAUDE.md)"; the protocol lives in `AGENTS.md`. Now points at where it is.
 
 - `/bw-review` now runs each persona pass in a **sub-agent** rather than adopting the persona inline.
   The command already claimed "independent by construction: run it with fresh context — you are the
@@ -18,15 +39,6 @@
   needed editing and two would have been forgotten.
 
 ## 0.0.19
-
-- New `/bw-cleaner` command — a whole-repo hygiene sweep for rot that no diff introduced: stale docs,
-  dangling references, dead files, rules stated twice, and gates that have quietly stopped biting.
-  `/bw-review` is scoped to a diff by design and says so ("never the whole repo"), so nothing covered
-  the repository at rest. Its oracle is internal consistency rather than intent — the repo against
-  its own declarations. Runs the project's existing gates before auditing anything by hand, and
-  removes only what passes a two-part standard (nothing references it, by a stated search scope, and
-  the reason it existed no longer holds); everything else is a reported finding, left standing.
-  A weed pulled twice is treated as a missing gate.
 
 - New `/bw-review` command — independent code + security review of a GitHub PR (`gh pr diff`) or the
   current local changes, on demand. Adopts the staff-engineer + security-engineer personas with fresh
