@@ -37,6 +37,8 @@ update, not meant to be customized:
 - `findings.md` - the convention for recording report-upstream and
   before-production findings.
 - `tasks-to-issues.md` - the convention for turning a plan's tasks into tracked issues on the forge (parent + child-per-unit, stable IDs, idempotent, remote-guarded; optionally fanned out across repos and linked under one feature via a Project/Epic); prepared by `/bw-plan`, created at the `/bw-work` handoff.
+- `tdd-evidence.md` - the proof-of-red convention: a behaviour change or bug fix must capture and
+  cite the failing test run before the fix, unless declared a characterization/regression guard.
 
 Unlike steering, do not edit these to fit a project; changing them changes the
 framework's contract.
@@ -54,9 +56,11 @@ sync (`bash .buildwright/scripts/sync-agents.sh`) and gitignored:
   commands/             # bw-work, bw-plan, bw-verify, bw-review,
                         #   bw-ship, bw-analyse, bw-cleaner
   framework/            # Buildwright-owned behaviour, refreshed on update:
-                        #   autonomy.md, capability.md, findings.md, tasks-to-issues.md
+                        #   autonomy.md, capability.md, findings.md, tasks-to-issues.md,
+                        #   tdd-evidence.md
   scripts/              # Buildwright-owned support scripts + git hooks,
-                        #   refreshed on update: sync-agents.sh, install-hooks.sh
+                        #   refreshed on update: sync-agents.sh, validate-docs.sh,
+                        #   install-hooks.sh
   steering/             # project-owned, customizable, preserved on update:
                         #   philosophy.md plus lazy-created tech.md/product.md
 
