@@ -1,6 +1,6 @@
 ---
 name: buildwright
-description: Lightweight engineering workflow for agent-led development. Provides plan, work, verify, ship, and analyse commands with TDD, documentation discipline, security review, code review, and quality gates.
+description: Lightweight engineering workflow for agent-led development. Provides plan, work, verify, review, ship, analyse, and cleaner commands with TDD, documentation discipline, security review, code review, and quality gates.
 license: MIT
 compatibility: Requires git and gh for shipping. Optional tools for security scans include semgrep, gitleaks, and trufflehog. Works with Claude Code, OpenCode, Cursor, and Codex CLI.
 metadata:
@@ -45,9 +45,16 @@ Run project quality gates: typecheck, lint, test, and build. Commands come from
 `.buildwright/steering/tech.md` when present; otherwise Buildwright detects and
 writes them.
 
+### /bw-review
+
+Independent code + security review of a PR or the current changes. Adopts the
+Staff Engineer and Security Engineer personas with fresh context. Report-only —
+never edits or merges. The single home for the review logic; `/bw-work` and
+`/bw-ship` delegate to it.
+
 ### /bw-ship
 
-Run verify, security review, Staff Engineer review, then commit, push, and open
+Run verify, then `/bw-review` (security + code), then commit, push, and open
 a PR. Shipping confirms documentation was updated or explicitly not applicable.
 
 ### /bw-analyse
@@ -55,6 +62,14 @@ a PR. Shipping confirms documentation was updated or explicitly not applicable.
 Analyse a brownfield codebase and write `.buildwright/codebase/STACK.md`,
 `ARCHITECTURE.md`, `CONVENTIONS.md`, and `CONCERNS.md`. Also creates or updates
 `.buildwright/steering/tech.md` with discovered stack and commands.
+
+### /bw-cleaner
+
+Sweep the repository at rest for rot that no diff introduced: stale docs,
+dangling references, dead files, rules stated twice, and gates that have
+quietly stopped biting. Runs the project's existing checks first; removes only
+what passes a two-part proof (nothing references it, and the reason it existed
+no longer holds) — everything else is a reported finding.
 
 ## Steering
 
@@ -72,6 +87,12 @@ fixed — identical in every install, refreshed on update, not customized:
   replace Buildwright's steering or process.
 - `.buildwright/framework/findings.md` — convention for recording report-upstream
   and before-production deferrals.
+- `.buildwright/framework/tasks-to-issues.md` — convention for turning an
+  approved plan's tasks into tracked forge issues (parent + child-per-unit,
+  stable IDs, idempotent, remote-guarded).
+- `.buildwright/framework/tdd-evidence.md` — proof-of-red convention: a
+  behaviour change or bug fix must capture and cite the failing test run before
+  the fix, unless declared a characterization/regression guard.
 
 **Steering** (`.buildwright/steering/`) is project-owned and customizable,
 preserved across updates. The shipped default:
