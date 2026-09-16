@@ -16,6 +16,7 @@ only useful project context.
 | `/bw-review` | Independent code + security review of a PR or the current changes |
 | `/bw-ship` | Verify, review, push, and PR |
 | `/bw-analyse` | Analyse a brownfield codebase and write context docs |
+| `/bw-cleaner` | Sweep the repo at rest for stale docs, dead files, and gates that stopped biting |
 
 ## Workflow
 
@@ -150,6 +151,7 @@ same `.buildwright/` source of truth.
     security-engineer.md
   commands/
     bw-analyse.md
+    bw-cleaner.md
     bw-plan.md
     bw-review.md
     bw-ship.md
