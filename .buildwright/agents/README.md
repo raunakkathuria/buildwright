@@ -14,9 +14,10 @@ Buildwright is not a multi-agent framework.
 
 ## How they are triggered
 
-Neither persona is invoked directly by `/bw-work` or `/bw-ship` — `/bw-review` is
-the single home for the review logic and adopts both personas; `/bw-work` and
-`/bw-ship` delegate to it rather than restating the review inline:
+`/bw-review` is the single home for the review logic and adopts both personas;
+`/bw-work` and `/bw-ship` delegate to it rather than restating the review inline
+(falling back to adopting the personas inline only where a host cannot invoke
+`/bw-review` faithfully):
 
 - `/bw-work` — Phase 7 (Review) runs `/bw-review` after the implementation passes
   its verification gates, before commit.
