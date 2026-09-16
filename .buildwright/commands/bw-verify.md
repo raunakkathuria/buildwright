@@ -8,7 +8,7 @@ Running quick verification...
 
 ## 1. Discover Project Commands
 
-Follow the Tech Discovery Protocol (see Command Discovery in CLAUDE.md):
+Follow the Command Discovery protocol in AGENTS.md:
 
 1. Read `.buildwright/steering/tech.md` if it exists — if "Project Commands" has real commands, use them.
 2. Otherwise auto-detect from project files: `package.json`, `Cargo.toml`, `go.mod`, `pyproject.toml`, `Makefile`, etc.
