@@ -16,6 +16,7 @@ only useful project context.
 | `/bw-review` | Independent code + security review of a PR or the current changes |
 | `/bw-ship` | Verify, review, push, and PR |
 | `/bw-analyse` | Analyse a brownfield codebase and write context docs |
+| `/bw-cleaner` | Sweep the repo at rest for stale docs, dead files, and gates that stopped biting |
 
 ## Workflow
 
@@ -50,16 +51,21 @@ and fixed — identical in every install, refreshed on update, not meant to be
 customized:
 
 ```text
-.buildwright/framework/autonomy.md    # the single autonomy behaviour, auto-continue, context-inferred failure handling
-.buildwright/framework/capability.md  # prefer host-native capabilities (plan/file-write/tasks/subagents/hooks) with fallbacks
-.buildwright/framework/findings.md    # convention for report-upstream and before-production deferrals
+.buildwright/framework/autonomy.md        # the single autonomy behaviour, auto-continue, context-inferred failure handling
+.buildwright/framework/capability.md      # prefer host-native capabilities (plan/file-write/tasks/subagents/hooks) with fallbacks
+.buildwright/framework/findings.md        # convention for report-upstream and before-production deferrals
+.buildwright/framework/tasks-to-issues.md # convention for turning a plan's tasks into tracked forge issues
+.buildwright/framework/tdd-evidence.md    # proof-of-red convention for behaviour changes and bug fixes
 ```
 
 `autonomy.md` is why there is no approval flag — one behaviour, inferred from
 context. `capability.md` keeps commands leaning on each host tool's built-ins
 (parallelism, task tracking, sub-agents, worktrees, file-write, hooks) for
 *execution mechanics* — they never replace Buildwright's steering or process.
-`findings.md` standardises how deferred decisions are recorded.
+`findings.md` standardises how deferred decisions are recorded. `tasks-to-issues.md`
+defines the parent/child issue breakdown created at the `/bw-work` handoff.
+`tdd-evidence.md` requires a cited failing run before a behaviour change or bug
+fix is considered done.
 
 **Steering** lives in `.buildwright/steering/`. It is project-owned and
 customizable, and is preserved across updates:
@@ -150,6 +156,7 @@ same `.buildwright/` source of truth.
     security-engineer.md
   commands/
     bw-analyse.md
+    bw-cleaner.md
     bw-plan.md
     bw-review.md
     bw-ship.md
@@ -160,6 +167,7 @@ same `.buildwright/` source of truth.
     capability.md
     findings.md
     tasks-to-issues.md
+    tdd-evidence.md
   scripts/                # Buildwright-owned support scripts, refreshed on update
     sync-agents.sh        # regenerates the tool configs below
     validate-docs.sh

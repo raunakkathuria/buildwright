@@ -2,6 +2,15 @@
 
 ## 0.0.19
 
+- New `/bw-cleaner` command — a whole-repo hygiene sweep for rot that no diff introduced: stale docs,
+  dangling references, dead files, rules stated twice, and gates that have quietly stopped biting.
+  `/bw-review` is scoped to a diff by design and says so ("never the whole repo"), so nothing covered
+  the repository at rest. Its oracle is internal consistency rather than intent — the repo against
+  its own declarations. Runs the project's existing gates before auditing anything by hand, and
+  removes only what passes a two-part standard (nothing references it, by a stated search scope, and
+  the reason it existed no longer holds); everything else is a reported finding, left standing.
+  A weed pulled twice is treated as a missing gate.
+
 - New `/bw-review` command — independent code + security review of a GitHub PR (`gh pr diff`) or the
   current local changes, on demand. Adopts the staff-engineer + security-engineer personas with fresh
   context (reviewer ≠ implementer); report-only (judgment-class, logged override), never edits or
