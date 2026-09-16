@@ -11,8 +11,17 @@ shipping anything. Use it to review an existing PR (yours, a teammate's, or anot
 working changes before `/bw-ship`. It is the single home for the review logic that `/bw-work` and
 `/bw-ship` delegate to (DRY).
 
-**Independent by construction:** run it with fresh context — you are the reviewer, not the
-implementer. Review only what changed; verify each issue is real and introduced by these changes.
+**Independent by construction:** the reviewer must not be the implementer. Run each persona pass in
+a **sub-agent** (see `framework/capability.md`) so it starts with the diff and the persona and
+nothing else — not the session that wrote the code, and not the author's account of why. The two
+passes do not depend on each other, so run them **in parallel** where the host supports it.
+
+Where the host has no sub-agents this degrades to adopting the persona inline, which is weaker and
+worth naming: an author reviewing their own change reads the diff already knowing what was deliberate
+and what was "out of scope", and finds fewer things as a result. **Say which of the two happened** in
+the report, so a reader knows how much the verdict is worth.
+
+Review only what changed; verify each issue is real and introduced by these changes.
 
 **Judgment-class, report-only.** It never edits code and never merges. Findings are advice for a
 human: a false positive is cleared by a logged override (`.buildwright/framework/findings.md`), and a
@@ -44,8 +53,9 @@ Review **only** the changed lines and their blast radius — never the whole rep
 
 ## Phase 2: Security review (Security Engineer persona)
 
-Adopt `.buildwright/agents/security-engineer.md` (or `~/.claude/agents/security-engineer.md` for a
-global install without a project `.buildwright/`).
+Run this pass in a sub-agent, given the diff and `.buildwright/agents/security-engineer.md` (or
+`~/.claude/agents/security-engineer.md` for a global install without a project `.buildwright/`).
+Inline fallback per the header.
 
 - **Automated scans** (skip gracefully if a tool is absent): dependency vulnerabilities
   (`npm audit` / `cargo audit` / `pip-audit` / `go list -m -json all | nancy sleuth` …); secrets
@@ -57,7 +67,8 @@ global install without a project `.buildwright/`).
 
 ## Phase 3: Code review (Staff Engineer persona)
 
-Adopt `.buildwright/agents/staff-engineer.md` (or the global path as above).
+Run this pass in a sub-agent, given the diff and `.buildwright/agents/staff-engineer.md` (or the
+global path as above). Inline fallback per the header.
 
 - **Phased:** repository context → comparative analysis (pattern fit; reuse over reinvention;
   DRY/YAGNI) → issue assessment. For each candidate issue, verify it is real and **introduced** by

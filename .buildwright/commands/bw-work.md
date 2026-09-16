@@ -144,7 +144,7 @@ behaviour.
 
 Run **`/bw-review`** over the changed diff — invoke the real command (host-native command
 invocation, per `.buildwright/framework/capability.md`), do not re-enact it from memory. It adopts
-the security-engineer and staff-engineer personas and reports both security and code findings
+the security-engineer and staff-engineer passes and reports both security and code findings
 (secrets, dependency/OWASP risks, financial-code risks; logic errors, edge cases, error handling,
 pattern fit, complexity, missing tests/docs, and un-cited red per `framework/tdd-evidence.md`).
 

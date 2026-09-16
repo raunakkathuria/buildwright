@@ -1,5 +1,22 @@
 # Changelog
 
+## Unreleased
+
+- `/bw-review` now runs each persona pass in a **sub-agent** rather than adopting the persona inline.
+  The command already claimed "independent by construction: run it with fresh context — you are the
+  reviewer, not the implementer", but its main caller is `/bw-work` Phase 7, which invokes it inside
+  the run that just wrote the code. The reviewer *was* the implementer, and the independence was
+  aspirational. `framework/capability.md` already mapped **Sub-agents** across all four hosts with a
+  documented fallback; the command simply never reached for it. Now it does: each pass starts with
+  the diff and the persona and nothing else, the two run in parallel where the host supports it, and
+  a host without sub-agents degrades to the inline adoption as before — but the report must **say
+  which of the two happened**, because an author reviewing their own change already knows what was
+  deliberate and finds fewer things as a result.
+
+- `/bw-work` and `/bw-ship` no longer restate *how* `/bw-review` obtains its personas, only what they
+  get from it. The mechanism was described in three files; when it changed, three files would have
+  needed editing and two would have been forgotten.
+
 ## 0.0.19
 
 - New `/bw-cleaner` command — a whole-repo hygiene sweep for rot that no diff introduced: stale docs,

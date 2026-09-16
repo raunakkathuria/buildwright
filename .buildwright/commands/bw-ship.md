@@ -112,7 +112,7 @@ Handle failure per the **Failure Handling** section below (context-inferred).
 Run **`/bw-review`** over the diff being shipped — invoke the real command
 (host-native command invocation, per `.buildwright/framework/capability.md`); do
 not re-enact it from memory. It is the single home for the review logic (DRY),
-adopting the security-engineer and staff-engineer personas and reporting both
+running the security-engineer and staff-engineer passes and reporting both
 security and code findings:
 
 - **Security:** dependency vulnerabilities, secrets, OWASP Top 10, financial-code
