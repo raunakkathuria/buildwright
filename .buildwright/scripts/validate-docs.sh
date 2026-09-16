@@ -47,19 +47,17 @@ for file in "$COMMANDS_DIR"/bw-*.md; do
 
   cmd="/$name"
 
-  if [ -f "$README_MD" ] && ! grep -q "$cmd" "$README_MD" 2>/dev/null; then
-    echo -e "  ${RED}${BOLD}validate-docs: $cmd missing from README.md${RESET}"
-    missing=$((missing + 1))
-  else
-    echo -e "  ${GREEN}validate-docs: $cmd (README.md) ✓${RESET}"
-  fi
-
-  if [ -f "$CLAWHUB_SKILL" ] && ! grep -q "$cmd" "$CLAWHUB_SKILL" 2>/dev/null; then
-    echo -e "  ${RED}${BOLD}validate-docs: $cmd missing from $CLAWHUB_SKILL${RESET}"
-    missing=$((missing + 1))
-  else
-    echo -e "  ${GREEN}validate-docs: $cmd ($CLAWHUB_SKILL) ✓${RESET}"
-  fi
+  # An absent target is skipped, never reported as a pass — a ✓ for a file that
+  # was never opened is a gate that has stopped biting.
+  for target in "$README_MD" "$CLAWHUB_SKILL"; do
+    [ -f "$target" ] || continue
+    if ! grep -q "$cmd" "$target" 2>/dev/null; then
+      echo -e "  ${RED}${BOLD}validate-docs: $cmd missing from $target${RESET}"
+      missing=$((missing + 1))
+    else
+      echo -e "  ${GREEN}validate-docs: $cmd ($target) ✓${RESET}"
+    fi
+  done
 done
 
 for file in "$FRAMEWORK_DIR"/*.md; do
