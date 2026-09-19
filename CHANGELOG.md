@@ -2,6 +2,9 @@
 
 ## 0.0.20
 
+- Reformatted `/bw-analyse` as standard Markdown so its sections, numbered
+  process, nested lists, and success checklist render correctly in skill views.
+
 - New `/bw-cleaner` command — a whole-repo hygiene sweep for rot that no diff introduced: stale docs,
   dangling references, dead files, rules stated twice, and gates that have quietly stopped biting.
   `/bw-review` is scoped to a diff by design and says so ("never the whole repo"), so nothing covered
