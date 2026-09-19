@@ -9,14 +9,14 @@ if ! git diff --quiet || ! git diff --cached --quiet; then
   exit 1
 fi
 
-# Step 1: bump version files (cli/package.json + command stamps + make sync)
+# Step 1: bump the npm package and maintained skill metadata versions
 make bump BUMP="$BUMP"
 
 # Read new version from the bumped package.json
 NEW_VERSION=$(node -p "require('./cli/package.json').version")
 
 # Step 2: commit version files
-git add cli/package.json cli/package-lock.json clawhub/SKILL.md .buildwright/commands/bw-*.md
+git add cli/package.json cli/package-lock.json clawhub/buildwright/SKILL.md .buildwright/commands/bw-*.md
 git commit -m "chore: bump version to v$NEW_VERSION"
 
 # Step 3: push commit first
@@ -37,4 +37,4 @@ echo "✓ Released v$NEW_VERSION"
 echo "  GitHub: https://github.com/$(gh repo view --json nameWithOwner -q .nameWithOwner)/releases/tag/v$NEW_VERSION"
 echo "  npm:    https://www.npmjs.com/package/buildwright/v/$NEW_VERSION"
 echo ""
-echo "Manual step — ClawHub: upload the clawhub/ folder at https://clawhub.ai/upload"
+echo "Manual step — ClawHub: upload the clawhub/buildwright/ folder at https://clawhub.ai/upload"

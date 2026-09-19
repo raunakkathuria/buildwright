@@ -2,6 +2,11 @@
 
 ## 0.0.20
 
+- Buildwright skills now use minimal Agent Skills frontmatter: required `name`
+  and `description` fields plus maintained `author` and `version` metadata.
+  Descriptions include when to use each skill, and releases keep every skill's
+  version in lockstep with the npm package.
+
 - Reformatted `/bw-analyse` as standard Markdown so its sections, numbered
   process, nested lists, and success checklist render correctly in skill views.
 
@@ -21,8 +26,9 @@
     **absent** the first condition was false, the `else` ran, and it printed a green ✓ for a file it
     never opened. An absent target is now skipped and reported as such, never passed.
   - It also now validates that every **framework doc** is listed in `AGENTS.md`, `README.md` and
-    `clawhub/SKILL.md`, not only that every command is — and skips itself entirely in a consuming
-    project, where those files belong to the host rather than to Buildwright.
+    `clawhub/buildwright/SKILL.md`, not only that every command is — and skips
+    itself entirely in a consuming project, where those files belong to the host
+    rather than to Buildwright.
   - **A dangling reference.** `/bw-verify` said "Follow the Tech Discovery Protocol (see Command
     Discovery in CLAUDE.md)"; the protocol lives in `AGENTS.md`. Now points at where it is.
 

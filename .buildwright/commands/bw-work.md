@@ -1,11 +1,9 @@
 ---
 name: bw-work
-version: 0.0.19
-description: Implement bug fixes, refactors, and features with research, Red-Green-Refactor, docs, verification, security review, and code review
-arguments:
-  - name: task
-    description: What to build, fix, or refactor
-    required: true
+description: Implement bug fixes, refactors, and features with research, TDD, documentation, verification, and review. Use when code or project files must change.
+metadata:
+  author: raunakkathuria
+  version: "0.0.19"
 ---
 
 # /bw-work

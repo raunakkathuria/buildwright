@@ -1,19 +1,9 @@
 ---
 name: buildwright
-description: Lightweight engineering workflow for agent-led development. Provides plan, work, verify, review, ship, analyse, and cleaner commands with TDD, documentation discipline, security review, code review, and quality gates.
-license: MIT
-compatibility: Requires git and gh for shipping. Optional tools for security scans include semgrep, gitleaks, and trufflehog. Works with Claude Code, OpenCode, Cursor, and Codex CLI.
+description: Provide plan, work, verify, review, ship, analyse, and cleaner workflows with TDD and quality gates. Use when applying Buildwright's agent-led engineering discipline.
 metadata:
-  homepage: https://github.com/raunakkathuria/buildwright
-  version: "0.0.19"
   author: raunakkathuria
-  tags:
-    - development
-    - workflow
-    - tdd
-    - security
-    - code-review
-    - documentation
+  version: "0.0.19"
 ---
 
 # Buildwright

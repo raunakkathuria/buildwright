@@ -1,14 +1,9 @@
 ---
 name: bw-analyse
-version: 0.0.19
-description: Analyse the codebase and write structured docs to .buildwright/codebase/. Creates or updates tech.md with discovered stack and commands.
-allowed-tools:
-  - Read
-  - Bash
-  - Glob
-  - Grep
-  - Write
-  - Edit
+description: Analyse an unfamiliar or brownfield codebase and write structured context docs. Use when codebase docs or project technology steering are missing or stale.
+metadata:
+  author: raunakkathuria
+  version: "0.0.19"
 ---
 
 # /bw-analyse

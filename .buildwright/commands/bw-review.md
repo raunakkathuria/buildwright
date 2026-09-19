@@ -1,7 +1,9 @@
 ---
 name: bw-review
-version: 0.0.19
-description: Independent code + security review of a PR or the current changes. Adopts the staff-engineer and security-engineer personas; reports findings, does not modify code. Reused by /bw-work and /bw-ship.
+description: Independently review a PR or local changes for code and security issues without modifying code. Use before shipping or when a standalone review is requested.
+metadata:
+  author: raunakkathuria
+  version: "0.0.19"
 ---
 
 # /bw-review — independent code + security review

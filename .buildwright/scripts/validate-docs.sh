@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # validate-docs.sh — checks that every bw-* command is documented in
-# README.md and clawhub/SKILL.md, and that every framework doc is listed in
-# AGENTS.md, README.md, and clawhub/SKILL.md.
+# README.md and clawhub/buildwright/SKILL.md, and that every framework doc is
+# listed in AGENTS.md, README.md, and clawhub/buildwright/SKILL.md.
 # Run automatically by sync-agents.sh after each sync.
 # Exit code 1 if any commands or framework docs are missing from documentation.
 
@@ -11,7 +11,7 @@ COMMANDS_DIR=".buildwright/commands"
 FRAMEWORK_DIR=".buildwright/framework"
 README_MD="README.md"
 AGENTS_MD="AGENTS.md"
-CLAWHUB_SKILL="clawhub/SKILL.md"
+CLAWHUB_SKILL="clawhub/buildwright/SKILL.md"
 
 RED='\033[0;31m'
 YELLOW='\033[1;33m'
