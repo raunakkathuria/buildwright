@@ -1,9 +1,11 @@
 ---
 name: buildwright
-description: Provide plan, work, verify, review, ship, analyse, and cleaner workflows with TDD and quality gates. Use when applying Buildwright's agent-led engineering discipline.
+description: Apply agent-led software development workflows for planning, implementation, TDD, verification, security review, code review, shipping, repository analysis, and cleanup. Use when developing or maintaining a software project with Buildwright.
+version: "0.0.19"
 metadata:
-  author: raunakkathuria
-  version: "0.0.19"
+  openclaw:
+    emoji: "🛠️"
+    homepage: https://github.com/raunakkathuria/buildwright
 ---
 
 # Buildwright

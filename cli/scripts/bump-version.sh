@@ -19,8 +19,17 @@ while printf '%s\n' "${BLOCKED_VERSIONS[@]}" | grep -qx "$NEW_VERSION"; do
 done
 cd ..
 
-# 3. Keep the maintained Agent Skills metadata in lockstep with the package.
-SKILL_FILES=(clawhub/buildwright/SKILL.md)
+# 3. Keep the ClawHub bundle version in lockstep with the package.
+CLAWHUB_SKILL="clawhub/buildwright/SKILL.md"
+if ! grep -q '^version: ".*"$' "$CLAWHUB_SKILL"; then
+  echo "✗ $CLAWHUB_SKILL must contain a top-level version." >&2
+  exit 1
+fi
+sed -i.bak "s/^version: \".*\"/version: \"$NEW_VERSION\"/" "$CLAWHUB_SKILL"
+rm -f "$CLAWHUB_SKILL.bak"
+
+# 4. Keep generated Agent Skills metadata in lockstep with the package.
+SKILL_FILES=()
 for cmd in .buildwright/commands/bw-*.md; do
   [ -f "$cmd" ] && SKILL_FILES+=("$cmd")
 done
@@ -34,7 +43,7 @@ for skill in "${SKILL_FILES[@]}"; do
   rm -f "$skill.bak"
 done
 
-# 4. Propagate the canonical command metadata to generated skills.
+# 5. Propagate the canonical command metadata to generated skills.
 make sync
 
 echo ""

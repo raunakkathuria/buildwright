@@ -54,8 +54,22 @@ test('Buildwright skills use minimal Agent Skills frontmatter', () => {
     const expectedName = path.basename(entry, '.md');
     assertMinimalSkill(path.join(commandsDir, entry), expectedName);
   }
+});
 
-  assertMinimalSkill(path.join(repoRoot, 'clawhub', 'buildwright', 'SKILL.md'), 'buildwright');
+test('ClawHub bundle uses supported ClawHub metadata', () => {
+  const file = path.join(repoRoot, 'clawhub', 'buildwright', 'SKILL.md');
+  const frontmatter = readFrontmatter(file);
+  const keys = frontmatter
+    .split('\n')
+    .filter(line => /^\S[^:]*:/.test(line))
+    .map(line => line.slice(0, line.indexOf(':')));
+
+  assert.deepStrictEqual(keys, ['name', 'description', 'version', 'metadata']);
+  assert.strictEqual(readField(frontmatter, 'name'), 'buildwright');
+  assert.strictEqual(readField(frontmatter, 'version')?.replace(/^"|"$/g, ''), packageVersion);
+  assert.match(readField(frontmatter, 'description'), /\bUse (?:when|for|before)\b/);
+  assert.match(frontmatter, /^  openclaw:\n    emoji: ".+"\n    homepage: https:\/\/github\.com\/raunakkathuria\/buildwright$/m);
+  assert.doesNotMatch(frontmatter, /^license:|^compatibility:|^  author:|^\s+tags:/m);
 });
 
 test('release scripts maintain skill metadata versions', () => {
@@ -66,5 +80,9 @@ test('release scripts maintain skill metadata versions', () => {
     assert.match(bump, pattern);
     assert.match(release, pattern);
   }
+  assert.match(bump, /\^version:/);
   assert.match(bump, /\^  version:/);
+  assert.match(release, /--tags latest/);
+  assert.match(release, /--categories development,agents/);
+  assert.match(release, /--topics tdd,code-review,security-review,software-development,agent-workflows/);
 });

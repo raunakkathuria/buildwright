@@ -2,10 +2,12 @@
 
 ## 0.0.20
 
-- Buildwright skills now use minimal Agent Skills frontmatter: required `name`
-  and `description` fields plus maintained `author` and `version` metadata.
-  Descriptions include when to use each skill, and releases keep every skill's
-  version in lockstep with the npm package.
+- Generated Buildwright command skills now use minimal Agent Skills frontmatter:
+  required `name` and `description` fields plus maintained `author` and
+  `version` metadata. The separate ClawHub bundle uses ClawHub's top-level
+  `version` and `metadata.openclaw` display fields. Releases keep every version
+  in lockstep with npm and publish ClawHub with the `latest` version tag plus
+  catalog categories and discovery topics.
 
 - Reformatted `/bw-analyse` as standard Markdown so its sections, numbered
   process, nested lists, and success checklist render correctly in skill views.

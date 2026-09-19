@@ -203,6 +203,10 @@ The npm package README is materialized from the root `README.md` at pack time.
 Releases run through `make release` (bump, commit, tag, GitHub release, npm
 publish). The [ClawHub](https://clawhub.ai) listing is a manual upload of the
 committed `clawhub/buildwright/` skill folder; `make bump` stamps its version.
+`make release` prints the ClawHub publish command with the `latest` version tag,
+the `development` and `agents` categories, and focused discovery topics. ClawHub
+search uses the skill description and indexed content; registry tags point to
+published versions rather than acting as discovery keywords.
 
 ## Configuration
 
