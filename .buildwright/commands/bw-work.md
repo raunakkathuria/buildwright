@@ -3,7 +3,7 @@ name: bw-work
 description: Implement bug fixes, refactors, and features with research, TDD, documentation, verification, and review. Use when code or project files must change.
 metadata:
   author: raunakkathuria
-  version: "0.0.19"
+  version: "0.0.20"
 ---
 
 # /bw-work

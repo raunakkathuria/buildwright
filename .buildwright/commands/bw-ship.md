@@ -3,7 +3,7 @@ name: bw-ship
 description: Run the full quality pipeline, then commit, push, and create a PR. Use when verified work is ready to be reviewed and shipped.
 metadata:
   author: raunakkathuria
-  version: "0.0.19"
+  version: "0.0.20"
 ---
 
 ## Ship Pipeline

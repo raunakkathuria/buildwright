@@ -3,7 +3,7 @@ name: bw-review
 description: Independently review a PR or local changes for code and security issues without modifying code. Use before shipping or when a standalone review is requested.
 metadata:
   author: raunakkathuria
-  version: "0.0.19"
+  version: "0.0.20"
 ---
 
 # /bw-review — independent code + security review
