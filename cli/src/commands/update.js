@@ -7,7 +7,7 @@ const { execSync } = require('child_process');
 const { isBuildwrightInstalled } = require('../utils/detect');
 const { copyDir, chmodScripts } = require('../utils/copy-files');
 const { runSync, runInstallHooks } = require('../utils/run-script');
-const { appendGitignoreBlock } = require('../utils/gitignore');
+const { appendGitignoreBlock, validateGitignore } = require('../utils/gitignore');
 
 // ANSI colours
 const GREEN = '\x1b[32m';
@@ -138,6 +138,9 @@ async function update() {
     console.log(`Run ${BOLD}buildwright init${RESET} first.`);
     process.exit(1);
   }
+
+  // Fail before downloading or replacing files if .gitignore is unsafe.
+  validateGitignore(cwd);
 
   console.log(`${BOLD}Updating Buildwright in ${cwd}...${RESET}\n`);
   console.log(`Updating: ${UPDATE_DIRS.map(d => `.buildwright/${d}/`).join(', ')}`);
