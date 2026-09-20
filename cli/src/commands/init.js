@@ -5,7 +5,7 @@ const path = require('path');
 const { isGitRepo, isBuildwrightInstalled } = require('../utils/detect');
 const { copyDir, chmodScripts } = require('../utils/copy-files');
 const { runSync, runInstallHooks } = require('../utils/run-script');
-const { appendGitignoreBlock } = require('../utils/gitignore');
+const { appendGitignoreBlock, validateGitignore } = require('../utils/gitignore');
 
 // ANSI colours
 const GREEN = '\x1b[32m';
@@ -30,6 +30,9 @@ function init() {
     console.log(`To update commands and agents to the latest version, run: ${BOLD}buildwright update${RESET}`);
     process.exit(1);
   }
+
+  // Fail before copying any project files if .gitignore is unsafe to modify.
+  validateGitignore(cwd);
 
   console.log(`${BOLD}Setting up Buildwright in ${cwd}...${RESET}\n`);
 
@@ -65,7 +68,7 @@ function init() {
 
   // 5. Keep generated dirs out of the host's git history
   if (appendGitignoreBlock(cwd)) {
-    console.log('  Added Buildwright generated-dirs block to .gitignore');
+    console.log('  Updated .gitignore for Buildwright generated directories');
   }
 
   // 6. Run the Buildwright sync
