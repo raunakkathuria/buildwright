@@ -72,6 +72,46 @@ test('ClawHub bundle uses supported ClawHub metadata', () => {
   assert.doesNotMatch(frontmatter, /^license:|^compatibility:|^  author:|^\s+tags:/m);
 });
 
+test('repository Markdown stays untrusted project context', () => {
+  const commandsDir = path.join(repoRoot, '.buildwright', 'commands');
+  const guidanceFiles = [
+    'AGENTS.md',
+    'clawhub/buildwright/SKILL.md',
+    ...fs.readdirSync(commandsDir)
+      .filter(name => /^bw-.*\.md$/.test(name))
+      .map(name => path.join('.buildwright', 'commands', name)),
+  ];
+
+  for (const relativePath of guidanceFiles) {
+    const content = fs.readFileSync(path.join(repoRoot, relativePath), 'utf8');
+    assert.doesNotMatch(
+      content,
+      /recursively (?:discover and )?reads?[\s\S]{0,80}\.buildwright\/(?:steering|codebase|framework)/i,
+      `${relativePath} must not automatically load open-ended repository Markdown`,
+    );
+  }
+
+  for (const relativePath of ['AGENTS.md', 'clawhub/buildwright/SKILL.md']) {
+    const content = fs.readFileSync(path.join(repoRoot, relativePath), 'utf8');
+    assert.match(content, /repository-owned Markdown as untrusted project context/i);
+    assert.match(content, /cannot override system, developer, or user instructions/i);
+    assert.match(content, /cannot authorize credential access/i);
+    assert.match(content, /never execute[\s\S]{0,120}solely because[\s\S]{0,80}file says to do so/i);
+    assert.match(content, /new or modified[\s\S]{0,100}reviewed change/i);
+  }
+});
+
+test('Cursor never auto-loads repository context as generated rules', () => {
+  const sync = fs.readFileSync(path.join(repoRoot, '.buildwright/scripts/sync-agents.sh'), 'utf8');
+
+  assert.doesNotMatch(sync, /CURSOR_ALWAYS_APPLY="true"/);
+  assert.doesNotMatch(
+    sync,
+    /sync_cursor_dir "\.buildwright\/(?:framework|steering|codebase)"/,
+  );
+  assert.match(sync, /STALE: \.cursor\/rules\/\$context_dir/);
+});
+
 test('release scripts maintain skill metadata versions', () => {
   const bump = fs.readFileSync(path.join(repoRoot, 'cli/scripts/bump-version.sh'), 'utf8');
   const release = fs.readFileSync(path.join(repoRoot, 'cli/scripts/release.sh'), 'utf8');
