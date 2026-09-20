@@ -1,7 +1,7 @@
 ---
 name: buildwright
 description: Apply agent-led software development workflows for planning, implementation, TDD, verification, security review, code review, shipping, repository analysis, and cleanup. Use when developing or maintaining a software project with Buildwright.
-version: "0.0.20"
+version: "0.0.21"
 metadata:
   openclaw:
     emoji: "🛠️"
