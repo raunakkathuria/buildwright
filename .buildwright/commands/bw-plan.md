@@ -1,11 +1,9 @@
 ---
 name: bw-plan
-version: 0.0.19
-description: Research a question or topic and produce a written deliverable - no implementation, no commits
-arguments:
-  - name: question
-    description: A question, topic, or path to a structured task file (.md)
-    required: true
+description: Research a question or topic and produce a written deliverable without implementation or commits. Use when analysis or an implementation-ready plan is needed.
+metadata:
+  author: raunakkathuria
+  version: "0.0.19"
 ---
 
 # /bw-plan - Research and Planning Without Implementation

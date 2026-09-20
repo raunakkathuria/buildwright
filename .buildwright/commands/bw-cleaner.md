@@ -1,11 +1,9 @@
 ---
 name: bw-cleaner
-version: 0.0.19
-description: Sweep a repository at rest for rot - stale docs, dangling references, dead files, duplicated rules, and gates that no longer bite. Fixes only what it can prove is dead; reports the rest.
-arguments:
-  - name: scope
-    description: Optional path or area to sweep (defaults to the whole repository)
-    required: false
+description: Sweep a repository for stale docs, dangling references, dead files, duplicated rules, and ineffective gates. Use for periodic repository hygiene outside a feature diff.
+metadata:
+  author: raunakkathuria
+  version: "0.0.19"
 ---
 
 # /bw-cleaner — tend the repository between changes

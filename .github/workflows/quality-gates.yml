@@ -20,6 +20,9 @@ jobs:
       - name: Install CLI dependencies
         run: npm --prefix cli ci
 
+      - name: Run CLI tests
+        run: npm --prefix cli test
+
       - name: Generate synced files
         run: make sync
 
