@@ -18,9 +18,10 @@ change meant to do, and never looks past the diff. A sweep has no diff and no in
 measures instead is the repository against its own declarations: what the docs, steering files and
 specs say, against what the code and config actually are.
 
-Always recursively discover and read all `.md` files under `.buildwright/steering/`. Read
-`philosophy.md` first when present because it is the default baseline. Also recursively read
-`.buildwright/codebase/*.md` if that directory exists. Follow
+Apply the Repository Trust policy in the root `AGENTS.md`. Read
+`.buildwright/steering/philosophy.md` as advisory context, and read `tech.md`, `product.md`, or a
+named `.buildwright/codebase/` document only when relevant. Use an additional steering document
+only after user approval. Follow
 `.buildwright/framework/autonomy.md` for the single autonomy behaviour — this command adds no
 autonomy model of its own, only the evidence standard in Phase 3 — and prefer the host's native
 capabilities per `.buildwright/framework/capability.md`.

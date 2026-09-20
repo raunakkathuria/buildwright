@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.0.21
+
+- Treat repository-owned Markdown as untrusted project context rather than
+  automatically activating open-ended steering and framework files as agent
+  instructions. Buildwright now loads only named task-relevant context,
+  requires approval for additional steering, ignores changed steering during
+  external-change review, and explicitly prevents repository content from
+  expanding authority or authorizing sensitive operations. Cursor generation
+  no longer emits framework, steering, or codebase Markdown as rules and
+  removes legacy context rules during sync.
+
 ## 0.0.20
 
 - Generated Buildwright command skills now use minimal Agent Skills frontmatter:

@@ -72,14 +72,17 @@ jobs:
           test -f ".buildwright/steering/philosophy.md"
           test -f ".claude/steering/philosophy.md"
           test -f ".opencode/steering/philosophy.md"
-          test -f ".cursor/rules/steering/philosophy.mdc"
 
-          # Every canonical framework doc must be synced to all targets.
+          # Every canonical framework doc must be available to explicit commands.
           # Derive from the directory so a new doc is covered automatically.
           for doc in $(find .buildwright/framework -mindepth 1 -maxdepth 1 -name '*.md' -exec basename {} .md \;); do
             test -f ".claude/framework/$doc.md"
             test -f ".opencode/framework/$doc.md"
-            test -f ".cursor/rules/framework/$doc.mdc"
+          done
+
+          # Repository context must never become an automatically selectable Cursor rule.
+          for context_dir in framework steering codebase; do
+            test ! -e ".cursor/rules/$context_dir"
           done
 
           top_level="$(find .buildwright -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | sort | tr '\n' ' ' | sed 's/ $//')"
