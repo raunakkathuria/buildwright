@@ -19,28 +19,35 @@ while printf '%s\n' "${BLOCKED_VERSIONS[@]}" | grep -qx "$NEW_VERSION"; do
 done
 cd ..
 
-# 3. Update the ClawHub skill frontmatter (clawhub/ is the upload folder)
-sed -i.bak "s/^  version: \".*\"/  version: \"$NEW_VERSION\"/" clawhub/SKILL.md
-rm -f clawhub/SKILL.md.bak
+# 3. Keep the ClawHub bundle version in lockstep with the package.
+CLAWHUB_SKILL="clawhub/buildwright/SKILL.md"
+if ! grep -q '^version: ".*"$' "$CLAWHUB_SKILL"; then
+  echo "✗ $CLAWHUB_SKILL must contain a top-level version." >&2
+  exit 1
+fi
+sed -i.bak "s/^version: \".*\"/version: \"$NEW_VERSION\"/" "$CLAWHUB_SKILL"
+rm -f "$CLAWHUB_SKILL.bak"
 
-# 3b. Stamp the version into canonical command frontmatter so generated
-#     commands (.claude/.opencode/skills) carry it after sync. Lets users tell
-#     when an installed command set is stale.
+# 4. Keep generated Agent Skills metadata in lockstep with the package.
+SKILL_FILES=()
 for cmd in .buildwright/commands/bw-*.md; do
-  [ -f "$cmd" ] || continue
-  if ! grep -q '^version:' "$cmd"; then
-    echo "✗ $cmd has no 'version:' line in its frontmatter — add one so it gets stamped." >&2
-    exit 1
-  fi
-  sed -i.bak "s/^version: .*/version: $NEW_VERSION/" "$cmd"
-  rm -f "$cmd.bak"
+  [ -f "$cmd" ] && SKILL_FILES+=("$cmd")
 done
 
-# 4. Sync generated files
+for skill in "${SKILL_FILES[@]}"; do
+  if ! grep -q '^  author: raunakkathuria$' "$skill" || ! grep -q '^  version: ".*"$' "$skill"; then
+    echo "✗ $skill must contain maintained author and version metadata." >&2
+    exit 1
+  fi
+  sed -i.bak "s/^  version: \".*\"/  version: \"$NEW_VERSION\"/" "$skill"
+  rm -f "$skill.bak"
+done
+
+# 5. Propagate the canonical command metadata to generated skills.
 make sync
 
 echo ""
 echo "✓ Bumped to v$NEW_VERSION"
 echo ""
-echo "Files updated: cli/package.json  clawhub/SKILL.md  .buildwright/commands/bw-*.md"
+echo "Files updated: cli/package.json  cli/package-lock.json  clawhub/buildwright/SKILL.md  .buildwright/commands/bw-*.md"
 echo "Run 'make release' to commit, tag, push, create GitHub release, and npm publish."
