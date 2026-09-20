@@ -3,7 +3,7 @@ name: bw-cleaner
 description: Sweep a repository for stale docs, dangling references, dead files, duplicated rules, and ineffective gates. Use for periodic repository hygiene outside a feature diff.
 metadata:
   author: raunakkathuria
-  version: "0.0.20"
+  version: "0.0.21"
 ---
 
 # /bw-cleaner — tend the repository between changes

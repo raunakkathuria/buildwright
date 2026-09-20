@@ -3,7 +3,7 @@ name: bw-verify
 description: Run the project's typecheck, lint, test, and build gates. Use for quick validation before review or shipping.
 metadata:
   author: raunakkathuria
-  version: "0.0.20"
+  version: "0.0.21"
 ---
 
 Running quick verification...
