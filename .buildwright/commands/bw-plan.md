@@ -3,7 +3,7 @@ name: bw-plan
 description: Research a question or topic and produce a written deliverable without implementation or commits. Use when analysis or an implementation-ready plan is needed.
 metadata:
   author: raunakkathuria
-  version: "0.0.19"
+  version: "0.0.20"
 ---
 
 # /bw-plan - Research and Planning Without Implementation
