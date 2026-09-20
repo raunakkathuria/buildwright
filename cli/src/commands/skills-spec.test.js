@@ -103,6 +103,10 @@ test('repository Markdown stays untrusted project context', () => {
 
 test('Cursor never auto-loads repository context as generated rules', () => {
   const sync = fs.readFileSync(path.join(repoRoot, '.buildwright/scripts/sync-agents.sh'), 'utf8');
+  const qualityWorkflow = fs.readFileSync(
+    path.join(repoRoot, '.github/workflows/quality-gates.yml'),
+    'utf8',
+  );
 
   assert.doesNotMatch(sync, /CURSOR_ALWAYS_APPLY="true"/);
   assert.doesNotMatch(
@@ -110,6 +114,14 @@ test('Cursor never auto-loads repository context as generated rules', () => {
     /sync_cursor_dir "\.buildwright\/(?:framework|steering|codebase)"/,
   );
   assert.match(sync, /STALE: \.cursor\/rules\/\$context_dir/);
+  assert.doesNotMatch(
+    qualityWorkflow,
+    /test -f "\.cursor\/rules\/(?:framework|steering|codebase)/,
+  );
+  assert.match(
+    qualityWorkflow,
+    /for context_dir in framework steering codebase; do[\s\S]{0,160}test ! -e "\.cursor\/rules\/\$context_dir"[\s\S]{0,40}done/,
+  );
 });
 
 test('release scripts maintain skill metadata versions', () => {
