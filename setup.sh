@@ -17,6 +17,11 @@ if [ -d .buildwright ]; then
   exit 0
 fi
 
+if [ -L .gitignore ] || { [ -e .gitignore ] && [ ! -f .gitignore ]; }; then
+  echo "Error: Refusing to modify a non-regular or symlinked .gitignore." >&2
+  exit 1
+fi
+
 echo "Setting up Buildwright..."
 
 TMP_DIR="$(mktemp -d)"
@@ -37,7 +42,7 @@ mkdir -p docs/specs
 [ -f AGENTS.md ] || cp "$TMP_DIR/AGENTS.md" AGENTS.md
 [ -f CLAUDE.md ] || cp "$TMP_DIR/CLAUDE.md" CLAUDE.md
 
-# Keep generated dirs out of the project's git history (append-only, idempotent).
+# Keep generated dirs out of the project's git history (marker-managed and idempotent).
 GITIGNORE_MARKER="# --- buildwright generated ---"
 if ! grep -qsF "$GITIGNORE_MARKER" .gitignore; then
   [ -f .gitignore ] && [ -n "$(tail -c1 .gitignore)" ] && echo "" >> .gitignore
@@ -47,6 +52,7 @@ if ! grep -qsF "$GITIGNORE_MARKER" .gitignore; then
 .claude/agents/
 .claude/framework/
 .claude/steering/
+.claude/codebase/
 .claude/skills/bw-*/
 .claude/settings.local.json
 .opencode/

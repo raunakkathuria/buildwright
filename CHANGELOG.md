@@ -11,6 +11,11 @@
   no longer emits framework, steering, or codebase Markdown as rules and
   removes legacy context rules during sync.
 
+- Ignore generated `.claude/codebase/` analysis docs in consuming projects.
+  Fresh npm and curl installs include the entry, while `buildwright update`
+  migrates existing marker-managed `.gitignore` blocks without changing
+  unrelated project entries.
+
 ## 0.0.20
 
 - Generated Buildwright command skills now use minimal Agent Skills frontmatter:
