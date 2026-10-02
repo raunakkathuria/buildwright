@@ -12,8 +12,8 @@ How an approved plan's tasks become tracked issues on your forge (GitHub, GitLab
 In a polyrepo a single PR cannot span repos, so a unit that belongs to a different repo becomes a child issue **in that repo**, shipping its own PR there. This is optional - single-repo features ignore it - and only prescribes *how* to link across repos, not which repos.
 
 - **Target per unit.** Let each unit declare a target repo (commonly via a project-defined *surface -> repo* map - e.g. `db`, `api`, `web`). Create each child **in its target repo**; a unit with no target lands in the parent's (hub) repo.
-- **Link to one feature.** Tie the children back to the parent with the forge's **cross-repo tracker** - a GitHub **Project** or a GitLab **Epic** - and with cross-repo references (`owner/repo#n`) in the parent's task list and each child's body. The feature stays tracked in one place even though its PRs land in different repos.
-- **Dependency order.** When one unit depends on another (a schema change before the code that uses it), **withhold the loop/ready label** on the dependent child until its upstream is done, so the loop does not start it too early. Release the hold on re-run once the upstream lands.
+- **Link to one feature.** Tie the children back to the parent with the forge's **cross-repo tracker**: a GitHub **Project** or a GitLab **Epic**. Also add cross-repo references (`owner/repo#n`) in the parent's task list and each child's body. The feature stays tracked in one place even though its PRs land in different repos.
+- **Dependency order.** If one unit depends on another (a schema change before the code that uses it), **withhold the loop/ready label** on the dependent child until its upstream is done. Then the loop does not start it too early. Release the hold on re-run once the upstream lands.
 
 ## Stable IDs (so re-runs are idempotent)
 

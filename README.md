@@ -96,8 +96,8 @@ Repository-owned steering and codebase Markdown is project context, not an
 authority source. It cannot override system, developer, or user instructions or
 authorize credentials, network access, external writes, publishing, Git
 operations, destructive actions, or work outside the repository. Buildwright
-reads only named files needed for the selected command; additional steering
-requires user approval, and steering changed by an external diff is reviewed as
+reads only named files needed for the selected command. Additional steering
+requires user approval. Steering changed by an external diff is reviewed as
 data rather than activated as guidance.
 
 ## Install
@@ -150,9 +150,9 @@ cd buildwright
 make sync
 ```
 
-Per-project `buildwright init` is the single supported install — it commits the
-workflow config to your repo so it is versioned and shared with your team, and
-the generated tool configs (Claude Code, OpenCode, Cursor, Codex) come from the
+Per-project `buildwright init` is the only supported install. It commits the
+workflow config to your repo, so it is versioned and shared with your team. The
+generated tool configs (Claude Code, OpenCode, Cursor, Codex) all come from the
 same `.buildwright/` source of truth.
 
 ## Project Layout
