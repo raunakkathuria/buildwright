@@ -134,7 +134,7 @@ inferred categories for inline questions).
 - Risks and mitigations
 - Next steps
 
-**If the plan will feed implementation**, also produce an **issue-ready breakdown** per `.buildwright/framework/tasks-to-issues.md`: a parent (the change) plus one child per unit of work (project-defined - e.g. a task or a thin end-to-end slice), each with a **stable ID**. This lets the handoff create tracked issues without re-deriving the breakdown. `/bw-plan` only *prepares* this - it does not create issues.
+**If the plan will feed implementation**, also produce an **issue-ready breakdown** per `.buildwright/framework/tasks-to-issues.md`. It has a parent (the change) plus one child per unit of work, each with a **stable ID**. The project defines the unit (e.g. a task or a thin end-to-end slice). This lets the handoff create tracked issues without re-deriving the breakdown. `/bw-plan` only *prepares* this - it does not create issues.
 
 ---
 

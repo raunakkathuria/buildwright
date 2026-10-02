@@ -48,8 +48,8 @@ the stack and commands are chosen.
 
 **If the task hands off a plan with an issue-ready breakdown** (per
 `.buildwright/framework/tasks-to-issues.md`), create the tracked issues now,
-before implementation: run the remote guard first, then create the parent and
-one child per unit in its target repo, skipping any stable ID that already has
+before implementation. Run the remote guard first. Then create the parent and
+one child per unit in its target repo. Skip any stable ID that already has
 an issue. This handoff is the creation point the convention names - `/bw-plan`
 prepares the breakdown but never creates issues.
 
@@ -97,7 +97,7 @@ For every bug fix, behavior change, or feature milestone:
 Write or update a failing test that describes the bug or expected behavior. Run
 the focused test against the current (unfixed) code and confirm it fails **for
 the right reason**. **Capture that red as evidence and cite it** in the
-commit/PR (the failing test name + key assertion) — a change that adds or edits
+commit/PR (the failing test name + key assertion). A change that adds or edits
 tests with no cited red is incomplete. A test that pins down already-working
 behavior (accessibility, a visual baseline, a guard around existing code) never
 goes red; declare it a **characterization** test instead. See
@@ -143,9 +143,10 @@ behaviour.
 
 Run **`/bw-review`** over the changed diff — invoke the real command (host-native command
 invocation, per `.buildwright/framework/capability.md`), do not re-enact it from memory. It adopts
-the security-engineer and staff-engineer passes and reports both security and code findings
-(secrets, dependency/OWASP risks, financial-code risks; logic errors, edge cases, error handling,
-pattern fit, complexity, missing tests/docs, and un-cited red per `framework/tdd-evidence.md`).
+the security-engineer and staff-engineer passes. It reports security findings (secrets,
+dependency/OWASP risks, financial-code risks) and code findings (logic errors, edge cases, error
+handling, pattern fit, complexity, missing tests/docs, and un-cited red per
+`framework/tdd-evidence.md`).
 
 Fix blocking issues before committing. Where a host cannot invoke `/bw-review` faithfully, fall back
 to adopting `.buildwright/agents/{security-engineer,staff-engineer}.md` inline over the diff.
@@ -155,10 +156,10 @@ to adopting `.buildwright/agents/{security-engineer,staff-engineer}.md` inline o
 Use atomic conventional commits and stage only files changed for this work.
 
 For small local work, commit and report the result. For PR-ready work, run
-`/bw-ship` after verify and review have passed. Verify and review just passed
-here — when `/bw-ship` runs next in the same run and the working tree is
-unchanged, it reuses these results (its "Gate reuse" rule) rather than
-re-running them. Report which gates passed and at what commit so the reuse is
+`/bw-ship` after verify and review have passed. Verify and review have passed
+here. If `/bw-ship` runs next in the same run and the working tree is
+unchanged, it reuses these results (its "Gate reuse" rule). It does not
+re-run them. Report which gates passed and at what commit so the reuse is
 unambiguous.
 
 ## Final Report

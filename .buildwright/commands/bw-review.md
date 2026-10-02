@@ -14,13 +14,13 @@ working changes before `/bw-ship`. It is the single home for the review logic th
 `/bw-ship` delegate to (DRY).
 
 **Independent by construction:** the reviewer must not be the implementer. Run each persona pass in
-a **sub-agent** (see `framework/capability.md`) so it starts with the diff and the persona and
-nothing else — not the session that wrote the code, and not the author's account of why. The two
+a **sub-agent** (see `framework/capability.md`). This way it starts with the diff and the persona and
+nothing else. Not the session that wrote the code, and not the author's account of why. The two
 passes do not depend on each other, so run them **in parallel** where the host supports it.
 
-Where the host has no sub-agents this degrades to adopting the persona inline, which is weaker and
-worth naming: an author reviewing their own change reads the diff already knowing what was deliberate
-and what was "out of scope", and finds fewer things as a result. **Say which of the two happened** in
+Where the host has no sub-agents, fall back to adopting the persona inline. This is weaker, so name
+it. An author who reviews their own change already knows what was deliberate and what was "out of
+scope". So they find fewer things. **Say which of the two happened** in
 the report, so a reader knows how much the verdict is worth.
 
 Review only what changed; verify each issue is real and introduced by these changes.
@@ -75,9 +75,9 @@ global path as above). Inline fallback per the header.
 - **Phased:** repository context → comparative analysis (pattern fit; reuse over reinvention;
   DRY/YAGNI) → issue assessment. For each candidate issue, verify it is real and **introduced** by
   these changes; assign confidence and **report only ≥ 80**.
-- Cover the persona's "In Code" checklist — logic errors, edge cases, error handling, complexity,
-  missing validation, missing tests/docs, and (per `framework/tdd-evidence.md`) **new/changed tests
-  with no cited red** unless declared characterization guards.
+- Cover the persona's "In Code" checklist: logic errors, edge cases, error handling, complexity,
+  missing validation, and missing tests/docs. Per `framework/tdd-evidence.md`, also flag **new/changed
+  tests with no cited red**, unless they are declared characterization guards.
 
 ## Phase 4: Report
 

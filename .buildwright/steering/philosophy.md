@@ -9,9 +9,12 @@ multi-agent framework.
 - **YAGNI:** Do not add speculative features, extension points, or abstractions.
 - **DRY:** Search for existing functions, types, utilities, and docs before
   creating new ones.
-- **Boring technology:** Prefer proven tools and project-local patterns.
-- **Fail fast:** Validate inputs at boundaries and surface clear errors.
-- **No premature optimization:** Make it correct first; optimize with evidence.
+- **Boring technology:** Prefer proven tools and the patterns this project
+  already uses.
+- **Fail fast:** Validate inputs where they enter the system (its boundaries)
+  and show clear errors.
+- **No premature optimization:** Make it correct first. Optimize only when
+  you have evidence that you need to.
 
 ## TDD
 
@@ -26,7 +29,7 @@ Use Red -> Green -> Refactor for behavior changes.
 ## Documentation Is Part of Done
 
 Every feature, bug fix, behavior change, command change, config change, or
-public workflow change must check documentation before verification.
+public workflow change must check the docs before verification.
 
 Update affected docs in the same work item: README, docs, command text,
 examples, API docs, changelog, or generated user-facing docs. If no docs need

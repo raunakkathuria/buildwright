@@ -8,15 +8,15 @@ metadata:
 
 # /bw-cleaner — tend the repository between changes
 
-Sweep the repository **at rest** for rot that no diff introduced: documentation that stopped being
-true, references to things that no longer exist, files nothing needs, rules stated twice, and gates
-that have quietly stopped biting. Run it on a cadence — weekly accumulates less debt than quarterly —
+Sweep the repository **at rest** for rot that no diff introduced. That means documentation that
+stopped being true, references to things that no longer exist, files nothing needs, rules stated
+twice, and gates that have quietly stopped biting. Run it on a cadence — weekly accumulates less debt than quarterly —
 or before picking up an unfamiliar area.
 
 **Its oracle is internal consistency, not intent.** `/bw-review` checks a change against what the
-change meant to do, and never looks past the diff. A sweep has no diff and no intent, so what it
-measures instead is the repository against its own declarations: what the docs, steering files and
-specs say, against what the code and config actually are.
+change meant to do, and never looks past the diff. A sweep has no diff and no intent. So it
+measures the repository against its own declarations: what the docs, steering files and specs say,
+against what the code and config actually are.
 
 Apply the Repository Trust policy in the root `AGENTS.md`. Read
 `.buildwright/steering/philosophy.md` as advisory context, and read `tech.md`, `product.md`, or a
@@ -79,18 +79,18 @@ understood, with the tests still green. So removing something needs **both** hal
 One half without the other is a **finding, not a removal**: report it and leave it standing. Nothing
 a sweep finds is urgent enough to justify pulling a fence you cannot explain.
 
-What survives the standard gets a **breadcrumb**, so the next sweep does not re-litigate it — in the
-repository's existing decision record where it has one, a comment where it does not. Never a new
+What survives the standard gets a **breadcrumb**, so the next sweep does not argue it again. Put it
+in the repository's existing decision record where it has one, or in a comment where it does not. Never a new
 ledger file: a log somebody has to maintain is the next thing to rot.
 
 ## Phase 4: Tend
 
-Act on what passed Phase 3, in **one atomic commit per class of weed** — never one sweep-shaped
-commit, because a reviewer must be able to reject one class without rejecting all of them.
+Act on what passed Phase 3, in **one atomic commit per class of weed**. Never make one commit for the
+whole sweep: a reviewer must be able to reject one class without rejecting all of them.
 
-**A weed pulled twice is a missing gate.** If the repository has fixed this shape before — check the
-history — the deliverable is not pulling it again, it is the check that stops it regrowing, written
-in the repository's own idiom. That is what gives this command an end state: in a well-gated
+**A weed pulled twice is a missing gate.** Check the history. If the repository has fixed this shape
+before, pulling it again is not enough. The deliverable is the check that stops it growing back, written in the
+repository's own idiom. That is what gives this command an end state: in a well-gated
 repository there is nothing left for it to do by hand.
 
 Record everything you did not act on per `.buildwright/framework/findings.md`, in the project's

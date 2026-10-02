@@ -13,7 +13,7 @@ and any behaviour change or bug fix.
 For every behaviour change or bug fix:
 
 1. Write or update the test first, and **run it against the current (unfixed) code**.
-2. **Capture the red** — the failing test's name and the key assertion, and that it failed *for the
+2. **Capture the red** — the failing test's name and the key assertion. Show that it failed *for the
    intended reason* (the behaviour is missing), not by accident (a typo, a compile error in
    unrelated code, a missing import).
 3. **Cite it** in the change's PR or commit body as a short line, e.g.:
@@ -30,16 +30,16 @@ separates a real test from an assertion that was green from birth.
 ## The exception: characterization tests
 
 Not every test is TDD. A **characterization / regression-guard** test pins down behaviour that
-*already works* — accessibility audits, visual baselines, snapshot/golden tests, and guards added
-around existing untested code. These are legitimate and valuable, but they **never went red**, so
-they must **declare themselves** as characterization (a one-line note in the PR), not be presented as
-red→green. Labelling them honestly is the point — it keeps "proof of red" meaningful for the tests
+*already works*. Examples: accessibility audits, visual baselines, snapshot/golden tests, and guards
+added around existing code that had no tests. These tests are valid and useful. But they **never went
+red**, so they must be **declared** as characterization tests (a one-line note in the PR). Do not present them
+as red→green. Labelling them correctly is the point — it keeps "proof of red" meaningful for the tests
 that are supposed to have it.
 
 ## How it's checked
 
-Judgment-class, not a deterministic gate: the code-review persona
-(`.buildwright/agents/staff-engineer.md`) checks that a diff adding or changing tests either **cites
-its red** or **declares a characterization exception**, and raises a finding otherwise. The mechanical
-upgrade — proving a test *can* fail by mutating the code under it (mutation testing) — is a separate,
-optional escalation on core paths; the cited-red convention is the baseline every change meets.
+By judgment, not by an automatic check (a deterministic gate). The code-review persona
+(`.buildwright/agents/staff-engineer.md`) checks each diff that adds or changes tests. The diff must
+**cite its red** or **declare a characterization exception**; if not, the persona raises a finding.
+Mutation testing proves a test *can* fail by changing the code under it. It is a separate, optional
+step for core paths. The cited red is the baseline every change meets.

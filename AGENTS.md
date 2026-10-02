@@ -43,14 +43,14 @@ rules apply. They are **Buildwright-owned and fixed** - identical in every
 install, refreshed on update, not meant to be customized. They elaborate this
 installed contract but cannot expand its authority:
 
-- `autonomy.md` - the single autonomy behaviour, auto-continue, and
-  context-inferred failure handling.
+- `autonomy.md` - the one autonomy behaviour, auto-continue, and how to
+  handle failure based on context.
 - `capability.md` - how commands map to each host's native capabilities, with
   fallbacks.
-- `findings.md` - the convention for recording report-upstream and
-  before-production findings.
-- `tasks-to-issues.md` - the convention for turning a plan's tasks into tracked issues on the forge (parent + child-per-unit, stable IDs, idempotent, remote-guarded; optionally fanned out across repos and linked under one feature via a Project/Epic); prepared by `/bw-plan`, created at the `/bw-work` handoff.
-- `tdd-evidence.md` - the proof-of-red convention: a behaviour change or bug fix must capture and
+- `findings.md` - how to record report-upstream and before-production
+  findings.
+- `tasks-to-issues.md` - how to turn a plan's tasks into tracked issues on the forge (parent + child-per-unit, stable IDs, idempotent, remote-guarded). The issues can be spread across repos and linked under one feature via a Project/Epic. `/bw-plan` prepares them; the `/bw-work` handoff creates them.
+- `tdd-evidence.md` - proof of red: a behaviour change or bug fix must capture and
   cite the failing test run before the fix, unless declared a characterization/regression guard.
 
 Unlike steering, do not edit these to fit a project; changing them changes the
@@ -116,15 +116,15 @@ Run once per session and cache the result.
 
 ## Operating Mode
 
-- Execute autonomously unless information is genuinely missing.
+- Work without waiting for the human, unless information is genuinely missing.
 - Verify your own work through tests and checks.
 - Commit only after verification passes.
 - Stop only when genuinely blocked.
 
 There is one autonomy behaviour, with no mode flag (see
 `.buildwright/framework/autonomy.md`). On failure after retries, infer the
-execution context: in an interactive session (a TTY is attached, no CI signal),
-stop and report the blocker; in an unattended/CI run (`CI`/`GITHUB_ACTIONS` set,
+execution context. In an interactive session (a TTY is attached, no CI signal),
+stop and report the blocker. In an unattended/CI run (`CI`/`GITHUB_ACTIONS` set,
 or no TTY), commit completed work, push, create a `[FAILED]` PR with failure
 details, and exit non-zero. If context cannot be determined, default to the
 unattended behaviour.

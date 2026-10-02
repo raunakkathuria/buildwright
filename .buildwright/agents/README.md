@@ -1,10 +1,10 @@
 # Agent Personas
 
-This directory contains reusable review personas. Each file is a valid agent
-definition (with `name`/`description` frontmatter) so the tools that expect a
-subagent registry — Claude Code (`.claude/agents/`, `~/.claude/agents/`),
-OpenCode (`.opencode/agents/`) — load them cleanly. They are still adopted
-**inline** by `/bw-review`, not spawned as separate orchestration runtimes;
+This folder holds the review personas. Each file is a valid agent
+definition (with `name`/`description` frontmatter). So tools that expect a
+subagent registry load them cleanly: Claude Code (`.claude/agents/`,
+`~/.claude/agents/`) and OpenCode (`.opencode/agents/`). But `/bw-review` still
+adopts them **inline**. It does not spawn them as separate runtimes, because
 Buildwright is not a multi-agent framework.
 
 | Agent | File | Adopted By | Purpose |
@@ -14,13 +14,12 @@ Buildwright is not a multi-agent framework.
 
 ## How they are triggered
 
-`/bw-review` is the single home for the review logic and adopts both personas;
-`/bw-work` and `/bw-ship` delegate to it rather than restating the review inline
-(falling back to adopting the personas inline only where a host cannot invoke
-`/bw-review` faithfully):
+The review logic lives in one place: `/bw-review`, which adopts both personas.
+`/bw-work` and `/bw-ship` call it and do not repeat the review. Only where a host
+cannot run `/bw-review` faithfully do they adopt the personas inline:
 
-- `/bw-work` — Phase 7 (Review) runs `/bw-review` after the implementation passes
-  its verification gates, before commit.
+- `/bw-work` — Phase 7 (Review) runs `/bw-review` once the code passes its
+  verification gates, before commit.
 - `/bw-ship` — Step 2 (Review) runs `/bw-review` as part of the ship pipeline,
   before push/PR.
 
