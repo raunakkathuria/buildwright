@@ -27,8 +27,8 @@ the report, so a reader knows how much the verdict is worth.
 Review only what changed; verify each issue is real and introduced by these changes.
 
 **Judgment-class, report-only.** It never edits code and never merges. Findings are advice for a
-human: a false positive is cleared by a logged override (`.buildwright/framework/findings.md`), and a
-"before-production" concession is recorded there too. It is not a deterministic gate.
+human: a blocking finding is cleared by a fix or by an override (see Phase 4). A "before-production"
+concession is recorded in `.buildwright/framework/findings.md`. It is not a deterministic gate.
 
 ## Invocation
 
@@ -92,11 +92,18 @@ Emit one consolidated result — security then code — each with a verdict and 
 them as review comments; otherwise print them. State clearly:
 
 - **PASS** — no blocking findings; safe to proceed / merge (a human still merges).
-- **BLOCKED** — blocking security or code findings; route back to the implementer, or clear a genuine
-  false positive with a logged override (`framework/findings.md`).
+- **BLOCKED** — blocking security or code findings; route back to the implementer, who fixes each
+  one or overrides it.
 
 **Blocking** means a security finding rated **Critical** or **High**, or a code finding under
 **Critical Issues**. Everything else (security Medium and Low, code Recommendations and
 Observations) is reported but does not block. `/bw-work` and `/bw-ship` use this definition.
+
+**Override:** the developer may skip a blocking finding by adding one line to the PR body, or to a
+commit message on the branch when there is no PR: `Override: <finding title> — <reason>`. Only the
+developer writes this line, never the agent. On the next run, Phase 4 reads these lines
+(`gh pr view <pr> --json body`, or `git log --format=%B "$mb"..HEAD`). It lists each overridden
+finding with its reason and does not count it as blocking. A finding with no override line still
+blocks.
 
 Never modify code and never merge — this command only reviews.

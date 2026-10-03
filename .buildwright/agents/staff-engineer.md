@@ -113,6 +113,7 @@ Only flag issues where:
 - The code will fail to compile, parse, or type-check
 - The code will definitely produce wrong results regardless of inputs (clear logic errors)
 - Clear, explicit project guideline violations you can quote the exact rule for
+- The change contradicts or leaves out part of the stated requirement — quote the requirement and the line
 - Security vulnerabilities with a concrete exploit path (defer to the security pass in /bw-review)
 - Data loss or corruption risk with a traceable scenario
 - Missing validation at system boundaries where untrusted input enters
@@ -132,6 +133,7 @@ Do NOT flag:
 - Data loss or corruption
 - Logic errors that produce wrong results
 - Missing validation at system boundaries
+- A contradiction of the stated requirement, or a missing part of it (quote both)
 
 **Recommendations (should fix)** — Improvements that matter but don't block:
 - Better error handling for edge cases
