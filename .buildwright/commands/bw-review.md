@@ -14,8 +14,9 @@ working changes before `/bw-ship`. It is the single home for the review logic th
 `/bw-ship` delegate to (DRY).
 
 **Independent by construction:** the reviewer must not be the implementer. Run each persona pass in
-a **sub-agent** (see `framework/capability.md`). This way it starts with the diff and the persona and
-nothing else. Not the session that wrote the code, and not the author's account of why. The two
+a **sub-agent** (see `framework/capability.md`). This way it starts with only the diff, the persona
+and the stated requirement (the PR title and body, or the task or spec the caller names). Not the
+session that wrote the code, and not the author's account of why. The two
 passes do not depend on each other, so run them **in parallel** where the host supports it.
 
 Where the host has no sub-agents, fall back to adopting the persona inline. This is weaker, so name
@@ -32,7 +33,7 @@ human: a false positive is cleared by a logged override (`.buildwright/framework
 ## Invocation
 
 ```
-/bw-review                      # review the local diff (branch vs main, or working tree)
+/bw-review                      # review the local changes: branch commits and uncommitted work
 /bw-review <pr-number|pr-url>    # review a GitHub PR by its diff
 /bw-review --comment            # (with a PR) post findings as PR review comments instead of only printing
 ```
@@ -45,10 +46,13 @@ human: a false positive is cleared by a logged override (`.buildwright/framework
   gh pr view <pr> --json title,body,files
   ```
   Optionally check it out (`gh pr checkout <pr>`) if running tools that need the tree.
-- **Local changes** (no argument): the branch's diff against the base, else the working tree —
+- **Local changes** (no argument): everything since the branch left the default branch —
+  commits **and** uncommitted work, because `/bw-work` and `/bw-ship` review before they commit —
+  plus new untracked files:
   ```bash
-  git diff --name-only main...HEAD || git diff --name-only HEAD
-  git diff main...HEAD               || git diff HEAD
+  base=$(git symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null || echo main)
+  git diff $(git merge-base "$base" HEAD)   # commits + staged + unstaged changes
+  git ls-files --others --exclude-standard  # new files git diff does not show
   ```
 
 Review **only** the changed lines and their blast radius — never the whole repo.
@@ -59,9 +63,10 @@ Run this pass in a sub-agent, given the diff and `.buildwright/agents/security-e
 `~/.claude/agents/security-engineer.md` for a global install without a project `.buildwright/`).
 Inline fallback per the header.
 
-- **Automated scans** (skip gracefully if a tool is absent): dependency vulnerabilities
-  (`npm audit` / `cargo audit` / `pip-audit` / `go list -m -json all | nancy sleuth` …); secrets
-  (API keys, tokens, private keys); SAST (`semgrep --config p/owasp-top-ten .`).
+- **Automated scans** (skip gracefully if a tool is absent), on the changed files only: secrets
+  (API keys, tokens, private keys); SAST (`semgrep --config p/owasp-top-ten <changed files>`).
+  Run a dependency audit (`npm audit` / `cargo audit` / `pip-audit` …) only when the diff changes a
+  manifest or lock file, and report only advisories for packages the diff adds or changes.
 - **Manual, phased:** repository context → comparative analysis (does the change follow or weaken
   existing controls?) → OWASP Top 10 (A01–A10) over the changed code. Watch financial-code risks
   (floating point for money).
@@ -88,5 +93,9 @@ them as review comments; otherwise print them. State clearly:
 - **PASS** — no blocking findings; safe to proceed / merge (a human still merges).
 - **BLOCKED** — blocking security or code findings; route back to the implementer, or clear a genuine
   false positive with a logged override (`framework/findings.md`).
+
+**Blocking** means a security finding rated **Critical** or **High**, or a code finding under
+**Critical Issues**. Everything else (security Medium and Low, code Recommendations and
+Observations) is reported but does not block. `/bw-work` and `/bw-ship` use this definition.
 
 Never modify code and never merge — this command only reviews.
