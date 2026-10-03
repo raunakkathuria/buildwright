@@ -1,10 +1,10 @@
 # Capabilities
 
 Buildwright runs on several host agent tools (Claude Code, Codex, OpenCode,
-Cursor). A **capability** here is an *execution primitive* the host provides —
-the machinery for *how* a step runs: write a file, track a queue of work, run
-independent work in parallel, isolate work in a git worktree, fire a hook,
-invoke another command. Where a host provides one of these natively, **prefer
+Cursor). A **capability** here is an *execution primitive* the host provides:
+the machinery for *how* a step runs. Examples: write a file, track a queue of
+work, run independent work in parallel, isolate work in a git worktree, fire a
+hook, invoke another command. Where a host provides one of these natively, **prefer
 the native capability** — do not reimplement it in command prose. Where a host
 lacks one, fall back to the documented behaviour in the last column; **never
 fail** because a capability is missing.
@@ -60,11 +60,11 @@ working intact.
 
 ## Why this matters
 
-Hand-rolled equivalents of native behaviour are where Buildwright's bugs have
-lived — e.g. narrating "writing the plan now…" instead of issuing the host's
-file-write (the `/bw-plan` stall), and continuing into implementation "from
+Buildwright's bugs have lived in hand-rolled copies of native behaviour. One
+example: narrating "writing the plan now…" instead of issuing the host's
+file-write (the `/bw-plan` stall). Another: continuing into implementation "from
 memory" instead of invoking the real `/bw-work`. Leaning on native capabilities
-removes that class of bug, unlocks speed (running independent work in parallel,
-isolating it in a worktree), and keeps Buildwright aligned with each tool as it
-evolves. But these are *how* the work runs, not *what* the work is: the steering
+removes that class of bug. It also unlocks speed (running independent work in
+parallel, isolating it in a worktree), and keeps Buildwright aligned with each
+tool as it evolves. But these are *how* the work runs, not *what* the work is: the steering
 docs and the Buildwright process still govern.

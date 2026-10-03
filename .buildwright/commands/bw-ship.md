@@ -172,8 +172,8 @@ git remote
 
 **If no remote is configured** (empty output), you cannot push or open a PR.
 This is not a failure — the work is committed and verified locally. Stop here
-and report the **No-remote outcome** (see below): the work is preserved on the
-feature branch as a local commit, and the human can add a remote and push when
+and report the **No-remote outcome** (see below). The work is kept on the
+feature branch as a local commit. The human can add a remote and push when
 ready. Do **not** treat this as a `[FAILED]` ship.
 
 ### 3.4 Push
