@@ -148,7 +148,7 @@ dependency/OWASP risks, financial-code risks) and code findings (logic errors, e
 handling, pattern fit, complexity, missing tests/docs, and un-cited red per
 `framework/tdd-evidence.md`).
 
-Fix blocking issues (as `/bw-review` defines them) before committing. Where a host cannot invoke `/bw-review` faithfully, fall back
+Fix blocking issues (as `/bw-review` defines them) before committing, unless the developer overrides one. Where a host cannot invoke `/bw-review` faithfully, fall back
 to adopting `.buildwright/agents/{security-engineer,staff-engineer}.md` inline over the diff.
 
 ## Phase 8: Commit or Ship

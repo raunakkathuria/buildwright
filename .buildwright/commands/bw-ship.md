@@ -124,8 +124,8 @@ as `/bw-review` Phase 1 resolves it.
 
 **No retry.** Security and code findings need human judgment. If `/bw-review`
 reports blocking findings (as it defines them), **STOP** and handle it per the **Failure Handling**
-section below (context-inferred); clear a genuine false positive with a logged
-override (`.buildwright/framework/findings.md`). Where a host cannot invoke
+section below (context-inferred). The developer fixes each finding or overrides
+it, as `/bw-review` Phase 4 describes. Where a host cannot invoke
 `/bw-review` faithfully, fall back to adopting
 `.buildwright/agents/{security-engineer,staff-engineer}.md` inline over the diff.
 
