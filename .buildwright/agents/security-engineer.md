@@ -1,6 +1,6 @@
 ---
 name: security-engineer
-description: Security review persona — OWASP Top 10, secrets, authentication/authorization, injection, and dependency risks. Used by /bw-work and /bw-ship.
+description: Security review persona — OWASP Top 10, secrets, authentication/authorization, injection, and dependency risks. Used by /bw-review (called by /bw-work and /bw-ship).
 ---
 
 # Security Engineer Agent
