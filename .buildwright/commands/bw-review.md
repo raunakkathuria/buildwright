@@ -51,7 +51,8 @@ human: a false positive is cleared by a logged override (`.buildwright/framework
   plus new untracked files:
   ```bash
   base=$(git symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null || echo main)
-  git diff $(git merge-base "$base" HEAD)   # commits + staged + unstaged changes
+  mb=$(git merge-base "$base" HEAD 2>/dev/null) || mb=HEAD  # no base: uncommitted work only
+  git diff "$mb"                            # commits + staged + unstaged changes
   git ls-files --others --exclude-standard  # new files git diff does not show
   ```
 
