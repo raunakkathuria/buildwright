@@ -119,16 +119,13 @@ security and code findings:
   missing tests/docs, and un-cited red per `framework/tdd-evidence.md`
   (confidence ≥ 80).
 
-Scope is the diff being shipped:
-
-```bash
-git diff main...HEAD   # or: git diff HEAD  (no main branch)
-```
+Scope is the diff being shipped: the branch's commits and the uncommitted work,
+as `/bw-review` Phase 1 resolves it.
 
 **No retry.** Security and code findings need human judgment. If `/bw-review`
-reports blocking findings, **STOP** and handle it per the **Failure Handling**
-section below (context-inferred); clear a genuine false positive with a logged
-override (`.buildwright/framework/findings.md`). Where a host cannot invoke
+reports blocking findings (as it defines them), **STOP** and handle it per the **Failure Handling**
+section below (context-inferred). The developer fixes each finding or overrides
+it, as `/bw-review` Phase 4 describes. Where a host cannot invoke
 `/bw-review` faithfully, fall back to adopting
 `.buildwright/agents/{security-engineer,staff-engineer}.md` inline over the diff.
 

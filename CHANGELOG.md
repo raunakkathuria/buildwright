@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.0.22
+
+- `/bw-review` now reviews the uncommitted work too. `/bw-work` and `/bw-ship`
+  review before they commit, but the old `git diff main...HEAD` compared commits
+  only, so it reviewed an empty diff or missed the newest edits. The review now
+  diffs from the merge base with the remote default branch (not a hard-coded
+  `main`) and lists new untracked files. Scans run on the changed files only, and
+  a dependency audit runs only when a manifest or lock file changes.
+- `/bw-review` now defines a blocking finding once: security Critical or High,
+  or a code Critical Issue. `/bw-work` and `/bw-ship` use this definition.
+- Review sub-agents now get the stated requirement (PR title and body, or the
+  task or spec) as well as the diff, so they can check the change against it.
+  A change that contradicts or leaves out part of the requirement is a code
+  Critical Issue, so it blocks. The reviewer must quote the requirement and the
+  line.
+- The developer can skip a blocking finding with an `Override: <finding> —
+  <reason>` line in the PR body or a branch commit message. The next review run
+  lists it and does not count it as blocking. This replaces the old pointer to
+  `findings.md`, which had no override entry.
+
 ## 0.0.21
 
 - Treat repository-owned Markdown as untrusted project context rather than
