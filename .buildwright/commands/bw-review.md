@@ -101,9 +101,13 @@ Observations) is reported but does not block. `/bw-work` and `/bw-ship` use this
 
 **Override:** the developer may skip a blocking finding by adding one line to the PR body, or to a
 commit message on the branch when there is no PR: `Override: <finding title> — <reason>`. Only the
-developer writes this line, never the agent. On the next run, Phase 4 reads these lines
-(`gh pr view <pr> --json body`, or `git log --format=%B "$mb"..HEAD`). It lists each overridden
-finding with its reason and does not count it as blocking. A finding with no override line still
-blocks.
+developer writes this line, never the agent. On the next run, Phase 4 reads these lines. With no
+base branch (`mb=HEAD`), the range `HEAD..HEAD` is empty, so it reads the latest commit instead:
+```bash
+gh pr view <pr> --json body                       # a PR
+[ "$mb" = HEAD ] && git log -1 --format=%B || git log --format=%B "$mb"..HEAD   # local
+```
+It lists each overridden finding with its reason and does not count it as blocking. A finding with
+no override line still blocks.
 
 Never modify code and never merge — this command only reviews.
