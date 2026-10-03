@@ -1,9 +1,9 @@
 # Deferred Findings
 
 While working, two kinds of finding recur and tend to scatter across PR
-descriptions, chat threads, and `// TODO` comments. Capture them **as they
-arise**, in a consistent format, in one discoverable place per class — don't
-leave them to be rediscovered on the next project.
+descriptions, chat threads, and `// TODO` comments. Capture them **when they
+arise**, in the same format, in one place per class that people can find. Do not
+leave them for the next project to find again.
 
 This is a convention; there is no dedicated command. `/bw-work` and `/bw-ship`
 record findings into the project's known location for each class (create the
@@ -12,8 +12,8 @@ file on first use if it doesn't exist — never discard a finding).
 ## Two classes
 
 ### report-upstream
-An issue better fixed at its source (a shared template, library, or upstream
-project) so everyone benefits — not patched only locally.
+An issue that is better fixed at its source (a shared template, library, or
+upstream project), so everyone gains, rather than only being patched locally.
 
 ```
 ## [ ] <title>
