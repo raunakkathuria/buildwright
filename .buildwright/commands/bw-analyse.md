@@ -3,7 +3,7 @@ name: bw-analyse
 description: Analyse an unfamiliar or brownfield codebase and write structured context docs. Use when codebase docs or project technology steering are missing or stale.
 metadata:
   author: raunakkathuria
-  version: "0.0.21"
+  version: "0.0.22"
 ---
 
 # /bw-analyse
