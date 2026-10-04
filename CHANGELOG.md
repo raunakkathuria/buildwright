@@ -19,6 +19,8 @@
   <reason>` line in the PR body or a branch commit message. The next review run
   lists it and does not count it as blocking. This replaces the old pointer to
   `findings.md`, which had no override entry.
+- The framework, command and root docs are rewritten in plain English, with
+  shorter sentences and simpler words. No rule, fact or condition changes.
 
 ## 0.0.21
 
