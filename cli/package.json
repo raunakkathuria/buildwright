@@ -12,6 +12,7 @@
   "files": [
     "bin/",
     "src/",
+    "!src/**/*.test.js",
     "templates/"
   ],
   "scripts": {
