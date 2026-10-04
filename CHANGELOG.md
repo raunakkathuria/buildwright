@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- The npm package no longer includes the CLI's own `*.test.js` files. Users do
+  not run them, so the package drops from 38 to 35 files.
+
 ## 0.0.22
 
 - `/bw-review` now reviews the uncommitted work too. `/bw-work` and `/bw-ship`
