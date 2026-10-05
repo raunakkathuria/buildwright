@@ -9,7 +9,8 @@
   source exists, agent-hook files under `.kiro/hooks/bw-*.json`. Generated
   output is scoped to the `bw-*` namespace, so a project's own committed
   steering docs and hooks are never touched. `capability.md` gains a Kiro
-  column.
+  column, and the README lists Kiro alongside the other hosts with a note on
+  how its commands are invoked (`#bw-command-<name>` / the `/` menu).
 - The npm package no longer includes the CLI's own `*.test.js` files. Users do
   not run them, so the package drops from 38 to 35 files.
 
