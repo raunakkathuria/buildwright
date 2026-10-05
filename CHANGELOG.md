@@ -14,7 +14,9 @@
   steering docs emit only the `inclusion` field; `description` is an
   `inclusion: auto` field with no effect on `always`/`manual` docs. Verified
   against Kiro 1.2.4, whose non-strict steering schema accepts this output with
-  no "Problems" diagnostic.
+  no "Problems" diagnostic. The `Check Buildwright structure` CI step now
+  asserts the generated `.kiro/steering/bw-*` docs per command, per framework
+  doc, and for philosophy, matching the coverage the other hosts already have.
 - The npm package no longer includes the CLI's own `*.test.js` files. Users do
   not run them, so the package drops from 38 to 35 files.
 
