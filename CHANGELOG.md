@@ -10,7 +10,11 @@
   output is scoped to the `bw-*` namespace, so a project's own committed
   steering docs and hooks are never touched. `capability.md` gains a Kiro
   column, and the README lists Kiro alongside the other hosts with a note on
-  how its commands are invoked (`#bw-command-<name>` / the `/` menu).
+  how its commands are invoked (`#bw-command-<name>` / the `/` menu). Generated
+  steering docs emit only the `inclusion` field; `description` is an
+  `inclusion: auto` field with no effect on `always`/`manual` docs. Verified
+  against Kiro 1.2.4, whose non-strict steering schema accepts this output with
+  no "Problems" diagnostic.
 - The npm package no longer includes the CLI's own `*.test.js` files. Users do
   not run them, so the package drops from 38 to 35 files.
 

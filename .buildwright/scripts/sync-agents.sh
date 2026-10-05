@@ -316,12 +316,20 @@ fi
 #
 # Only `inclusion` is emitted. Per the Kiro steering docs
 # (https://kiro.dev/docs/steering/), the recognized front-matter fields are
-# `inclusion` (always | fileMatch | manual) plus `fileMatchPattern` for the
-# fileMatch mode; `description` (paired with `name`) is specific to
-# `inclusion: auto`, where Kiro matches it against the request. On `always` and
-# `manual` docs `description` has no behavioural effect, so it is intentionally
-# omitted — this also avoids any YAML-escaping hazard from embedding a derived
-# string in the front-matter.
+# `inclusion` (always | fileMatch | manual | auto), `fileMatchPattern` (for the
+# fileMatch mode), and `name` + `description` (for the auto mode, where Kiro
+# matches `description` against the request). On `always` and `manual` docs
+# `description` has no behavioural effect — the steering loader only consumes
+# `inclusion` and `fileMatchPattern` — so it is intentionally omitted to avoid
+# shipping inert metadata, and this also sidesteps any YAML-escaping hazard from
+# embedding a derived string in the front-matter.
+#
+# Verified against Kiro 1.2.4: the agent's steering front-matter schema is a
+# non-strict object `{inclusion, fileMatchPattern, name, description}` (all
+# optional), so emitting only `inclusion` is accepted and raises no "Problems"
+# diagnostic. `inclusion` is a recognized field in this version (the earlier
+# kirodotdev/Kiro#6094 symptom, where the validator flagged `inclusion`, is
+# fixed), so `always`/`manual` need no extra fields to be conformant.
 kiro_frontmatter() {
   local inclusion="$1"
   printf '%s\n' "---"
