@@ -17,7 +17,7 @@
 #   .kiro/steering/bw-codebase-*.md   ← from .buildwright/codebase/  (inclusion: always)
 #   .kiro/steering/bw-command-*.md    ← from .buildwright/commands/  (inclusion: manual)
 #   .kiro/steering/bw-agent-*.md      ← from .buildwright/agents/    (inclusion: manual)
-#   .kiro/hooks/bw-*.kiro.hook        ← from .buildwright/hooks/ (optional)
+#   .kiro/hooks/bw-*.json             ← from .buildwright/hooks/ (optional)
 #
 # Note: AGENTS.md (canonical, committed) and CLAUDE.md (pointer stub) are NOT
 # generated — they are hand-maintained root files.
@@ -308,17 +308,24 @@ fi
 #    modified. Later tasks append the sync_kiro_* generators to this section.
 # ============================================================================
 
-# kiro_frontmatter INCLUSION DESCRIPTION
+# kiro_frontmatter INCLUSION
 # Emits a Kiro steering front-matter block to stdout, intended to be written as
 # the first bytes of a generated doc (byte offset 0, no preceding whitespace):
-# an opening `---`, the `inclusion` field, the `description` field, and a
-# closing `---`, each on its own line.
+# an opening `---`, the `inclusion` field, and a closing `---`, each on its own
+# line.
+#
+# Only `inclusion` is emitted. Per the Kiro steering docs
+# (https://kiro.dev/docs/steering/), the recognized front-matter fields are
+# `inclusion` (always | fileMatch | manual) plus `fileMatchPattern` for the
+# fileMatch mode; `description` (paired with `name`) is specific to
+# `inclusion: auto`, where Kiro matches it against the request. On `always` and
+# `manual` docs `description` has no behavioural effect, so it is intentionally
+# omitted — this also avoids any YAML-escaping hazard from embedding a derived
+# string in the front-matter.
 kiro_frontmatter() {
   local inclusion="$1"
-  local description="$2"
   printf '%s\n' "---"
   printf 'inclusion: %s\n' "$inclusion"
-  printf 'description: "%s"\n' "$description"
   printf '%s\n' "---"
 }
 
@@ -381,9 +388,9 @@ kiro_ref_rewrite() {
 # SYNC_NEEDED and reuses kiro_frontmatter, purge_bw_namespace, kiro_ref_rewrite,
 # strip_frontmatter, and sed_inplace — no existing function is modified.
 #
-# Description precedence (Requirements 1.6/1.7/1.8): the source front-matter
-# `description:` value, else the source's first markdown heading, else the
-# source base name — matching set_cursor_frontmatter's awk/sed derivation.
+# Front-matter: only `inclusion: <INCLUSION>` is emitted (see kiro_frontmatter).
+# `description` is intentionally not derived or written — it is an
+# `inclusion: auto` field and has no effect on `always`/`manual` docs.
 #
 # Collision handling (Requirement 2.6): if two source files in this category
 # would flatten to the same `<NAME_PREFIX><base>.md` output (e.g. a nested
@@ -431,7 +438,7 @@ sync_kiro_steering() {
     mkdir -p ".kiro/steering"
   fi
 
-  local src_file base dst_file desc
+  local src_file base dst_file
   while IFS= read -r src_file; do
     [ -f "$src_file" ] || continue
     base=$(basename "$src_file" .md)
@@ -443,25 +450,11 @@ sync_kiro_steering() {
 
     dst_file=".kiro/steering/${prefix}${base}.md"
 
-    # Description: front-matter `description:`, else first heading, else base.
-    desc="$(awk '
-      NR==1 && $0 !~ /^---/ { exit }
-      /^---/ { f++; next }
-      f==1 && sub(/^description:[ \t]*/, "") { print; exit }
-      f>=2 { exit }
-    ' "$src_file")"
-    if [ -z "$desc" ]; then
-      desc="$(sed -n 's/^# *//p' "$src_file" | head -1)"
-    fi
-    if [ -z "$desc" ]; then
-      desc="$base"
-    fi
-
     if [ "$CHECK_ONLY" = true ]; then
       local tmpfile
       tmpfile=$(mktemp)
       {
-        kiro_frontmatter "$inclusion" "$desc"
+        kiro_frontmatter "$inclusion"
         strip_frontmatter "$src_file"
       } > "$tmpfile"
       kiro_ref_rewrite "$tmpfile"
@@ -475,7 +468,7 @@ sync_kiro_steering() {
       rm -f "$tmpfile"
     else
       {
-        kiro_frontmatter "$inclusion" "$desc"
+        kiro_frontmatter "$inclusion"
         strip_frontmatter "$src_file"
       } > "$dst_file"
       kiro_ref_rewrite "$dst_file"
@@ -497,22 +490,30 @@ sync_kiro_command_dir() {
 }
 
 # sync_kiro_hooks
-# Generates Kiro agent-hook manifests under .kiro/hooks/ from the optional
-# .buildwright/hooks/ source. Each `*.json` manifest is copied verbatim to
-# `.kiro/hooks/bw-<base>.kiro.hook` (base = json filename without extension), so
-# the expected output is the source json byte-for-byte. In write mode a scoped
-# purge removes stale `.kiro/hooks/bw-*.kiro.hook` first (Requirements 1.4, 3.4).
-# The step is a no-op when `.buildwright/hooks/` is absent — the common case, as
-# the repo ships no hooks dir today (Requirement 1.4). All writes and the purge
-# stay strictly within the `bw-*` hook glob so non-bw hooks are never touched
-# (Requirements 3.1, 3.5). Honours CHECK_ONLY: in --check mode it mutates
-# nothing, printing `MISSING:`/`OUT OF SYNC:` and setting SYNC_NEEDED=true on
-# drift, mirroring sync_kiro_steering / sync_cursor_dir. Reuses only the existing
-# toolset (purge_bw_namespace, mktemp, diff, cp) — no new dependency, no existing
+# Generates Kiro agent-hook files under .kiro/hooks/ from the optional
+# .buildwright/hooks/ source. Current Kiro (CLI 3.0 / IDE 1.0) loads standalone
+# hook files at `.kiro/hooks/<id>.json` using a versioned schema
+# (`{"version":"v1","hooks":[{"name","trigger","matcher","action":{…}}]}`); the
+# older IDE-only `*.kiro.hook` format is deprecated. Each source `*.json`
+# manifest is expected to already be Kiro-shaped and is copied verbatim to
+# `.kiro/hooks/bw-<base>.json` (base = json filename without extension), so the
+# expected output is the source json byte-for-byte. In write mode a scoped purge
+# removes stale generated `.kiro/hooks/bw-*.json` (and any legacy
+# `bw-*.kiro.hook`) first (Requirements 1.4, 3.4). The step is a no-op when
+# `.buildwright/hooks/` is absent — the common case, as the repo ships no hooks
+# dir today (Requirement 1.4). All writes and the purge stay strictly within the
+# `bw-*` hook glob so non-bw hooks are never touched (Requirements 3.1, 3.5).
+# Honours CHECK_ONLY: in --check mode it mutates nothing, printing
+# `MISSING:`/`OUT OF SYNC:` and setting SYNC_NEEDED=true on drift, mirroring
+# sync_kiro_steering / sync_cursor_dir. Reuses only the existing toolset
+# (purge_bw_namespace, mktemp, diff, cp) — no new dependency, no existing
 # function modified.
 sync_kiro_hooks() {
   if [ "$CHECK_ONLY" = false ]; then
-    # Scoped purge: only generated bw-* hooks, never a project's own hooks.
+    # Scoped purge: only generated bw-* hooks, never a project's own hooks. The
+    # legacy `.kiro.hook` glob is purged too so an older generated hook left by
+    # a prior sync is cleaned up on the next run.
+    purge_bw_namespace ".kiro/hooks/bw-*.json"
     purge_bw_namespace ".kiro/hooks/bw-*.kiro.hook"
   fi
 
@@ -529,7 +530,7 @@ sync_kiro_hooks() {
   while IFS= read -r manifest; do
     [ -f "$manifest" ] || continue
     base=$(basename "$manifest" .json)
-    dst_file=".kiro/hooks/bw-${base}.kiro.hook"
+    dst_file=".kiro/hooks/bw-${base}.json"
 
     if [ "$CHECK_ONLY" = true ]; then
       # Plain copy: expected content is the source manifest byte-for-byte. Build
@@ -551,7 +552,7 @@ sync_kiro_hooks() {
   done < <(find ".buildwright/hooks" -type f -name "*.json" | sort)
 
   if [ "$CHECK_ONLY" = false ]; then
-    echo "  synced .buildwright/hooks → .kiro/hooks/ (bw-*.kiro.hook)"
+    echo "  synced .buildwright/hooks → .kiro/hooks/ (bw-*.json)"
   fi
 }
 
@@ -589,7 +590,7 @@ else
   echo "  commands/agents → .cursor/rules/ (opt-in .mdc rules)"
   echo "  .buildwright/commands/ → .agents/skills/  (Codex CLI skill discovery)"
   echo "  .buildwright/ → .kiro/steering/  (bw-* steering docs, gitignored)"
-  echo "  .buildwright/hooks/ → .kiro/hooks/  (bw-*.kiro.hook, optional)"
+  echo "  .buildwright/hooks/ → .kiro/hooks/  (bw-*.json, optional)"
 
   # Validate all commands are documented in README.md
   if [ -f ".buildwright/scripts/validate-docs.sh" ]; then

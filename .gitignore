@@ -26,4 +26,8 @@ cli/README.md
 
 # Kiro (generated from .buildwright/ by the Buildwright sync — do not commit)
 .kiro/steering/bw-*.md
-.kiro/hooks/bw-*.kiro.hook
+.kiro/hooks/bw-*.json
+
+# Kiro spec-workflow scratchpad — local planning artifacts, not part of the repo
+.kiro/specs/
+.config.kiro

@@ -59,7 +59,9 @@ if ! grep -qsF "$GITIGNORE_MARKER" .gitignore; then
 .cursor/rules/
 .agents/skills/bw-*/
 .kiro/steering/bw-*.md
-.kiro/hooks/bw-*.kiro.hook
+.kiro/hooks/bw-*.json
+.kiro/specs/
+.config.kiro
 EOF
 fi
 

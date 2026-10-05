@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- Add Kiro as a supported host. `sync-agents.sh` now generates namespaced,
+  gitignored Kiro steering docs under `.kiro/steering/bw-*.md` (framework and
+  steering as `inclusion: always`; commands and agents as `inclusion: manual`,
+  which also surface as `/` slash commands) and, when a `.buildwright/hooks/`
+  source exists, agent-hook files under `.kiro/hooks/bw-*.json`. Generated
+  output is scoped to the `bw-*` namespace, so a project's own committed
+  steering docs and hooks are never touched. `capability.md` gains a Kiro
+  column.
 - The npm package no longer includes the CLI's own `*.test.js` files. Users do
   not run them, so the package drops from 38 to 35 files.
 
