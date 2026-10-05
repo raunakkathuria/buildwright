@@ -416,17 +416,28 @@ sync_kiro_steering() {
   local prefix="$2"
   local inclusion="$3"
 
-  if [ ! -d "$src" ]; then
-    return 0
-  fi
-
   # Symlink guard: never follow a committed symlink out of the repo (write mode
-  # only — --check mutates nothing).
+  # only — --check mutates nothing). Runs before anything else so a symlinked
+  # steering dir can't be written through even for the purge.
   if [ "$CHECK_ONLY" = false ]; then
     if [ -L ".kiro" ] || [ -L ".kiro/steering" ]; then
       echo "ERROR: sync_kiro_steering: .kiro or .kiro/steering is a symlink; refusing to write" >&2
       return 1
     fi
+  fi
+
+  # Scoped purge for THIS prefix runs even when the source dir is gone, so a
+  # removed category's stale docs are cleaned up rather than stranded (a
+  # strand would otherwise fail --check forever with no way to fix it via
+  # sync). Only the prefix glob is touched; project docs are never purged.
+  if [ "$CHECK_ONLY" = false ]; then
+    purge_bw_namespace ".kiro/steering/${prefix}*.md"
+  fi
+
+  # No source dir → nothing to generate (the purge above already removed any
+  # stale output for this prefix).
+  if [ ! -d "$src" ]; then
+    return 0
   fi
 
   # Collision pre-scan: detect two sources mapping to the same
@@ -456,8 +467,6 @@ sync_kiro_steering() {
   fi
 
   if [ "$CHECK_ONLY" = false ]; then
-    # Scoped purge: only THIS prefix, never project docs.
-    purge_bw_namespace ".kiro/steering/${prefix}*.md"
     mkdir -p ".kiro/steering"
   fi
 
@@ -490,6 +499,12 @@ sync_kiro_steering() {
       fi
       rm -f "$tmpfile"
     else
+      # Defense in depth: the prefix purge already removed any bw-* link, but if
+      # the target somehow remains a symlink, refuse rather than write through it.
+      if [ -L "$dst_file" ]; then
+        echo "ERROR: sync_kiro_steering: $dst_file is a symlink; refusing to write" >&2
+        return 1
+      fi
       {
         kiro_frontmatter "$inclusion"
         strip_frontmatter "$src_file"
@@ -519,6 +534,10 @@ sync_kiro_command_dir() {
 # Sets SYNC_NEEDED=true and prints `STRAY:` for each. The expected set is the
 # `<prefix><base>.md` names derived from all five source categories, mirroring
 # what the generators write (meta files excluded, same as sync_kiro_steering).
+# Only files whose name starts with one of the five managed prefixes are
+# considered — a project's own `bw-*` steering doc that sync never generates
+# (e.g. `bw-notes.md`) is not a stray and is left alone. A dangling managed
+# link counts (`-e || -L`, matching purge_bw_namespace) so --check reports it.
 kiro_check_stray() {
   [ "$CHECK_ONLY" = true ] || return 0
   [ -d ".kiro/steering" ] || return 0
@@ -546,8 +565,10 @@ kiro_check_stray() {
   done
 
   local f name
-  for f in .kiro/steering/bw-*.md; do
-    [ -e "$f" ] || continue
+  for f in .kiro/steering/bw-framework-*.md .kiro/steering/bw-steering-*.md \
+           .kiro/steering/bw-codebase-*.md .kiro/steering/bw-command-*.md \
+           .kiro/steering/bw-agent-*.md; do
+    { [ -e "$f" ] || [ -L "$f" ]; } || continue
     name=$(basename "$f")
     if ! grep -qxF "$name" "$expected"; then
       echo "STRAY: .kiro/steering/$name (no .buildwright/ source maps to it)"

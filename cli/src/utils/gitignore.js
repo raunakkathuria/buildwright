@@ -62,11 +62,20 @@ function appendGitignoreBlock(cwd) {
     if (missing.length === 0) return false;
 
     // Insert the missing entries immediately after the last existing block
-    // entry, so they stay grouped under the marker. Anchor on the last known
-    // block entry present in the file, else on the marker line itself.
+    // entry, so they stay grouped under the marker. Scan only within the marker
+    // block: a blank line ends the block (so entries a user relocated into a
+    // later section do not drag the anchor out), comment lines inside the block
+    // are skipped, and any other non-block line also ends the scan.
     let anchorPart = markerPart;
     for (let index = markerPart + 2; index < parts.length; index += 2) {
-      if (blockEntries.includes(parts[index])) anchorPart = index;
+      const line = parts[index];
+      if (line === '') break;
+      if (blockEntries.includes(line)) {
+        anchorPart = index;
+        continue;
+      }
+      if (line.startsWith('#')) continue;
+      break;
     }
     const separator = parts[anchorPart + 1] || (current.includes('\r\n') ? '\r\n' : '\n');
     const insertion = [];

@@ -12,6 +12,9 @@
   committed `.kiro/` files are never touched. `capability.md` and the README
   gain Kiro, and `buildwright update` adds the Kiro ignore lines to existing
   projects.
+- `buildwright update` now re-adds any Buildwright-managed `.gitignore` block
+  entry a user deleted (not only `.claude/codebase/`), keeping the generated-
+  dirs block complete. It only adds lines; it never removes a user's own.
 - The npm package no longer includes the CLI's own `*.test.js` files. Users do
   not run them, so the package drops from 38 to 35 files.
 

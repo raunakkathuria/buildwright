@@ -3,7 +3,9 @@
 const test = require('node:test');
 const assert = require('node:assert');
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
+const { spawnSync } = require('child_process');
 
 const repoRoot = path.resolve(__dirname, '..', '..', '..');
 const packageVersion = require('../../package.json').version;
@@ -125,18 +127,38 @@ test('Cursor never auto-loads repository context as generated rules', () => {
 });
 
 test('Kiro never auto-loads repository context as always-included steering', () => {
-  const sync = fs.readFileSync(path.join(repoRoot, '.buildwright/scripts/sync-agents.sh'), 'utf8');
+  // Behaviour test: run the real sync in a temp copy of .buildwright/ and assert
+  // every generated Kiro steering doc is inclusion:manual. Repository-owned
+  // Markdown must not load into every prompt (the trust rule the Cursor target
+  // keeps; a regression to "always"/"fileMatch" would reintroduce the 0.0.21
+  // (#46) auto-loading AGENTS.md forbids). Checking the output rather than the
+  // script text covers every call site, including sync_kiro_command_dir which
+  // passes its path through "$1".
+  const workdir = fs.mkdtempSync(path.join(os.tmpdir(), 'bw-kiro-trust-'));
+  fs.cpSync(path.join(repoRoot, '.buildwright'), path.join(workdir, '.buildwright'), {
+    recursive: true,
+  });
+  spawnSync('git', ['init', '-q'], { cwd: workdir });
 
-  // Every Kiro steering generator call must pass "manual" — repository-owned
-  // Markdown must not load into every prompt (the same trust rule the Cursor
-  // target keeps). A regression to "always"/"fileMatch" here would reintroduce
-  // the 0.0.21 (#46) auto-loading that AGENTS.md forbids.
-  const calls = sync.match(/sync_kiro_steering "\.buildwright\/\S+"\s+"bw-\S+"\s+"(\w+)"/g) || [];
-  assert.ok(calls.length >= 3, 'expected sync_kiro_steering calls for the context categories');
-  for (const call of calls) {
-    assert.match(call, /"manual"$/, `Kiro steering must be manual, got: ${call}`);
+  const result = spawnSync('bash', ['.buildwright/scripts/sync-agents.sh'], {
+    cwd: workdir,
+    encoding: 'utf8',
+  });
+  assert.strictEqual(result.status, 0, `sync failed: ${result.stderr}`);
+
+  const steeringDir = path.join(workdir, '.kiro', 'steering');
+  const docs = fs.readdirSync(steeringDir).filter((f) => f.startsWith('bw-') && f.endsWith('.md'));
+  assert.ok(docs.length >= 3, `expected generated Kiro steering docs, got ${docs.length}`);
+  for (const doc of docs) {
+    const head = fs.readFileSync(path.join(steeringDir, doc), 'utf8').slice(0, 26);
+    assert.strictEqual(
+      head,
+      '---\ninclusion: manual\n---\n',
+      `Kiro steering doc ${doc} must be inclusion:manual, got frontmatter: ${JSON.stringify(head)}`,
+    );
   }
-  assert.doesNotMatch(sync, /sync_kiro_steering "\.buildwright\/\S+"\s+"bw-\S+"\s+"(?:always|fileMatch)"/);
+
+  fs.rmSync(workdir, { recursive: true, force: true });
 });
 
 test('release scripts maintain skill metadata versions', () => {

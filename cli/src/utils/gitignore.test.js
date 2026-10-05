@@ -106,6 +106,31 @@ test('migration preserves mixed line endings and unrelated bytes', () => {
   );
 });
 
+test('missing entries are added under the marker, not in a later user section', () => {
+  const root = tmpProject();
+  const file = path.join(root, '.gitignore');
+  // The marker block ends at the blank line; the user kept `.cursor/rules/`
+  // (a block entry) in their own section further down. The missing Kiro line
+  // must land under the marker, immediately after the block's last entry
+  // (`.opencode/`), not next to the relocated `.cursor/rules/` below.
+  const existing =
+    `${MARKER}\n` +
+    `# Generated from .buildwright/ by the Buildwright sync — do not commit.\n` +
+    `.claude/agents/\n.claude/framework/\n.claude/steering/\n.claude/codebase/\n` +
+    `.claude/skills/bw-*/\n.claude/settings.local.json\n.opencode/\n.agents/skills/bw-*/\n` +
+    `\n# my own section\n.cursor/rules/\n`;
+  fs.writeFileSync(file, existing);
+
+  assert.strictEqual(appendGitignoreBlock(root), true);
+  const content = fs.readFileSync(file, 'utf8');
+
+  // The Kiro line sits right after the block's last entry, before the blank line.
+  assert.match(content, /\.agents\/skills\/bw-\*\/\n\.kiro\/steering\/bw-\*\.md\n\n# my own section\n/);
+  // The user's relocated entry and its heading are untouched and appear once.
+  assert.strictEqual(count(content, '.cursor/rules/'), 1);
+  assert.match(content, /# my own section\n\.cursor\/rules\/\n$/);
+});
+
 test('refuses a symlinked gitignore without mutating its target', () => {
   const root = tmpProject();
   const project = path.join(root, 'project');
