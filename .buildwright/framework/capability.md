@@ -25,13 +25,12 @@ so the command text stays tool-agnostic.
 | **Worktree isolation** | `Agent` `isolation: "worktree"`; `git worktree` | `git worktree` | `git worktree` | `git worktree` | `git worktree` | work in the main tree, one change at a time |
 | **Hooks** | lifecycle hooks (PreToolUse, Stop, …) | config-driven | session/tool hooks | agent/permission config | agent hooks (`.kiro/hooks/*.json`, `{version, hooks:[{trigger, matcher, action}]}`: UserPromptSubmit, PostToolUse, PreToolUse, Stop) | an explicit step in the command |
 
-> **Kiro command invocation.** Kiro has no slash-command primitive, so "faithful
-> command invocation" degrades to loading the real command text as a
-> manually-included steering doc (referenced via `#bw-command-<name>`, e.g.
-> `#bw-command-bw-work`) rather than a host command primitive. This fallback
-> loads and preserves the real Buildwright command prose rather than substituting
-> Kiro's own interpretation — the command prose is still the real Buildwright
-> command, satisfying the "faithful, not reinterpreted" rule.
+> **Kiro command invocation.** Kiro has no dedicated Buildwright command
+> primitive, so a command is carried as a manually-included steering doc. You
+> invoke it with `#bw-command-<name>` (e.g. `#bw-command-bw-work`) or pick it
+> from the `/` menu, where manual steering docs appear. Either way the doc is
+> the real Buildwright command prose, loaded verbatim rather than reinterpreted,
+> which satisfies the "faithful, not reinterpreted" rule.
 
 ## Mechanism, not policy
 

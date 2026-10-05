@@ -2,21 +2,16 @@
 
 ## Unreleased
 
-- Add Kiro as a supported host. `sync-agents.sh` now generates namespaced,
-  gitignored Kiro steering docs under `.kiro/steering/bw-*.md` (framework and
-  steering as `inclusion: always`; commands and agents as `inclusion: manual`,
-  which also surface as `/` slash commands) and, when a `.buildwright/hooks/`
-  source exists, agent-hook files under `.kiro/hooks/bw-*.json`. Generated
-  output is scoped to the `bw-*` namespace, so a project's own committed
-  steering docs and hooks are never touched. `capability.md` gains a Kiro
-  column, and the README lists Kiro alongside the other hosts with a note on
-  how its commands are invoked (`#bw-command-<name>` / the `/` menu). Generated
-  steering docs emit only the `inclusion` field; `description` is an
-  `inclusion: auto` field with no effect on `always`/`manual` docs. Verified
-  against Kiro 1.2.4, whose non-strict steering schema accepts this output with
-  no "Problems" diagnostic. The `Check Buildwright structure` CI step now
-  asserts the generated `.kiro/steering/bw-*` docs per command, per framework
-  doc, and for philosophy, matching the coverage the other hosts already have.
+- Add Kiro as a supported host. `sync-agents.sh` generates namespaced,
+  gitignored Kiro steering docs under `.kiro/steering/bw-*.md`, all
+  `inclusion: manual` so repository Markdown is never auto-loaded into every
+  prompt (the same trust boundary the Cursor target keeps). Commands and agents
+  are invoked with `#bw-command-<name>` / `#bw-agent-<name>` or from the `/`
+  menu; framework, steering and codebase docs are opt-in context the commands
+  reference. Output is scoped to the `bw-*` namespace, so a project's own
+  committed `.kiro/` files are never touched. `capability.md` and the README
+  gain Kiro, and `buildwright update` adds the Kiro ignore lines to existing
+  projects.
 - The npm package no longer includes the CLI's own `*.test.js` files. Users do
   not run them, so the package drops from 38 to 35 files.
 

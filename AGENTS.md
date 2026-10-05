@@ -161,8 +161,8 @@ say why in the final report.
 - Never use `git stash`.
 - `.buildwright/` and the root `AGENTS.md` are canonical and committed.
   `CLAUDE.md` is a committed pointer stub. Do not commit generated `.claude/`,
-  `.opencode/`, `.cursor/rules/`, `.kiro/steering/bw-*.md`,
-  `.kiro/hooks/bw-*.kiro.hook`, or `.agents/skills/bw-*/`.
+  `.opencode/`, `.cursor/rules/`, `.kiro/steering/bw-*.md`, or
+  `.agents/skills/bw-*/`.
 - After editing `.buildwright/`, run `bash .buildwright/scripts/sync-agents.sh`
   (or `buildwright sync`).
 

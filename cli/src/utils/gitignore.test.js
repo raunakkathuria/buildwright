@@ -37,8 +37,13 @@ test('update migrates an existing marker-managed block', () => {
   assert.strictEqual(appendGitignoreBlock(root), true);
 
   const content = fs.readFileSync(file, 'utf8');
-  assert.match(content, /^\.claude\/steering\/\n\.claude\/codebase\/$/m);
+  // Every missing block entry is added (grouped after the last existing block
+  // entry), including the Kiro steering line, while unrelated entries stay.
+  assert.match(content, /^\.claude\/codebase\/$/m);
+  assert.match(content, /^\.kiro\/steering\/bw-\*\.md$/m);
   assert.match(content, /^custom-project-entry\/$/m);
+  // The Kiro line follows an existing block entry, not the trailing custom one.
+  assert.match(content, /^\.opencode\/\n[\s\S]*^\.kiro\/steering\/bw-\*\.md$/m);
 });
 
 test('gitignore migration is idempotent', () => {
@@ -52,6 +57,26 @@ test('gitignore migration is idempotent', () => {
   assert.strictEqual(count(content, CODEBASE_ENTRY), 1);
 });
 
+test('update adds the Kiro ignore line to a pre-Kiro (0.0.22) block, once', () => {
+  const root = tmpProject();
+  const file = path.join(root, '.gitignore');
+  // A marker block as shipped in 0.0.22: has .claude/codebase/ but no .kiro line.
+  const existing = `${MARKER}\n# Generated from .buildwright/ by the Buildwright sync — do not commit.\n.claude/agents/\n.claude/framework/\n.claude/steering/\n.claude/codebase/\n.claude/skills/bw-*/\n.claude/settings.local.json\n.opencode/\n.cursor/rules/\n.agents/skills/bw-*/\n`;
+  fs.writeFileSync(file, existing);
+
+  // First update adds the missing Kiro line and reports a change.
+  assert.strictEqual(appendGitignoreBlock(root), true);
+  let content = fs.readFileSync(file, 'utf8');
+  assert.match(content, /^\.kiro\/steering\/bw-\*\.md$/m);
+  assert.strictEqual(count(content, '.kiro/steering/bw-*.md'), 1);
+  assert.strictEqual(count(content, MARKER), 1);
+
+  // Second update is a no-op (nothing missing).
+  assert.strictEqual(appendGitignoreBlock(root), false);
+  content = fs.readFileSync(file, 'utf8');
+  assert.strictEqual(count(content, '.kiro/steering/bw-*.md'), 1);
+});
+
 test('migration preserves CRLF line endings', () => {
   const root = tmpProject();
   const file = path.join(root, '.gitignore');
@@ -60,7 +85,10 @@ test('migration preserves CRLF line endings', () => {
   appendGitignoreBlock(root);
 
   const content = fs.readFileSync(file, 'utf8');
-  assert.match(content, /\.claude\/steering\/\r\n\.claude\/codebase\/\r\n/);
+  // Missing entries are appended after the last existing block entry, keeping
+  // CRLF throughout (no bare LF introduced).
+  assert.match(content, /\.opencode\/\r\n\.claude\/agents\/\r\n/);
+  assert.match(content, /\.kiro\/steering\/bw-\*\.md\r\n/);
   assert.doesNotMatch(content, /(?<!\r)\n/);
 });
 
@@ -74,7 +102,7 @@ test('migration preserves mixed line endings and unrelated bytes', () => {
 
   assert.strictEqual(
     fs.readFileSync(file, 'utf8'),
-    `first/\n${MARKER}\r\n.claude/steering/\r\n.claude/codebase/\r\n.opencode/\nlast/\n`,
+    `first/\n${MARKER}\r\n.claude/steering/\r\n.opencode/\n.claude/agents/\n.claude/framework/\n.claude/codebase/\n.claude/skills/bw-*/\n.claude/settings.local.json\n.cursor/rules/\n.agents/skills/bw-*/\n.kiro/steering/bw-*.md\nlast/\n`,
   );
 });
 

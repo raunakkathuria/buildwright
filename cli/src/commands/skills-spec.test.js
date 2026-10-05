@@ -124,6 +124,21 @@ test('Cursor never auto-loads repository context as generated rules', () => {
   );
 });
 
+test('Kiro never auto-loads repository context as always-included steering', () => {
+  const sync = fs.readFileSync(path.join(repoRoot, '.buildwright/scripts/sync-agents.sh'), 'utf8');
+
+  // Every Kiro steering generator call must pass "manual" — repository-owned
+  // Markdown must not load into every prompt (the same trust rule the Cursor
+  // target keeps). A regression to "always"/"fileMatch" here would reintroduce
+  // the 0.0.21 (#46) auto-loading that AGENTS.md forbids.
+  const calls = sync.match(/sync_kiro_steering "\.buildwright\/\S+"\s+"bw-\S+"\s+"(\w+)"/g) || [];
+  assert.ok(calls.length >= 3, 'expected sync_kiro_steering calls for the context categories');
+  for (const call of calls) {
+    assert.match(call, /"manual"$/, `Kiro steering must be manual, got: ${call}`);
+  }
+  assert.doesNotMatch(sync, /sync_kiro_steering "\.buildwright\/\S+"\s+"bw-\S+"\s+"(?:always|fileMatch)"/);
+});
+
 test('release scripts maintain skill metadata versions', () => {
   const bump = fs.readFileSync(path.join(repoRoot, 'cli/scripts/bump-version.sh'), 'utf8');
   const release = fs.readFileSync(path.join(repoRoot, 'cli/scripts/release.sh'), 'utf8');
