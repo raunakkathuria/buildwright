@@ -10,6 +10,8 @@ metadata:
 
 Use this for implementation work: bug fixes, refactors, small changes, and new
 features. The command chooses the lightest workflow that still protects quality.
+Lighter means less research and planning. It never skips verification or
+review, and never skips the failing test for a bug fix or behaviour change.
 
 ## Core Loop
 
@@ -141,6 +143,9 @@ behaviour.
 
 ## Phase 7: Review (security + code)
 
+Run this phase on every change, small ones included. A small diff makes the
+review quick; it is not a reason to skip it.
+
 Run **`/bw-review`** over the changed diff — invoke the real command (host-native command
 invocation, per `.buildwright/framework/capability.md`), do not re-enact it from memory. It adopts
 the security-engineer and staff-engineer passes. It reports security findings (secrets,
@@ -168,5 +173,6 @@ Report:
 - Task and work type
 - Files changed
 - Tests and gates run
+- `/bw-review` verdict (PASS or BLOCKED) and any findings fixed or overridden
 - Documentation updated, or why not applicable
 - Commit hash or PR URL if created
