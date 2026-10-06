@@ -93,7 +93,7 @@ function init() {
   console.log(`${GREEN}${BOLD}Buildwright is ready!${RESET}\n`);
   console.log('Next steps:');
   console.log(`  1. Run ${BOLD}/bw-analyse${RESET} first on unfamiliar brownfield projects`);
-  console.log(`  2. Open your AI editor and run ${BOLD}/bw-work "your task"${RESET}`);
+  console.log(`  2. Open your AI editor and describe the task; it runs ${BOLD}/bw-work${RESET} for you (on Kiro, reference ${BOLD}#bw-command-bw-work${RESET})`);
   console.log(`  3. Buildwright creates tech.md/product.md only when it has real project context\n`);
   console.log(`For help: ${BOLD}buildwright --help${RESET}`);
 }

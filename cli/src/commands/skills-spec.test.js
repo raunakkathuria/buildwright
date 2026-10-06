@@ -103,6 +103,37 @@ test('repository Markdown stays untrusted project context', () => {
   }
 });
 
+test('agents pick /bw-work from the request without the slash command', () => {
+  const work = readFrontmatter(path.join(repoRoot, '.buildwright', 'commands', 'bw-work.md'));
+  assert.match(readField(work, 'description'), /even when the user does not type \/bw-work/i);
+
+  const agents = fs.readFileSync(path.join(repoRoot, 'AGENTS.md'), 'utf8');
+  const commands = agents.match(/^## Commands\n([\s\S]*?)^## /m)?.[1] ?? '';
+  assert.match(commands, /user does not need to type/i);
+  assert.match(commands, /\bskip\b/i);
+
+  // An auto-picked /bw-work must not publish work the user did not ask to publish,
+  // in any phase, including the stalled-gate handoff.
+  const noPublish = /push,\s+open\s+a\s+PR,\s+or\s+create\s+issues\s+only\s+when\s+the\s+user\s+asks/i;
+  const stalledGate = /gate\s+stalls[\s\S]{0,80}\[FAILED\]`?\s+PR/i;
+  assert.match(commands, noPublish);
+  assert.match(commands, stalledGate);
+  const workBody = fs.readFileSync(path.join(repoRoot, '.buildwright', 'commands', 'bw-work.md'), 'utf8');
+  const preamble = workBody.split(/^## Phase 1/m)[0];
+  assert.match(preamble, noPublish);
+  assert.match(preamble, stalledGate);
+
+  // The failure handoff (autonomy.md, and Operating Mode in AGENTS.md) carries the same exception.
+  const autonomy = fs.readFileSync(path.join(repoRoot, '.buildwright', 'framework', 'autonomy.md'), 'utf8');
+  assert.match(autonomy, /picked\s+`\/bw-work`\s+itself[\s\S]{0,120}never\s+push/i);
+  const operatingMode = agents.match(/^## Operating Mode\n([\s\S]*?)^## /m)?.[1] ?? '';
+  assert.match(operatingMode, /picked\s+`\/bw-work`\s+yourself[\s\S]{0,120}\[FAILED\]`?\s+PR/i);
+
+  // Claude Code reads CLAUDE.md, not AGENTS.md, so the stub must import it.
+  const claude = fs.readFileSync(path.join(repoRoot, 'CLAUDE.md'), 'utf8');
+  assert.match(claude, /^@AGENTS\.md$/m);
+});
+
 test('/bw-work runs the review on every change, small ones included', () => {
   const work = fs.readFileSync(path.join(repoRoot, '.buildwright', 'commands', 'bw-work.md'), 'utf8');
   // A benchmark found agents skipped /bw-review in 31 of 36 runs because "the change is small".
