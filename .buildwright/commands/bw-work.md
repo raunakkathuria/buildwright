@@ -1,6 +1,6 @@
 ---
 name: bw-work
-description: Implement bug fixes, refactors, and features with research, TDD, documentation, verification, and review. Use when code or project files must change.
+description: Implement bug fixes, refactors, and features with research, TDD, documentation, verification, and review. Use when a request needs code or project files to change (build, add, fix, change, or refactor), even when the user does not type /bw-work.
 metadata:
   author: raunakkathuria
   version: "0.0.22"
@@ -161,6 +161,10 @@ here. If `/bw-ship` runs next in the same run and the working tree is
 unchanged, it reuses these results (its "Gate reuse" rule). It does not
 re-run them. Report which gates passed and at what commit so the reuse is
 unambiguous.
+
+When the agent picked this command itself (the user did not type `/bw-work`),
+commit locally only where the host allows it. Push, open a PR, or create issues
+only when the user asks. Otherwise, stop and offer `/bw-ship`.
 
 ## Final Report
 

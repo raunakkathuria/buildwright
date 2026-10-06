@@ -2,6 +2,22 @@
 
 ## Unreleased
 
+- Agents are now told to pick the command from the request, so you do not need
+  to type `/bw-work`. A request to build, add, fix, change, or refactor code
+  follows `/bw-work`. Say "skip bw-work" to do a task without it. Three changes
+  do this:
+  - The `/bw-work` skill description says it applies even when the user does
+    not type `/bw-work`. Hosts use this text to choose a skill.
+  - The `AGENTS.md` Commands section has routing rules.
+  - `CLAUDE.md` now imports `AGENTS.md` with `@AGENTS.md`. Before, it only
+    asked the agent to read the file, so Claude Code did not load the rules.
+- When the agent picks `/bw-work` itself, it does not push, open a PR, or
+  create issues unless the user asks. It stops and offers `/bw-ship` instead.
+  Typing `/bw-work` works as before.
+- Existing projects get only the new skill description from `buildwright
+  update`, because `AGENTS.md` and `CLAUDE.md` are added only when they are
+  absent. To get the rest, add `@AGENTS.md` to your `CLAUDE.md` and copy the
+  routing rules into your `AGENTS.md`.
 - The npm package no longer includes the CLI's own `*.test.js` files. Users do
   not run them, so the package drops from 38 to 35 files.
 

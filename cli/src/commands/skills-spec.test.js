@@ -101,6 +101,26 @@ test('repository Markdown stays untrusted project context', () => {
   }
 });
 
+test('agents pick /bw-work from the request without the slash command', () => {
+  const work = readFrontmatter(path.join(repoRoot, '.buildwright', 'commands', 'bw-work.md'));
+  assert.match(readField(work, 'description'), /even when the user does not type \/bw-work/i);
+
+  const agents = fs.readFileSync(path.join(repoRoot, 'AGENTS.md'), 'utf8');
+  const commands = agents.match(/^## Commands\n([\s\S]*?)^## /m)?.[1] ?? '';
+  assert.match(commands, /user does not need to type/i);
+  assert.match(commands, /\bskip\b/i);
+
+  // An auto-picked /bw-work must not publish work the user did not ask to publish.
+  const noPublish = /push,\s+open\s+a\s+PR,\s+or\s+create\s+issues\s+only\s+when\s+the\s+user\s+asks/i;
+  assert.match(commands, noPublish);
+  const workBody = fs.readFileSync(path.join(repoRoot, '.buildwright', 'commands', 'bw-work.md'), 'utf8');
+  assert.match(workBody.match(/^## Phase 8[\s\S]*?^## /m)?.[0] ?? '', noPublish);
+
+  // Claude Code reads CLAUDE.md, not AGENTS.md, so the stub must import it.
+  const claude = fs.readFileSync(path.join(repoRoot, 'CLAUDE.md'), 'utf8');
+  assert.match(claude, /^@AGENTS\.md$/m);
+});
+
 test('Cursor never auto-loads repository context as generated rules', () => {
   const sync = fs.readFileSync(path.join(repoRoot, '.buildwright/scripts/sync-agents.sh'), 'utf8');
   const qualityWorkflow = fs.readFileSync(
