@@ -134,6 +134,17 @@ test('agents pick /bw-work from the request without the slash command', () => {
   assert.match(claude, /^@AGENTS\.md$/m);
 });
 
+test('/bw-work runs the review on every change, small ones included', () => {
+  const work = fs.readFileSync(path.join(repoRoot, '.buildwright', 'commands', 'bw-work.md'), 'utf8');
+  // A benchmark found agents skipped /bw-review in 31 of 36 runs because "the change is small".
+  const intro = work.split(/^## Core Loop/m)[0];
+  assert.match(intro, /never\s+skips[\s\S]{0,80}review/i);
+  const phase7 = work.match(/^## Phase 7[\s\S]*?^## /m)?.[0] ?? '';
+  assert.match(phase7, /every\s+change,\s+small\s+ones\s+included/i);
+  const report = work.split(/^## Final Report/m)[1] ?? '';
+  assert.match(report, /\/bw-review`?\s+verdict/i);
+});
+
 test('Cursor never auto-loads repository context as generated rules', () => {
   const sync = fs.readFileSync(path.join(repoRoot, '.buildwright/scripts/sync-agents.sh'), 'utf8');
   const qualityWorkflow = fs.readFileSync(
