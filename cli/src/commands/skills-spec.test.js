@@ -126,7 +126,7 @@ test('Cursor never auto-loads repository context as generated rules', () => {
   );
 });
 
-test('Kiro never auto-loads repository context as always-included steering', () => {
+test('Kiro never auto-loads repository context as always-included steering', (t) => {
   // Behaviour test: run the real sync in a temp copy of .buildwright/ and assert
   // every generated Kiro steering doc is inclusion:manual. Repository-owned
   // Markdown must not load into every prompt (the trust rule the Cursor target
@@ -135,9 +135,16 @@ test('Kiro never auto-loads repository context as always-included steering', () 
   // script text covers every call site, including sync_kiro_command_dir which
   // passes its path through "$1".
   const workdir = fs.mkdtempSync(path.join(os.tmpdir(), 'bw-kiro-trust-'));
+  t.after(() => fs.rmSync(workdir, { recursive: true, force: true }));
+
   fs.cpSync(path.join(repoRoot, '.buildwright'), path.join(workdir, '.buildwright'), {
     recursive: true,
   });
+  // Fixture: the repo ships no .buildwright/codebase/, but /bw-analyse writes it
+  // and it is the riskiest category to auto-load — so force a codebase doc to
+  // exist, otherwise the codebase call site is never exercised here.
+  fs.mkdirSync(path.join(workdir, '.buildwright', 'codebase'), { recursive: true });
+  fs.writeFileSync(path.join(workdir, '.buildwright', 'codebase', 'STACK.md'), '# Stack\n');
   spawnSync('git', ['init', '-q'], { cwd: workdir });
 
   const result = spawnSync('bash', ['.buildwright/scripts/sync-agents.sh'], {
@@ -148,7 +155,23 @@ test('Kiro never auto-loads repository context as always-included steering', () 
 
   const steeringDir = path.join(workdir, '.kiro', 'steering');
   const docs = fs.readdirSync(steeringDir).filter((f) => f.startsWith('bw-') && f.endsWith('.md'));
-  assert.ok(docs.length >= 3, `expected generated Kiro steering docs, got ${docs.length}`);
+
+  // Every one of the five managed prefixes must have produced at least one doc,
+  // so no call site (framework/steering/codebase/command/agent) is silently
+  // skipped by this guard.
+  for (const prefix of [
+    'bw-framework-',
+    'bw-steering-',
+    'bw-codebase-',
+    'bw-command-',
+    'bw-agent-',
+  ]) {
+    assert.ok(
+      docs.some((f) => f.startsWith(prefix)),
+      `expected at least one ${prefix}*.md doc`,
+    );
+  }
+
   for (const doc of docs) {
     const head = fs.readFileSync(path.join(steeringDir, doc), 'utf8').slice(0, 26);
     assert.strictEqual(
@@ -157,8 +180,43 @@ test('Kiro never auto-loads repository context as always-included steering', () 
       `Kiro steering doc ${doc} must be inclusion:manual, got frontmatter: ${JSON.stringify(head)}`,
     );
   }
+});
 
-  fs.rmSync(workdir, { recursive: true, force: true });
+test('a Kiro name collision halts without deleting the prior docs', (t) => {
+  // The collision pre-scan must run before the scoped purge, so a conflict
+  // leaves previously generated docs in place (matches the error text and the
+  // PR's "halts before any write" claim).
+  const workdir = fs.mkdtempSync(path.join(os.tmpdir(), 'bw-kiro-collision-'));
+  t.after(() => fs.rmSync(workdir, { recursive: true, force: true }));
+
+  fs.cpSync(path.join(repoRoot, '.buildwright'), path.join(workdir, '.buildwright'), {
+    recursive: true,
+  });
+  spawnSync('git', ['init', '-q'], { cwd: workdir });
+
+  const sync = () =>
+    spawnSync('bash', ['.buildwright/scripts/sync-agents.sh'], { cwd: workdir, encoding: 'utf8' });
+
+  // First sync produces the framework docs.
+  assert.strictEqual(sync().status, 0);
+  const steeringDir = path.join(workdir, '.kiro', 'steering');
+  const before = fs.readdirSync(steeringDir).filter((f) => f.startsWith('bw-framework-'));
+  assert.ok(before.length >= 1, 'expected bw-framework-* docs after the first sync');
+
+  // Force two framework sources to flatten to the same output name.
+  const fwk = path.join(workdir, '.buildwright', 'framework');
+  fs.mkdirSync(path.join(fwk, 'a'), { recursive: true });
+  fs.mkdirSync(path.join(fwk, 'b'), { recursive: true });
+  fs.writeFileSync(path.join(fwk, 'a', 'dup.md'), '# dup\n');
+  fs.writeFileSync(path.join(fwk, 'b', 'dup.md'), '# dup\n');
+
+  const result = sync();
+  assert.notStrictEqual(result.status, 0, 'collision must halt with a non-zero status');
+  assert.match(result.stderr, /output name collision/);
+
+  // The prior docs must still be there — the halt deletes nothing.
+  const after = fs.readdirSync(steeringDir).filter((f) => f.startsWith('bw-framework-'));
+  assert.deepStrictEqual(after.sort(), before.sort());
 });
 
 test('release scripts maintain skill metadata versions', () => {

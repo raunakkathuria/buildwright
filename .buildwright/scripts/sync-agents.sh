@@ -426,17 +426,14 @@ sync_kiro_steering() {
     fi
   fi
 
-  # Scoped purge for THIS prefix runs even when the source dir is gone, so a
-  # removed category's stale docs are cleaned up rather than stranded (a
-  # strand would otherwise fail --check forever with no way to fix it via
-  # sync). Only the prefix glob is touched; project docs are never purged.
-  if [ "$CHECK_ONLY" = false ]; then
-    purge_bw_namespace ".kiro/steering/${prefix}*.md"
-  fi
-
-  # No source dir → nothing to generate (the purge above already removed any
-  # stale output for this prefix).
+  # No source dir → nothing to generate. Purge this prefix's stale docs so a
+  # removed category is cleaned up rather than stranded (a strand would
+  # otherwise fail --check forever with no way to fix it via sync). Only the
+  # prefix glob is touched; project docs are never purged.
   if [ ! -d "$src" ]; then
+    if [ "$CHECK_ONLY" = false ]; then
+      purge_bw_namespace ".kiro/steering/${prefix}*.md"
+    fi
     return 0
   fi
 
@@ -466,7 +463,11 @@ sync_kiro_steering() {
     return 1
   fi
 
+  # Scoped purge for THIS prefix, after the collision scan so a conflict halts
+  # before deleting anything. Only the prefix glob is touched; project docs are
+  # never purged.
   if [ "$CHECK_ONLY" = false ]; then
+    purge_bw_namespace ".kiro/steering/${prefix}*.md"
     mkdir -p ".kiro/steering"
   fi
 
