@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- `/bw-work` now runs `/bw-review` on every change, small ones included. In a
+  benchmark of 36 runs, agents skipped the review in 31 because "the change is
+  small". The command text said it "chooses the lightest workflow", and agents
+  read that as permission to skip. It now says that lighter means less research
+  and planning. It never skips verification or review, or the failing test for a
+  bug fix or behaviour change. The final report must state the `/bw-review`
+  verdict.
 - Add Kiro as a supported host. `sync-agents.sh` generates namespaced,
   gitignored Kiro steering docs under `.kiro/steering/bw-*.md`, all
   `inclusion: manual` so repository Markdown is never auto-loaded into every
