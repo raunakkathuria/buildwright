@@ -142,7 +142,8 @@ execution context. In an interactive session (a TTY is attached, no CI signal),
 stop and report the blocker. In an unattended/CI run (`CI`/`GITHUB_ACTIONS` set,
 or no TTY), commit completed work, push, create a `[FAILED]` PR with failure
 details, and exit non-zero. If context cannot be determined, default to the
-unattended behaviour.
+unattended behaviour. Exception: when you picked `/bw-work` yourself, never push
+or open a `[FAILED]` PR (see Routing).
 
 ## Verification Loop
 

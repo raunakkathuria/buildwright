@@ -123,6 +123,12 @@ test('agents pick /bw-work from the request without the slash command', () => {
   assert.match(preamble, noPublish);
   assert.match(preamble, stalledGate);
 
+  // The failure handoff (autonomy.md, and Operating Mode in AGENTS.md) carries the same exception.
+  const autonomy = fs.readFileSync(path.join(repoRoot, '.buildwright', 'framework', 'autonomy.md'), 'utf8');
+  assert.match(autonomy, /picked\s+`\/bw-work`\s+itself[\s\S]{0,120}never\s+push/i);
+  const operatingMode = agents.match(/^## Operating Mode\n([\s\S]*?)^## /m)?.[1] ?? '';
+  assert.match(operatingMode, /picked\s+`\/bw-work`\s+yourself[\s\S]{0,120}\[FAILED\]`?\s+PR/i);
+
   // Claude Code reads CLAUDE.md, not AGENTS.md, so the stub must import it.
   const claude = fs.readFileSync(path.join(repoRoot, 'CLAUDE.md'), 'utf8');
   assert.match(claude, /^@AGENTS\.md$/m);

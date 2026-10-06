@@ -162,7 +162,8 @@ to adopting `.buildwright/agents/{security-engineer,staff-engineer}.md` inline o
 Use atomic conventional commits and stage only files changed for this work.
 
 For small local work, commit and report the result. For PR-ready work, run
-`/bw-ship` after verify and review have passed. Verify and review have passed
+`/bw-ship` after verify and review have passed (if you picked this command
+yourself, offer `/bw-ship` instead; see the rule at the top). Verify and review have passed
 here. If `/bw-ship` runs next in the same run and the working tree is
 unchanged, it reuses these results (its "Gate reuse" rule). It does not
 re-run them. Report which gates passed and at what commit so the reuse is
