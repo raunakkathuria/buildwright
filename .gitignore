@@ -23,3 +23,10 @@ cli/README.md
 .opencode/
 .cursor/
 .agents/skills/bw-*/
+
+# Kiro (generated from .buildwright/ by the Buildwright sync — do not commit)
+.kiro/steering/bw-*.md
+
+# Kiro spec-workflow scratchpad — local planning artifacts, not part of the repo
+.kiro/specs/
+.config.kiro

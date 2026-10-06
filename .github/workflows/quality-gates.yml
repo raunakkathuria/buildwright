@@ -67,17 +67,20 @@ jobs:
             test -f ".claude/skills/$command/SKILL.md"
             test -f ".opencode/commands/$command.md"
             test -f ".cursor/rules/commands/$command.mdc"
+            test -f ".kiro/steering/bw-command-$command.md"
           done
 
           test -f ".buildwright/steering/philosophy.md"
           test -f ".claude/steering/philosophy.md"
           test -f ".opencode/steering/philosophy.md"
+          test -f ".kiro/steering/bw-steering-philosophy.md"
 
           # Every canonical framework doc must be available to explicit commands.
           # Derive from the directory so a new doc is covered automatically.
           for doc in $(find .buildwright/framework -mindepth 1 -maxdepth 1 -name '*.md' -exec basename {} .md \;); do
             test -f ".claude/framework/$doc.md"
             test -f ".opencode/framework/$doc.md"
+            test -f ".kiro/steering/bw-framework-$doc.md"
           done
 
           # Repository context must never become an automatically selectable Cursor rule.

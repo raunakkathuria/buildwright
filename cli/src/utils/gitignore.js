@@ -17,6 +17,7 @@ ${CODEBASE_ENTRY}
 .opencode/
 .cursor/rules/
 .agents/skills/bw-*/
+.kiro/steering/bw-*.md
 `;
 
 function validateGitignore(cwd) {
@@ -35,8 +36,9 @@ function validateGitignore(cwd) {
 
 /**
  * Ensure the Buildwright generated-dirs block is present in the project's
- * .gitignore. Existing marker-managed blocks are migrated when a generated
- * entry is added. Unrelated project entries are never modified.
+ * .gitignore. When the marker block already exists, every BLOCK entry that is
+ * missing is appended to it (so upgrades pick up newly generated paths such as
+ * the Kiro steering docs). Unrelated project entries are never modified.
  * Returns true when the file changed.
  */
 function appendGitignoreBlock(cwd) {
@@ -47,20 +49,43 @@ function appendGitignoreBlock(cwd) {
   const parts = current.split(/(\r\n|\n)/);
   const markerPart = parts.findIndex((part, index) => index % 2 === 0 && part === MARKER);
   if (markerPart >= 0) {
-    const hasCodebaseEntry = parts.some(
-      (part, index) => index % 2 === 0 && part === CODEBASE_ENTRY,
-    );
-    if (hasCodebaseEntry) return false;
+    // The ignore-pattern lines in BLOCK (skip the marker and the comment line).
+    const blockEntries = BLOCK.split('\n')
+      .filter((line) => line !== '' && line !== MARKER && !line.startsWith('#'));
 
-    const steeringPart = parts.findIndex(
-      (part, index) => index > markerPart && index % 2 === 0 && part === STEERING_ENTRY,
+    // Entries already present anywhere in the file (even outside the block)
+    // are treated as covered, so we never duplicate a line a user kept.
+    const existing = new Set(
+      parts.filter((part, index) => index % 2 === 0 && part !== ''),
     );
-    const anchorPart = steeringPart >= 0 ? steeringPart : markerPart;
+    const missing = blockEntries.filter((entry) => !existing.has(entry));
+    if (missing.length === 0) return false;
+
+    // Insert the missing entries immediately after the last existing block
+    // entry, so they stay grouped under the marker. Scan only within the marker
+    // block: a blank line ends the block (so entries a user relocated into a
+    // later section do not drag the anchor out), comment lines inside the block
+    // are skipped, and any other non-block line also ends the scan.
+    let anchorPart = markerPart;
+    for (let index = markerPart + 2; index < parts.length; index += 2) {
+      const line = parts[index];
+      if (line === '') break;
+      if (blockEntries.includes(line)) {
+        anchorPart = index;
+        continue;
+      }
+      if (line.startsWith('#')) continue;
+      break;
+    }
     const separator = parts[anchorPart + 1] || (current.includes('\r\n') ? '\r\n' : '\n');
+    const insertion = [];
+    for (const entry of missing) {
+      insertion.push(entry, separator);
+    }
     if (parts[anchorPart + 1]) {
-      parts.splice(anchorPart + 2, 0, CODEBASE_ENTRY, separator);
+      parts.splice(anchorPart + 2, 0, ...insertion);
     } else {
-      parts.splice(anchorPart + 1, 0, separator, CODEBASE_ENTRY);
+      parts.splice(anchorPart + 1, 0, separator, ...insertion.slice(0, -1));
     }
     fs.writeFileSync(file, parts.join(''));
     return true;
