@@ -53,6 +53,9 @@ environment rather than a flag:
   push or PR that cannot happen.
 - **Unclear**: act as unattended. Never hang waiting for
   input that may never come.
+- **Exception:** when the agent picked `/bw-work` itself (the user did not type
+  it), never push or open a `[FAILED]` PR. Commit locally only where the host
+  allows it, report the failure summary, and stop.
 
 Detect interactivity with a standard shell check (e.g. `[ -t 0 ]` / `[ -t 1 ]`)
 and common CI variables; do not rely on any Buildwright-specific configuration.
