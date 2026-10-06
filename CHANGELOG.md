@@ -2,6 +2,19 @@
 
 ## Unreleased
 
+- Add Kiro as a supported host. `sync-agents.sh` generates namespaced,
+  gitignored Kiro steering docs under `.kiro/steering/bw-*.md`, all
+  `inclusion: manual` so repository Markdown is never auto-loaded into every
+  prompt (the same trust boundary the Cursor target keeps). Commands and agents
+  are invoked with `#bw-command-<name>` / `#bw-agent-<name>` or from the `/`
+  menu; framework, steering and codebase docs are opt-in context the commands
+  reference. Output is scoped to the `bw-*` namespace, so a project's own
+  committed `.kiro/` files are never touched. `capability.md` and the README
+  gain Kiro, and `buildwright update` adds the Kiro ignore lines to existing
+  projects.
+- `buildwright update` now re-adds any Buildwright-managed `.gitignore` block
+  entry a user deleted (not only `.claude/codebase/`), keeping the generated-
+  dirs block complete. It only adds lines; it never removes a user's own.
 - Agents are now told to pick the command from the request, so you do not need
   to type `/bw-work`. A request to build, add, fix, change, or refactor code
   follows `/bw-work`. Say "skip bw-work" to do a task without it. Three changes
