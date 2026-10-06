@@ -112,11 +112,16 @@ test('agents pick /bw-work from the request without the slash command', () => {
   assert.match(commands, /user does not need to type/i);
   assert.match(commands, /\bskip\b/i);
 
-  // An auto-picked /bw-work must not publish work the user did not ask to publish.
+  // An auto-picked /bw-work must not publish work the user did not ask to publish,
+  // in any phase, including the stalled-gate handoff.
   const noPublish = /push,\s+open\s+a\s+PR,\s+or\s+create\s+issues\s+only\s+when\s+the\s+user\s+asks/i;
+  const stalledGate = /gate\s+stalls[\s\S]{0,80}\[FAILED\]`?\s+PR/i;
   assert.match(commands, noPublish);
+  assert.match(commands, stalledGate);
   const workBody = fs.readFileSync(path.join(repoRoot, '.buildwright', 'commands', 'bw-work.md'), 'utf8');
-  assert.match(workBody.match(/^## Phase 8[\s\S]*?^## /m)?.[0] ?? '', noPublish);
+  const preamble = workBody.split(/^## Phase 1/m)[0];
+  assert.match(preamble, noPublish);
+  assert.match(preamble, stalledGate);
 
   // Claude Code reads CLAUDE.md, not AGENTS.md, so the stub must import it.
   const claude = fs.readFileSync(path.join(repoRoot, 'CLAUDE.md'), 'utf8');

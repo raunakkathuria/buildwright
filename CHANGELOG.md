@@ -25,12 +25,16 @@
   - `CLAUDE.md` now imports `AGENTS.md` with `@AGENTS.md`. Before, it only
     asked the agent to read the file, so Claude Code did not load the rules.
 - When the agent picks `/bw-work` itself, it does not push, open a PR, or
-  create issues unless the user asks. It stops and offers `/bw-ship` instead.
-  Typing `/bw-work` works as before.
-- Existing projects get only the new skill description from `buildwright
-  update`, because `AGENTS.md` and `CLAUDE.md` are added only when they are
-  absent. To get the rest, add `@AGENTS.md` to your `CLAUDE.md` and copy the
-  routing rules into your `AGENTS.md`.
+  create issues unless the user asks, in any phase. This includes a failed
+  gate: it reports the blocker instead of opening a `[FAILED]` PR. At the end it
+  offers `/bw-ship`. Typing `/bw-work` works as before.
+- Kiro does not get the skill description, so on Kiro you still reference
+  `#bw-command-bw-work`.
+- `buildwright update` gives existing projects the new `bw-work.md` and
+  `autonomy.md`, so they get the new description and the no-publish rule. It
+  does not change `AGENTS.md` or `CLAUDE.md`, which are added only when absent.
+  To get the rest, add `@AGENTS.md` to your `CLAUDE.md` and copy the routing
+  rules into your `AGENTS.md`.
 - The npm package no longer includes the CLI's own `*.test.js` files. Users do
   not run them, so the package drops from 38 to 35 files.
 

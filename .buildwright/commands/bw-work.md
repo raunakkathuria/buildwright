@@ -30,6 +30,12 @@ capabilities per `.buildwright/framework/capability.md` — use native
 task/todo tracking for the loop and native file writes rather than reimplementing
 them in prose.
 
+When you picked this command yourself (the user did not type `/bw-work`), this
+rule covers every phase. Commit locally only where the host allows it. Push,
+open a PR, or create issues only when the user asks. When a gate stalls, do not
+push or open a `[FAILED]` PR; report the blocker instead. At the end, offer
+`/bw-ship`.
+
 When you defer a decision (acceptable for staging, must fix before production) or
 spot an issue better fixed upstream, record it per
 `.buildwright/framework/findings.md` as it arises — don't leave it scattered.
@@ -161,10 +167,6 @@ here. If `/bw-ship` runs next in the same run and the working tree is
 unchanged, it reuses these results (its "Gate reuse" rule). It does not
 re-run them. Report which gates passed and at what commit so the reuse is
 unambiguous.
-
-When the agent picked this command itself (the user did not type `/bw-work`),
-commit locally only where the host allows it. Push, open a PR, or create issues
-only when the user asks. Otherwise, stop and offer `/bw-ship`.
 
 ## Final Report
 

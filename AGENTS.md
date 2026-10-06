@@ -112,7 +112,8 @@ Routing:
   bw-work"), do the task directly.
 - Picking a command yourself adds no permissions. When you pick `/bw-work`
   yourself, commit locally only where the host allows it. Push, open a PR, or
-  create issues only when the user asks.
+  create issues only when the user asks. When a gate stalls, do not push or
+  open a `[FAILED]` PR; report the blocker. This wins over Operating Mode.
 
 ## Command Discovery
 

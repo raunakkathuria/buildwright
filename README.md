@@ -122,7 +122,8 @@ On Kiro, the commands are generated as `inclusion: manual` steering docs under
 `.kiro/steering/`. Invoke one by referencing it in chat — `#bw-command-bw-work`
 — or pick it from the `/` menu, where manual steering docs appear. The
 referenced doc is the real Buildwright command text, so the behavior matches the
-other hosts.
+other hosts. Kiro does not pick the command for you, so reference
+`#bw-command-bw-work` yourself.
 
 ### Update
 

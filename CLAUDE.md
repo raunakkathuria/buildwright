@@ -5,5 +5,5 @@ root. Claude Code loads it through this import:
 
 @AGENTS.md
 
-`AGENTS.md` is the single source of truth — Claude Code, Codex, OpenCode, and
-Cursor all consume it.
+`AGENTS.md` is the single source of truth — Claude Code, Codex, OpenCode,
+Cursor, and Kiro all consume it.
