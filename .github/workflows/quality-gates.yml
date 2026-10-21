@@ -23,6 +23,12 @@ jobs:
       - name: Run CLI tests
         run: npm --prefix cli test
 
+      - name: Run Evaluation Suite
+        run: |
+          cd tests/evals
+          npm ci
+          npx promptfoo eval
+
       - name: Generate synced files
         run: make sync
 
