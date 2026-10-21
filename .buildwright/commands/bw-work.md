@@ -10,8 +10,11 @@ metadata:
 
 Use this for implementation work: bug fixes, refactors, small changes, and new
 features. The command chooses the lightest workflow that still protects quality.
-Lighter means less research and planning. It never skips verification or
-review, and never skips the failing test for a bug fix or behaviour change.
+Lighter means less research and planning. By default, it runs verification and
+review, and requires a failing test for a bug fix or behaviour change. However,
+if the user requests a "fast path" for a trivial change, or if the project's
+`.buildwright/steering/philosophy.md` explicitly alters the workflow, you may
+skip these steps to save time and tokens.
 
 ## Core Loop
 
@@ -74,7 +77,7 @@ Otherwise auto-detect from project files:
 
 Derive typecheck, lint, test, build, and dev commands. Mark unavailable gates as
 `SKIP`. Write a real `.buildwright/steering/tech.md` so future runs reuse the
-discovery result. If detection is ambiguous, ask for the missing commands.
+discovery result. If the project uses a non-standard topology or detection is ambiguous, ask the user to provide the exact commands instead of guessing.
 
 ## Phase 3: Research
 

@@ -127,7 +127,7 @@ Run once per session and cache the result.
 3. Derive typecheck, lint, test, build, and dev commands. Mark unavailable
    gates as `SKIP`.
 4. Write discovered commands to `.buildwright/steering/tech.md`.
-5. If still ambiguous, ask for the missing commands.
+5. If still ambiguous, or if the project uses a non-standard topology, ask the user for the missing commands instead of guessing.
 
 ## Operating Mode
 
@@ -180,6 +180,12 @@ say why in the final report.
   `.agents/skills/bw-*/`.
 - After editing `.buildwright/`, run `bash .buildwright/scripts/sync-agents.sh`
   (or `buildwright sync`).
+
+## Operating Flexibility
+
+While Buildwright defaults to a rigorous process, you may adapt the workflow to save time and tokens on simple tasks or non-standard codebases:
+- **Fast Path**: For trivial changes (e.g., typos, simple docs, obvious fixes), you may skip the TDD (Red) and Review phases if the user requests a "fast path" or "quick fix".
+- **Workflow Customization**: The core 'Red -> Green -> Refactor' workflow and verification loop can be overridden by the project's `.buildwright/steering/philosophy.md`. Do not fight the framework if the team explicitly alters these steps.
 
 ## Philosophy
 
