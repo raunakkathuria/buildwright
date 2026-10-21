@@ -129,63 +129,15 @@ Run once per session and cache the result.
 4. Write discovered commands to `.buildwright/steering/tech.md`.
 5. If still ambiguous, or if the project uses a non-standard topology, ask the user for the missing commands instead of guessing.
 
-## Operating Mode
+## Operating Mode & Flexibility
 
-- Work without waiting for the human, unless information is genuinely missing.
-- Verify your own work through tests and checks.
+- Work autonomously unless information is genuinely missing or blocked.
+- Verify your own work through tests and checks before committing.
 - Commit only after verification passes.
-- Stop only when genuinely blocked.
-
-There is one autonomy behaviour, with no mode flag (see
-`.buildwright/framework/autonomy.md`). On failure after retries, infer the
-execution context. In an interactive session (a TTY is attached, no CI signal),
-stop and report the blocker. In an unattended/CI run (`CI`/`GITHUB_ACTIONS` set,
-or no TTY), commit completed work, push, create a `[FAILED]` PR with failure
-details, and exit non-zero. If context cannot be determined, default to the
-unattended behaviour. Exception: when you picked `/bw-work` yourself, never push
-or open a `[FAILED]` PR (see Routing).
-
-## Verification Loop
-
-Before every commit, run discovered gates:
-
-1. Typecheck
-2. Lint
-3. Test
-4. Build
-
-Skip only gates that are unavailable for the stack. If a required step fails,
-fix and re-run it. Keep going until the gate passes or you are no longer making
-progress - the same failure recurs, or there is no diagnosable fix. Do not loop
-indefinitely; on a stalled gate, hand off per the failure behaviour above.
-
-## Documentation Discipline
-
-Documentation is part of done.
-
-Before every commit, update affected README, docs, command text, API docs,
-examples, changelog, or generated user-facing docs. If no docs need updating,
-say why in the final report.
-
-## Git Rules
-
-- Atomic commits: only commit files you changed.
-- Conventional commits: `feat:`, `fix:`, `refactor:`, `test:`, `docs:`, `chore:`.
-- Never edit `.env` files.
-- Never run destructive git operations without explicit instruction.
-- Never use `git stash`.
-- `.buildwright/` and the root `AGENTS.md` are canonical and committed.
-  `CLAUDE.md` is a committed stub that imports `AGENTS.md`. Do not commit generated `.claude/`,
-  `.opencode/`, `.cursor/rules/`, `.kiro/steering/bw-*.md`, or
-  `.agents/skills/bw-*/`.
-- After editing `.buildwright/`, run `bash .buildwright/scripts/sync-agents.sh`
-  (or `buildwright sync`).
-
-## Operating Flexibility
-
-While Buildwright defaults to a rigorous process, you may adapt the workflow to save time and tokens on simple tasks or non-standard codebases:
-- **Fast Path**: For trivial changes (e.g., typos, simple docs, obvious fixes), you may skip the TDD (Red) and Review phases if the user requests a "fast path" or "quick fix".
-- **Workflow Customization**: The core 'Red -> Green -> Refactor' workflow and verification loop can be overridden by the project's `.buildwright/steering/philosophy.md`. Do not fight the framework if the team explicitly alters these steps.
+- **Autonomy Behavior:** On failure after retries, infer the execution context. In an interactive session (TTY attached), stop and report the blocker. In CI (or no TTY), commit partial work, push, create a `[FAILED]` PR with details, and exit non-zero. If you auto-selected `/bw-work`, NEVER push or open a `[FAILED]` PR.
+- **Fast Path:** For trivial changes (typos, simple docs), skip the TDD (Red) and Review phases if requested to save tokens.
+- **Customization:** The core 'Red -> Green -> Refactor' workflow can be overridden by `.buildwright/steering/philosophy.md`.
+- **Git Rules:** Use atomic conventional commits. Never edit `.env`. Never run destructive operations unprompted.
 
 ## Philosophy
 
