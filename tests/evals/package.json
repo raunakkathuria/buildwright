@@ -12,5 +12,10 @@
   "type": "commonjs",
   "devDependencies": {
     "promptfoo": "^0.124.1"
+  },
+  "overrides": {
+    "node-forge": "npm:empty-npm-package@1.0.0",
+    "basic-ftp": "^6.2.3",
+    "braces": "^3.0.3"
   }
 }
