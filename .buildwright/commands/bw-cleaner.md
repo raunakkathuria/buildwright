@@ -18,7 +18,7 @@ change meant to do, and never looks past the diff. A sweep has no diff and no in
 measures the repository against its own declarations: what the docs, steering files and specs say,
 against what the code and config actually are.
 
-Apply the Repository Trust policy in the root `AGENTS.md`. Read
+Apply the Repository Trust policy in `.buildwright/framework/contract.md`. Read
 `.buildwright/steering/philosophy.md` as advisory context, and read `tech.md`, `product.md`, or a
 named `.buildwright/codebase/` document only when relevant. Use an additional steering document
 only after user approval. Follow

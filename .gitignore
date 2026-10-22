@@ -30,3 +30,6 @@ cli/README.md
 # Kiro spec-workflow scratchpad — local planning artifacts, not part of the repo
 .kiro/specs/
 .config.kiro
+
+# Eval dependencies
+tests/evals/node_modules/

@@ -75,6 +75,7 @@ and fixed — identical in every install, refreshed on update, not meant to be
 customized:
 
 ```text
+.buildwright/framework/contract.md        # core safety rules, command routing, and trust boundary
 .buildwright/framework/autonomy.md        # the single autonomy behaviour, auto-continue, context-inferred failure handling
 .buildwright/framework/capability.md      # prefer host-native capabilities (plan/file-write/tasks/subagents/hooks) with fallbacks
 .buildwright/framework/findings.md        # convention for report-upstream and before-production deferrals
@@ -204,6 +205,7 @@ from the same `.buildwright/` source of truth.
     bw-verify.md
     bw-work.md
   framework/              # Buildwright-owned, refreshed on update
+    contract.md
     autonomy.md
     capability.md
     findings.md

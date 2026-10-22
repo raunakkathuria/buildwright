@@ -8,6 +8,8 @@ metadata:
 
 # /bw-analyse
 
+@.buildwright/framework/contract.md
+
 Analyse the existing codebase and produce structured reference documents in
 `.buildwright/codebase/`. Then create or update `.buildwright/steering/tech.md`
 with real project context so future sessions do not rely on detection.

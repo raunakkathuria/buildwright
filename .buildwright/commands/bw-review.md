@@ -8,6 +8,8 @@ metadata:
 
 # /bw-review — independent code + security review
 
+@.buildwright/framework/contract.md
+
 Run a **review-only** pass — code **and** security — over a set of changes, without implementing or
 shipping anything. Use it to review an existing PR (yours, a teammate's, or another agent's) or your
 working changes before `/bw-ship`. It is the single home for the review logic that `/bw-work` and
