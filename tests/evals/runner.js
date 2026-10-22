@@ -29,17 +29,28 @@ class BuildwrightRunner {
       fs.writeFileSync(path.join(tmpDir, 'package.json'), JSON.stringify({ scripts: { test: "echo 'pass'" } }));
 
       // 2. Load Buildwright Prompts (simulate agent context)
-      const agentsMdPath = path.join(__dirname, '../../AGENTS.md');
+      const contractMdPath = path.join(__dirname, '../../.buildwright/framework/contract.md');
       const bwWorkMdPath = path.join(__dirname, '../../.buildwright/commands/bw-work.md');
       
-      const agentsMd = fs.existsSync(agentsMdPath) ? fs.readFileSync(agentsMdPath, 'utf8') : '';
+      const contractMd = fs.existsSync(contractMdPath) ? fs.readFileSync(contractMdPath, 'utf8') : '';
       const bwWorkMd = fs.existsSync(bwWorkMdPath) ? fs.readFileSync(bwWorkMdPath, 'utf8') : '';
 
       // 3. Validate Prompt Integrity (Prevent False Positives)
       // The mock should only succeed if the prompt actually contains the rules we are testing.
-      if (!bwWorkMd.includes('fast path') || !agentsMd.includes('Fast Path')) {
+      if (!bwWorkMd.includes('fast path') || !contractMd.includes('Fast Path')) {
          return { error: "Prompt missing fast path rules" };
       }
+
+      const trace = {
+        turnCount: 0,
+        skippedTdd: false,
+        testsRun: false,
+        fileChanged: false,
+        tokenUsage: { prompt: 1500, completion: 0 }
+      };
+
+      const task = context.vars.task.toLowerCase();
+      const mode = context.vars.mode.toLowerCase();
 
       // Simulate Agent Logic obeying the "Fast Path" rule we just added to AGENTS.md
       if (mode.includes('fast path') || task.includes('typo')) {
