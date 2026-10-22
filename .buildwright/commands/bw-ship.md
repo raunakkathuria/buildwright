@@ -8,6 +8,8 @@ metadata:
 
 ## Ship Pipeline
 
+@.buildwright/framework/contract.md
+
 This command runs the full quality pipeline before shipping.
 
 Failure handling follows the single autonomy behaviour in

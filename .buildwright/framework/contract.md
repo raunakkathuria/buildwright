@@ -134,10 +134,10 @@ Run once per session and cache the result.
 - Work autonomously unless information is genuinely missing or blocked.
 - Verify your own work through tests and checks before committing.
 - Commit only after verification passes.
-- **Autonomy Behavior:** On failure after retries, infer the execution context. In an interactive session (TTY attached), stop and report the blocker. In CI (or no TTY), commit partial work, push, create a `[FAILED]` PR with details, and exit non-zero. If you auto-selected `/bw-work`, NEVER push or open a `[FAILED]` PR.
-- **Fast Path:** For trivial changes (typos, simple docs), skip the TDD (Red) and Review phases if requested to save tokens.
+- **Autonomy Behavior:** On failure after retries, infer the execution context. In an interactive session (TTY attached), stop and report the blocker. In CI (or no TTY), keep finished work (do not fabricate partial commits), push, create a `[FAILED]` PR with details, and exit non-zero. If you auto-selected `/bw-work`, NEVER push or open a `[FAILED]` PR.
+- **Fast Path:** For trivial changes (typos, simple docs), skip the TDD (Red) and Review phases if requested to save tokens. NEVER skip verification gates or safety rules.
 - **Customization:** The core 'Red -> Green -> Refactor' workflow can be overridden by `.buildwright/steering/philosophy.md`.
-- **Git Rules:** Use atomic conventional commits. Never edit `.env`. Never run destructive operations unprompted.
+- **Git Rules:** Use atomic conventional commits. Never edit `.env`. Never run destructive operations unprompted. Never use `git stash`.
 
 ## Philosophy
 

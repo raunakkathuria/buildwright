@@ -35,22 +35,11 @@ class BuildwrightRunner {
       const agentsMd = fs.existsSync(agentsMdPath) ? fs.readFileSync(agentsMdPath, 'utf8') : '';
       const bwWorkMd = fs.existsSync(bwWorkMdPath) ? fs.readFileSync(bwWorkMdPath, 'utf8') : '';
 
-      // 3. Simulate Headless Agent Run
-      // In a real environment with an LLM, we would send `agentsMd + bwWorkMd + prompt` to the LLM API.
-      // Since this is a test framework and we don't want to burn CI credits/flake on LLM halucinations 
-      // without an explicit OPENAI_API_KEY, we will mock the agent's behavior based on the prompt's instructions.
-      // If an LLM was attached, it would generate these trace metrics.
-      
-      const trace = {
-        turnCount: 0,
-        skippedTdd: false,
-        testsRun: false,
-        fileChanged: false,
-        tokenUsage: { prompt: 1500, completion: 0 }
-      };
-
-      const task = context.vars.task.toLowerCase();
-      const mode = context.vars.mode.toLowerCase();
+      // 3. Validate Prompt Integrity (Prevent False Positives)
+      // The mock should only succeed if the prompt actually contains the rules we are testing.
+      if (!bwWorkMd.includes('fast path') || !agentsMd.includes('Fast Path')) {
+         return { error: "Prompt missing fast path rules" };
+      }
 
       // Simulate Agent Logic obeying the "Fast Path" rule we just added to AGENTS.md
       if (mode.includes('fast path') || task.includes('typo')) {
