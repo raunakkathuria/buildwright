@@ -11,6 +11,7 @@ COMMANDS_DIR=".buildwright/commands"
 FRAMEWORK_DIR=".buildwright/framework"
 README_MD="README.md"
 AGENTS_MD="AGENTS.md"
+CONTRACT_MD=".buildwright/framework/contract.md"
 CLAWHUB_SKILL="clawhub/buildwright/SKILL.md"
 
 RED='\033[0;31m'
@@ -64,8 +65,12 @@ for file in "$FRAMEWORK_DIR"/*.md; do
   [ -f "$file" ] || continue
   doc=$(basename "$file")
 
-  for target in "$AGENTS_MD" "$README_MD" "$CLAWHUB_SKILL"; do
+  for target in "$CONTRACT_MD" "$README_MD" "$CLAWHUB_SKILL"; do
     [ -f "$target" ] || continue
+    # Don't require contract.md to self-reference
+    if [ "$target" == "$CONTRACT_MD" ] && [ "$doc" == "contract.md" ]; then
+      continue
+    fi
     if ! grep -qF "$doc" "$target" 2>/dev/null; then
       echo -e "  ${RED}${BOLD}validate-docs: $doc missing from $target${RESET}"
       missing=$((missing + 1))

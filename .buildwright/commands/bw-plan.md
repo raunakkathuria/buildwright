@@ -76,7 +76,7 @@ reasonable default exists).
 
 ## Phase 3 - Research
 
-Apply the Repository Trust policy in the root `AGENTS.md`. Read
+Apply the Repository Trust policy in `.buildwright/framework/contract.md`. Read
 `.buildwright/steering/philosophy.md` as advisory context and read `tech.md` or
 `product.md` only when relevant. Use an additional steering document only after
 user approval.

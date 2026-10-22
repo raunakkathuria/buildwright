@@ -1,0 +1,43 @@
+# yaml-language-server: $schema=https://promptfoo.dev/config-schema.json
+description: "Buildwright Agent Workflow Evaluations"
+
+providers:
+  - id: "file://runner.js"
+    label: "buildwright-headless-agent"
+
+prompts:
+  - "Task: {{task}}\nMode: {{mode}}"
+
+tests:
+  - description: "Trivial Fix - Should use Fast Path"
+    vars:
+      task: "Fix the typo 'teh' to 'the' in README.md"
+      mode: "fast path"
+      expected_workflow: "fast"
+    assert:
+      # We assert against the structured output returned by runner.js
+      - type: "javascript"
+        value: "output.turnCount <= 2"
+        metric: "Efficiency: Low Turn Count"
+      - type: "javascript"
+        value: "output.skippedTdd === true"
+        metric: "Efficiency: Skipped TDD"
+      - type: "javascript"
+        value: "output.fileChanged === true"
+        metric: "Correctness: File Updated"
+
+  - description: "Standard Bug - Should use Standard Path"
+    vars:
+      task: "Fix the division by zero bug in math.js"
+      mode: "standard"
+      expected_workflow: "standard"
+    assert:
+      - type: "javascript"
+        value: "output.turnCount > 2"
+        metric: "Efficiency: Full Workflow Expected"
+      - type: "javascript"
+        value: "output.skippedTdd === false"
+        metric: "Correctness: TDD Not Skipped"
+      - type: "javascript"
+        value: "output.testsRun === true"
+        metric: "Correctness: Verification Gates Run"
