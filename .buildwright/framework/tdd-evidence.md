@@ -41,5 +41,11 @@ that are supposed to have it.
 By judgment, not by an automatic check (a deterministic gate). The code-review persona
 (`.buildwright/agents/staff-engineer.md`) checks each diff that adds or changes tests. The diff must
 **cite its red** or **declare a characterization exception**; if not, the persona raises a finding.
-Mutation testing proves a test *can* fail by changing the code under it. It is a separate, optional
-step for core paths. The cited red is the baseline every change meets.
+
+## Mechanical Proof: Mutation Testing
+
+The natural upgrade to the manual "proof of red" convention is **mutation testing** (e.g., Stryker for JS, Infection for PHP, pitest for Java). A surviving mutant is mechanical proof that a test never truly failed (it is assertion-light or tests the wrong thing). 
+
+For critical or core execution paths, projects should adopt mutation testing as the **mechanical proof-of-red signal**. 
+- **Advisory-first:** Begin by running mutation tests in CI and reporting the mutation score without failing the build. This establishes a baseline and highlights assertion gaps.
+- **Then a gate:** Once the core paths are covered, enforce a minimum mutation score threshold as a deterministic quality gate in the CI pipeline (`/bw-ship` step 1). This ensures no "green from birth" tests can pass code review on critical infrastructure.
