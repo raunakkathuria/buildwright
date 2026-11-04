@@ -11,7 +11,7 @@
   "license": "ISC",
   "type": "commonjs",
   "devDependencies": {
-    "promptfoo": "^0.124.1"
+    "promptfoo": "^0.125.1"
   },
   "overrides": {
     "node-forge": "npm:empty-npm-package@1.0.0",
